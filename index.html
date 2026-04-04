@@ -1,0 +1,2837 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Theism Probability Engine</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #050a18;
+      --surface: #0c1529;
+      --surface2: #111d35;
+      --surface3: #182642;
+      --border: #1e3055;
+      --border-glow: #22d3ee22;
+      --text: #e2e8f0;
+      --text-dim: #7e8fa6;
+      --text-faint: #4a5975;
+      --accent: #22d3ee;
+      --accent2: #818cf8;
+      --accent3: #a78bfa;
+      --gold: #f59e0b;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --gradient: linear-gradient(135deg, #22d3ee, #818cf8);
+      --glow: 0 0 20px #22d3ee18, 0 0 60px #22d3ee08;
+      --radius: 12px;
+      --radius-lg: 16px;
+      --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      --transition: 0.3s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.6;
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%, #22d3ee08, transparent),
+        radial-gradient(ellipse 60% 40% at 80% 100%, #818cf808, transparent);
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--surface)
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--accent)
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 60px
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 40px 20px 32px;
+      position: relative
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, #22d3ee10, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      font-size: clamp(24px, 5vw, 38px);
+      font-weight: 800;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      color: var(--text-dim);
+      font-size: 15px;
+      max-width: 620px;
+      margin: 0 auto
+    }
+
+    /* STATS */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 24px 0
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gradient);
+      opacity: 0;
+      transition: var(--transition)
+    }
+
+    .stat-card:hover::before {
+      opacity: 1
+    }
+
+    .stat-card:hover {
+      border-color: #22d3ee44;
+      box-shadow: var(--glow)
+    }
+
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-faint);
+      margin-bottom: 4px
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 800;
+      font-family: var(--mono);
+      color: var(--accent)
+    }
+
+    .stat-value.gold {
+      color: var(--gold)
+    }
+
+    .stat-value.emerald {
+      color: var(--emerald)
+    }
+
+    .stat-value.purple {
+      color: var(--accent3)
+    }
+
+    .stat-value.rose {
+      color: var(--rose)
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      overflow-x: auto;
+      border: 1px solid var(--border)
+    }
+
+    .tab {
+      flex: 1;
+      min-width: fit-content;
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      font-family: var(--font)
+    }
+
+    .tab:hover {
+      color: var(--text);
+      background: var(--surface2)
+    }
+
+    .tab.active {
+      background: var(--surface3);
+      color: var(--accent);
+      box-shadow: 0 0 12px #22d3ee12
+    }
+
+    /* PANELS */
+    .panel {
+      display: none;
+      animation: fadeIn .35s ease
+    }
+
+    .panel.active {
+      display: block
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* ARG CARD */
+    .arg-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 16px;
+      overflow: hidden;
+      transition: var(--transition)
+    }
+
+    .arg-card:hover {
+      border-color: #22d3ee33
+    }
+
+    .arg-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: var(--transition)
+    }
+
+    .arg-header:hover {
+      background: var(--surface2)
+    }
+
+    .arg-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0
+    }
+
+    .arg-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0
+    }
+
+    .arg-title {
+      font-weight: 700;
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .arg-subtitle {
+      font-size: 12px;
+      color: var(--text-dim)
+    }
+
+    .arg-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: var(--mono);
+      white-space: nowrap
+    }
+
+    .badge-core {
+      background: #22d3ee18;
+      color: var(--accent)
+    }
+
+    .badge-post {
+      background: #818cf818;
+      color: var(--accent2)
+    }
+
+    .chevron {
+      width: 20px;
+      height: 20px;
+      color: var(--text-faint);
+      transition: var(--transition);
+      flex-shrink: 0
+    }
+
+    .arg-card.open .chevron {
+      transform: rotate(180deg)
+    }
+
+    .arg-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .45s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    .arg-card.open .arg-body {
+      max-height: 20000px
+    }
+
+    .arg-content {
+      padding: 0 20px 20px
+    }
+
+    /* SECTIONS */
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-faint);
+      margin: 20px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border)
+    }
+
+    /* PREMISE */
+    .premise-card {
+      background: var(--surface2);
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      transition: var(--transition)
+    }
+
+    .premise-card:hover {
+      border-color: var(--border)
+    }
+
+    .premise-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    .premise-text {
+      flex: 1;
+      font-size: 14px;
+      line-height: 1.5
+    }
+
+    .premise-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      background: #22d3ee12;
+      padding: 2px 8px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      font-family: var(--mono)
+    }
+
+    /* SLIDER */
+    .confidence-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px
+    }
+
+    .slider-wrap {
+      flex: 1;
+      position: relative;
+      height: 32px;
+      display: flex;
+      align-items: center
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--surface3);
+      outline: none;
+      transition: var(--transition);
+      cursor: pointer
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 0 10px #22d3ee44;
+      transition: var(--transition)
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 16px #22d3ee66
+    }
+
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border: none;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer
+    }
+
+    .conf-display {
+      min-width: 56px;
+      text-align: center;
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--accent);
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: var(--surface3);
+      border: 1px solid var(--border)
+    }
+
+    .conf-display.empty {
+      color: var(--text-faint)
+    }
+
+    /* EVIDENCE */
+    .evidence-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-dim);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-family: var(--font);
+      transition: var(--transition);
+      padding: 4px 8px;
+      border-radius: 6px
+    }
+
+    .evidence-toggle:hover {
+      background: var(--surface3);
+      color: var(--text)
+    }
+
+    .evidence-toggle svg {
+      width: 14px;
+      height: 14px;
+      transition: var(--transition)
+    }
+
+    .evidence-toggle.open svg {
+      transform: rotate(90deg)
+    }
+
+    .evidence-list {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .3s ease
+    }
+
+    .evidence-list.open {
+      max-height: 3000px
+    }
+
+    .evidence-list ul {
+      margin: 8px 0 0 0;
+      padding: 0 0 0 20px;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7
+    }
+
+    .evidence-list li {
+      margin-bottom: 6px
+    }
+
+    .evidence-list li::marker {
+      color: var(--accent)
+    }
+
+    /* CONCLUSION */
+    .conclusion-box {
+      background: linear-gradient(135deg, #22d3ee08, #818cf808);
+      border: 1px solid #22d3ee22;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px
+    }
+
+    .conclusion-box.post {
+      border-color: #818cf822;
+      background: linear-gradient(135deg, #818cf808, #a78bfa08)
+    }
+
+    .conclusion-text {
+      font-size: 14px;
+      font-weight: 600
+    }
+
+    .conclusion-value {
+      font-family: var(--mono);
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--accent);
+      white-space: nowrap
+    }
+
+    .conclusion-box.post .conclusion-value {
+      color: var(--accent2)
+    }
+
+    /* POST-PREMISE */
+    .post-premise-card {
+      background: var(--surface2);
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      transition: var(--transition);
+      border-left: 3px solid var(--accent2)
+    }
+
+    .post-premise-card:hover {
+      border-color: var(--border);
+      border-left-color: var(--accent2)
+    }
+
+    .prop-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: #818cf818;
+      color: var(--accent2);
+      margin-left: 8px
+    }
+
+    .contribution-line {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 6px;
+      font-family: var(--mono)
+    }
+
+    /* SUBSET */
+    .subset-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 16px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 13px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font)
+    }
+
+    .subset-toggle:hover {
+      background: var(--surface3);
+      color: var(--text)
+    }
+
+    .subset-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .4s ease
+    }
+
+    .subset-panel.open {
+      max-height: 2000px;
+      overflow: auto
+    }
+
+    .subset-grid {
+      margin-top: 10px;
+      max-height: 260px;
+      overflow: auto;
+      border-radius: var(--radius);
+      background: var(--surface2);
+      border: 1px solid var(--border)
+    }
+
+    .subset-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 14px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .subset-row:last-child {
+      border: none
+    }
+
+    .subset-row:hover {
+      background: var(--surface3)
+    }
+
+    .subset-label {
+      color: var(--text-dim)
+    }
+
+    .subset-val {
+      font-family: var(--mono);
+      font-weight: 600;
+      color: var(--accent)
+    }
+
+    /* PROPERTIES */
+    .property-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 10px;
+      transition: var(--transition)
+    }
+
+    .property-card:hover {
+      border-color: #22d3ee33
+    }
+
+    .prop-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .prop-name {
+      font-weight: 700;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .prop-name .icon {
+      font-size: 18px
+    }
+
+    .prop-combined {
+      font-family: var(--mono);
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--emerald)
+    }
+
+    .contributors-list {
+      margin-top: 10px
+    }
+
+    .contributor-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .contributor-row:last-child {
+      border: none
+    }
+
+    .contributor-arg {
+      color: var(--text-dim)
+    }
+
+    .contributor-val {
+      font-family: var(--mono);
+      color: var(--accent)
+    }
+
+    /* COMBO */
+    .combo-builder {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-top: 20px
+    }
+
+    .combo-title {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .combo-title svg {
+      color: var(--gold)
+    }
+
+    .combo-checks {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 8px;
+      margin-bottom: 16px
+    }
+
+    .combo-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none
+    }
+
+    .combo-check:hover {
+      border-color: var(--accent);
+      background: var(--surface3)
+    }
+
+    .combo-check.checked {
+      border-color: var(--accent);
+      background: #22d3ee0a
+    }
+
+    .combo-check input {
+      display: none
+    }
+
+    .check-box {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      flex-shrink: 0
+    }
+
+    .combo-check.checked .check-box {
+      background: var(--accent);
+      border-color: var(--accent)
+    }
+
+    .check-box svg {
+      width: 12px;
+      height: 12px;
+      color: var(--bg);
+      opacity: 0;
+      transition: var(--transition)
+    }
+
+    .combo-check.checked .check-box svg {
+      opacity: 1
+    }
+
+    .combo-check-label {
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    .combo-check-sub {
+      font-size: 11px;
+      color: var(--text-dim)
+    }
+
+    .combo-result-box {
+      background: linear-gradient(135deg, #f59e0b08, #22d3ee08);
+      border: 1px solid #f59e0b33;
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center
+    }
+
+    .combo-result-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-faint);
+      margin-bottom: 4px
+    }
+
+    .combo-result-value {
+      font-family: var(--mono);
+      font-weight: 900;
+      font-size: 32px;
+      background: linear-gradient(135deg, var(--gold), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .combo-result-note {
+      font-size: 12px;
+      color: var(--text-faint);
+      margin-top: 8px
+    }
+
+    .base-select-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap
+    }
+
+    .base-select-row label {
+      font-size: 13px;
+      color: var(--text-dim)
+    }
+
+    .styled-select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 13px;
+      cursor: pointer;
+      transition: var(--transition)
+    }
+
+    .styled-select:hover {
+      border-color: var(--accent)
+    }
+
+    .styled-select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px #22d3ee18
+    }
+
+    .anchored-result {
+      margin-top: 12px;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-dim)
+    }
+
+    .anchored-result .val {
+      color: var(--accent2);
+      font-family: var(--mono);
+      font-weight: 700
+    }
+
+    /* HOW IT WORKS */
+    .how-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px
+    }
+
+    .how-card h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: var(--accent)
+    }
+
+    .how-steps {
+      counter-reset: step
+    }
+
+    .how-step {
+      counter-increment: step;
+      padding: 12px 16px 12px 52px;
+      position: relative;
+      margin-bottom: 8px;
+      border-radius: var(--radius);
+      background: var(--surface2)
+    }
+
+    .how-step::before {
+      content: counter(step);
+      position: absolute;
+      left: 14px;
+      top: 12px;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      color: var(--bg)
+    }
+
+    .how-step h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 2px
+    }
+
+    .how-step p {
+      font-size: 13px;
+      color: var(--text-dim)
+    }
+
+    .math-note {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7
+    }
+
+    .math-note code {
+      font-family: var(--mono);
+      color: var(--accent);
+      font-size: 12px;
+      background: var(--surface3);
+      padding: 1px 5px;
+      border-radius: 3px
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:640px) {
+      .app {
+        padding: 12px 10px 40px
+      }
+
+      .hero {
+        padding: 24px 12px 20px
+      }
+
+      .arg-header {
+        padding: 14px 14px
+      }
+
+      .arg-content {
+        padding: 0 14px 14px
+      }
+
+      .combo-checks {
+        grid-template-columns: 1fr
+      }
+
+      .stats-bar {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .tab {
+        padding: 8px 10px;
+        font-size: 12px
+      }
+    }
+
+    /* WORLDVIEW ANALYSIS */
+    .wv-analysis {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-top: 24px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .wv-analysis::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gradient);
+      opacity: .6
+    }
+
+    .wv-analysis-title {
+      font-weight: 800;
+      font-size: 18px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .wv-analysis-subtitle {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 20px
+    }
+
+    .wv-verdict {
+      text-align: center;
+      padding: 24px 16px;
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      position: relative
+    }
+
+    .wv-verdict.theist {
+      background: linear-gradient(135deg, #22d3ee06, #818cf808, #a78bfa06);
+      border: 1px solid #818cf833
+    }
+
+    .wv-verdict.atheist {
+      background: linear-gradient(135deg, #f43f5e06, #f59e0b06);
+      border: 1px solid #f43f5e33
+    }
+
+    .wv-verdict.incomplete {
+      background: var(--surface2);
+      border: 1px solid var(--border)
+    }
+
+    .wv-verdict-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-faint);
+      margin-bottom: 6px
+    }
+
+    .wv-verdict-name {
+      font-size: clamp(20px, 4vw, 28px);
+      font-weight: 900;
+      margin-bottom: 4px;
+      letter-spacing: -0.3px
+    }
+
+    .wv-verdict.theist .wv-verdict-name {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    .wv-verdict.atheist .wv-verdict-name {
+      color: var(--rose)
+    }
+
+    .wv-verdict.incomplete .wv-verdict-name {
+      color: var(--text-faint)
+    }
+
+    .wv-verdict-strength {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 2px
+    }
+
+    .wv-verdict-prob {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text-dim)
+    }
+
+    .wv-tier-grid {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px
+    }
+
+    .wv-tier {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      transition: var(--transition)
+    }
+
+    .wv-tier.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 16px #22d3ee10
+    }
+
+    .wv-tier.active.is-atheist {
+      border-color: var(--rose);
+      box-shadow: 0 0 16px #f43f5e10
+    }
+
+    .wv-tier-left {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .wv-tier-icon {
+      font-size: 20px;
+      width: 32px;
+      text-align: center
+    }
+
+    .wv-tier-name {
+      font-weight: 700;
+      font-size: 14px
+    }
+
+    .wv-tier-props {
+      font-size: 11px;
+      color: var(--text-faint)
+    }
+
+    .wv-tier-right {
+      text-align: right
+    }
+
+    .wv-tier-prob {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--accent)
+    }
+
+    .wv-tier.active .wv-tier-prob {
+      color: var(--emerald)
+    }
+
+    .wv-tier.active.is-atheist .wv-tier-prob {
+      color: var(--rose)
+    }
+
+    .wv-tier-strength {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-weight: 600
+    }
+
+    .wv-tier.below .wv-tier-prob {
+      color: var(--text-faint)
+    }
+
+    .wv-tier.below {
+      opacity: .5
+    }
+
+    .wv-strength-bar {
+      height: 8px;
+      border-radius: 4px;
+      background: var(--surface3);
+      margin-top: 6px;
+      overflow: hidden;
+      position: relative
+    }
+
+    .wv-strength-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width .5s ease
+    }
+
+    .wv-legend {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: var(--radius);
+      background: var(--surface2);
+      border-left: 3px solid var(--accent2);
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.8
+    }
+
+    .wv-legend strong {
+      color: var(--text)
+    }
+
+    /* ENTAILMENT */
+    .contributor-entailed {
+      color: var(--accent3);
+      font-style: italic
+    }
+
+    .entailment-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #a78bfa18;
+      color: var(--accent3);
+      margin-left: 6px;
+      letter-spacing: 0.5px
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <div class="hero">
+      <h1>Theism Probability Engine</h1>
+      <p>Evaluate classical arguments for theism, rate your confidence in each premise, and watch the probabilities
+        cascade into a unified cumulative case.</p>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-label">Strongest Argument</div>
+        <div class="stat-value" id="statStrongest">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg Core Probability</div>
+        <div class="stat-value gold" id="statAvgCore">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Properties Assessed</div>
+        <div class="stat-value emerald" id="statPropsAssessed">0 / 0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Composite Theism</div>
+        <div class="stat-value purple" id="statComposite">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Arguments Rated</div>
+        <div class="stat-value rose" id="statArgsRated">0 / 0</div>
+      </div>
+    </div>
+
+    <div class="tabs" id="tabBar">
+      <button class="tab active" data-tab="arguments">⚡ Arguments</button>
+      <button class="tab" data-tab="properties">🔗 Properties</button>
+      <button class="tab" data-tab="combinator">✨ Combinator</button>
+      <button class="tab" data-tab="howto">📘 How It Works</button>
+    </div>
+
+    <div class="panel active" id="panel-arguments"></div>
+    <div class="panel" id="panel-properties"></div>
+    <div class="panel" id="panel-combinator"></div>
+    <div class="panel" id="panel-howto">
+      <div class="how-card">
+        <h2>How This Works</h2>
+        <div class="how-steps">
+          <div class="how-step">
+            <h3>Rate Core Premises</h3>
+            <p>Each argument has core premises. Slide each to your confidence level (0–100%). The core conclusion
+              probability is the product of these confidences.</p>
+          </div>
+          <div class="how-step">
+            <h3>Evaluate Post-Argument Properties</h3>
+            <p>Once a core conclusion is established, post-premises ask: "Given the conclusion, does the cause have
+              property X?" Your confidence here combines with the core probability to produce a contribution to that
+              property.</p>
+          </div>
+          <div class="how-step">
+            <h3>Properties Aggregate Globally</h3>
+            <p>If multiple arguments support the same property (e.g., "personal"), they combine via noisy-OR
+              aggregation: the more independent arguments support it, the higher the aggregate probability.</p>
+          </div>
+          <div class="how-step">
+            <h3>Entailment</h3>
+            <p>Some properties logically entail others. For example, "Christian God" entails transcendent, first cause,
+              personal, maximally great, powerful, intelligent, moral source, and ground of meaning. Evidence for an
+              entailing property automatically flows into all entailed properties.</p>
+          </div>
+          <div class="how-step">
+            <h3>Build Custom Combinations</h3>
+            <p>In the Combinator tab, select which properties you care about and see the probability of a being having
+              all of them — computed across every argument's evidence (including entailments).</p>
+          </div>
+        </div>
+        <div class="math-note">
+          <strong>Math notes:</strong><br>
+          • <strong>Core conclusion</strong> = <code>P₁ × P₂ × … × Pₙ</code> (product of premise confidences).<br>
+          • <strong>Property contribution</strong> from one argument = <code>core × post-premise confidence</code>.<br>
+          • <strong>Entailed contribution:</strong> If property A entails property B, then A's contribution also counts
+          as a contribution to B.<br>
+          • <strong>Combined property</strong> across arguments = <code>1 − ∏(1 − contributionᵢ)</code> (noisy-OR —
+          treats arguments as approximately independent evidence sources).<br>
+          • <strong>Combo</strong> = <code>∏ combinedProp(pₖ)</code> for selected properties.<br><br>
+          This is a <em>structured reflection tool</em>, not a formal proof system. The independence assumptions are
+          modeling simplifications. The goal is to help you think rigorously about how your confidence in individual
+          premises cascades into a cumulative case.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ARGUMENTS = [
+      {
+        id: "kalam", title: "Kalam Cosmological Argument",
+        icon: "🌌", color: "#22d3ee",
+        corePremises: [
+          {
+            id: "k_p1",
+            text: "Whatever begins to exist has a cause.",
+            evidence: [
+              "<strong>From nothing, nothing comes.</strong> \"Nothing\" is not empty space — it is the total absence of anything: no space, no time, no matter, no energy, no laws. If something could pop into being uncaused from nothing, why don't we observe horses, music albums, or fully cooked meals appearing in our kitchens? The causal principle is one of the most intuitively obvious truths we know.",
+              "<strong>Denying this is worse than magic.</strong> At least with magic there is a magician. Here, not even that. Denying premise 1 commits you to a metaphysical absurdity far more extraordinary than anything the theist proposes.",
+              "<strong>Universal scientific confirmation.</strong> Every empirical observation in the history of science confirms that things which begin to exist have causes. No counterexample has ever been observed. Quantum vacuum fluctuations are sometimes cited, but these occur within an existing quantum vacuum governed by physical laws — they are not creation from nothing."
+            ]
+          },
+          {
+            id: "k_p2",
+            text: "The universe began to exist.",
+            evidence: [
+              "<strong>Hilbert's Hotel — the impossibility of an actual infinite.</strong> David Hilbert illustrated the absurdity of a real-world actual infinite with a thought experiment of a hotel with infinitely many occupied rooms:<br>• <em>Paradox 1 (Full yet has room):</em> A new guest arrives. The manager moves Room 1→2, Room 2→3, and so on, freeing Room 1. The hotel was full yet accommodates more — its sign reads 'No Vacancy (Guests Welcome).'<br>• <em>Paradox 2 (Infinity + infinity = infinity):</em> Infinitely many new guests arrive. Everyone moves to the even-numbered rooms, freeing all odd rooms — infinitely many vacancies, yet not a single guest left.<br>• <em>Paradox 3 (Subtraction contradictions):</em> All odd-room guests check out: ∞ − ∞ = ∞ (even rooms remain). But if rooms 4, 5, 6… check out: ∞ − ∞ = 3. In mathematics, subtracting infinities is forbidden precisely because it yields contradictions. But in a real hotel, guests check out as they please — the contradictions are inescapable.",
+              "<strong>The Jupiter–Saturn paradox.</strong> Suppose for every 1 orbit Saturn completes, Jupiter completes 2. The longer they orbit, the further Saturn falls behind — approaching an infinite disparity. But now suppose they have been orbiting from eternity past: how many orbits has each completed? The answer is the same: infinity. But that is absurd, because at every stage the disparity grows. How does the gap magically vanish by making the past infinite? These absurdities show an actual infinite cannot exist in reality — therefore the past is finite.",
+              "<strong>Successive addition cannot form an actual infinite.</strong> Even if an actual infinite could exist in principle, you cannot build one by adding one event after another. The past is formed by successive addition — one moment, then the next. No matter how far back you go, you only ever have a finite collection. Consider someone who claims to have been counting down from negative infinity and finishes today: …−3, −2, −1, 0! Why didn't he finish yesterday? He had already had infinite time by then. At any point in the past, he should already have finished — so he can never be found finishing at all, contradicting the hypothesis.",
+              "<strong>The Standard Big Bang Model.</strong> According to modern cosmology, space, time, matter, and energy all came into existence approximately 13.8 billion years ago. This is not an explosion in pre-existing space — it is the origin of space-time reality itself. When Georges Lemaître (a Catholic priest) proposed the Big Bang, Einstein realized it meant the death of an eternal universe. He initially inserted a 'fudge factor' into his equations to avoid this conclusion, but later admitted his error and accepted that the Big Bang implies a transcendent creator.",
+              "<strong>The Borde–Guth–Vilenkin Theorem (2003).</strong> Physicists Arvind Borde, Alan Guth, and Alexander Vilenkin proved that any universe which has been, on average, in a state of cosmic expansion cannot be past-eternal — it must have a past space-time boundary. This applies to virtually all viable cosmological models: inflationary, multiverse, cyclic, and more. Vilenkin himself stated: 'It is said that an argument is what convinces reasonable men and a proof is what it takes to convince even an unreasonable man. With the proof now in place, cosmologists can no longer hide behind the possibility of a past-eternal universe. There is no escape: they have to face the problem of a cosmic beginning. All the evidence we have says that the universe had a beginning.'",
+              "<strong>The Second Law of Thermodynamics.</strong> In a closed system, usable energy degrades over time (entropy increases). If the universe had existed forever, it would have already reached thermodynamic equilibrium — a cold, dark, lifeless heat death. The fact that we still observe stars, galaxies, and usable energy is powerful evidence that the universe has only existed for a finite time."
+            ]
+          }
+        ],
+        coreConclusionText: "Therefore, the universe has a cause.",
+        postPremises: [
+          {
+            id: "k_prop_transcendent",
+            text: "The cause must be transcendent — timeless, spaceless, and immaterial.",
+            propKey: "transcendent",
+            evidence: [
+              "Space, time, matter, and energy all originated at the Big Bang. The cause of all physical reality cannot itself be physical, spatial, or temporal — it must exist beyond the universe entirely.",
+              "Physical explanations presuppose a physical substrate; you cannot explain the origin of all physical reality by appealing to more physical reality. The cause must transcend the physical order.",
+              "Since the cause brought time itself into existence, it cannot be temporal. It must be timeless (or at minimum, causally prior to time)."
+            ]
+          },
+          {
+            id: "k_prop_powerful",
+            text: "The cause must be enormously powerful.",
+            propKey: "powerful",
+            evidence: [
+              "The cause brought the entirety of space-time reality into existence from nothing — an act of incomprehensible power.",
+              "No known physical force or mechanism can produce something from literally nothing. The power required transcends all physical energy scales."
+            ]
+          },
+          {
+            id: "k_prop_personal",
+            text: "The cause must be personal — an unembodied mind with free will.",
+            propKey: "personal",
+            evidence: [
+              "<strong>Only two candidates exist</strong> for a timeless, spaceless, immaterial cause: (1) abstract objects (like numbers), or (2) unembodied minds. Abstract objects have zero causal power — the number 7 cannot cause anything. Therefore the cause must be a personal mind.",
+              "<strong>The problem of eternal cause with temporal effect:</strong> If the cause is eternal and impersonal (like a mechanistic condition), then the effect should also be eternal — the universe should have existed forever. But it didn't; it began 13.8 billion years ago. The only way an eternal cause can produce a temporal effect is if the cause freely chooses when to act. This requires personhood — will, intention, and agency.",
+              "<strong>The cause has no external constraints.</strong> As an eternal, uncaused being, nothing forces it to create. A rock on a chair, unaffected, never moves. But a person with free will can choose at any moment to stand up. The 'great standing up' of creating the universe tells us we are dealing not with a rock, but with a person."
+            ]
+          },
+          {
+            id: "k_prop_firstcause",
+            text: "The cause is the uncaused first cause.",
+            propKey: "firstcause",
+            evidence: [
+              "The entire point of the argument is that an infinite regress of causes is impossible. The cause of the universe must therefore be uncaused — it terminates the explanatory chain.",
+              "This matches Aristotle's 'Unmoved Mover' — a being whose existence is explained by the necessity of its own nature, not by anything external.",
+              "By Ockham's Razor, we should posit no more causes than necessary. A single uncaused first cause is the simplest and most elegant explanation."
+            ]
+          }
+        ]
+      },
+      {
+        id: "finetuning", title: "Fine-Tuning Argument",
+        icon: "🎯", color: "#f59e0b",
+        corePremises: [
+          {
+            id: "f_p1",
+            text: "The fine-tuning of the universe for intelligent life is due to either physical necessity, chance, or design.",
+            evidence: [
+              "This is an exhaustive logical partition: these three categories cover every possible explanation for why the fundamental constants and initial conditions of the universe fall within the extraordinarily narrow life-permitting range.",
+              "<strong>What is 'fine-tuning'?</strong> Scientists have discovered that the fundamental constants of nature — numbers hardwired into the fabric of reality — fall within an astonishingly narrow range that permits life anywhere in the universe. These include the gravitational constant, the cosmological constant, the strong nuclear force, the electromagnetic force ratio, and dozens more. Alter any of them by even a minuscule amount and the universe becomes sterile."
+            ]
+          },
+          {
+            id: "f_p2",
+            text: "It is not due to physical necessity or chance.",
+            evidence: [
+              "<strong>Against physical necessity:</strong> There is no known theory of everything that demands these specific constants. The laws of physics are consistent with a vast range of values. String theory's landscape, for example, admits roughly 10⁵⁰⁰ possible vacuum states — making necessity wildly implausible.",
+              "<strong>Against chance — the numbers:</strong> The cosmological constant alone is fine-tuned to approximately 1 part in 10¹²⁰. The strong nuclear force: change it by 2% and only hydrogen exists (no heavy elements for life); weaken it by 5% and atomic nuclei fall apart entirely. The combined fine-tuning of multiple constants together yields estimated odds of roughly 1 in 10^(10^200). If every particle in the observable universe (~10⁸⁰) were a zero, you still wouldn't have enough zeros to write that number.",
+              "<strong>The marksman analogy:</strong> Accepting 'chance' as an explanation is like believing a blindfolded marksman hit a coin-sized target from the other side of the observable universe — not once, but hundreds of times in a row. It is not a scientific explanation; it is an admission of explanatory defeat.",
+              "<strong>Against the multiverse:</strong> (1) There is no direct observational evidence for other universes — it is speculation, not science. (2) Any multiverse-generating mechanism must itself be finely tuned to produce life-permitting universes — the fine-tuning is simply pushed back a level, making the problem worse. (3) The Boltzmann Brain problem: in most multiverse models, it is vastly more probable for a single self-aware brain to fluctuate into existence from chaos than for an entire fine-tuned universe to exist. It is also far more probable for an isolated solar system to fluctuate into existence with experiences nearly indistinguishable from ours, while the rest of the universe is chaotic. Since we clearly do not inhabit such a world, the multiverse fails as an explanation. Appealing to a multiverse is comparable to a blind person reaching into a bowl of trillions of red marbles and one blue marble and claiming to have drawn the blue by chance."
+            ]
+          }
+        ],
+        coreConclusionText: "Therefore, the fine-tuning is due to design.",
+        postPremises: [
+          {
+            id: "f_prop_transcendent",
+            text: "The designer must be transcendent — beyond the physical universe.",
+            propKey: "transcendent",
+            evidence: [
+              "The designer set the fundamental constants and initial conditions that govern all of physical reality. It therefore cannot be part of that reality — it must transcend it.",
+              "The designer configured matter, energy, space, and time, and therefore cannot be composed of or limited by them."
+            ]
+          },
+          {
+            id: "f_prop_intelligent",
+            text: "The designer must be supremely intelligent.",
+            propKey: "intelligent",
+            evidence: [
+              "The precision of fine-tuning — constants calibrated to 1 part in 10¹²⁰ and beyond — implies an intelligence of staggering depth. This is not a simple arrangement; it is the encoding of mathematical precision into the very fabric of reality.",
+              "Design implies intentionality, foresight, and the ability to evaluate and select among possibilities — hallmarks of an extraordinary intellect."
+            ]
+          },
+          {
+            id: "f_prop_powerful",
+            text: "The designer must be inconceivably powerful.",
+            propKey: "powerful",
+            evidence: [
+              "The designer brought the universe into being with precisely the right parameters — an act requiring power over the totality of physical reality.",
+              "Setting initial conditions 'before' the Big Bang implies the ability to determine the entire subsequent evolution of the cosmos."
+            ]
+          },
+          {
+            id: "f_prop_personal",
+            text: "The designer must be personal — choosing to create life-permitting order.",
+            propKey: "personal",
+            evidence: [
+              "Design implies intentionality and purpose. An impersonal force does not 'choose' to produce life — it simply operates mechanistically. The selection of life-permitting constants from among an astronomically vast landscape of sterile alternatives requires a choosing agent.",
+              "The fine-tuning is not merely ordered — it is ordered toward a goal (the existence of conscious life). This teleological character is the hallmark of personal agency."
+            ]
+          }
+        ]
+      },
+      {
+        id: "moral", title: "Moral Argument",
+        icon: "⚖️", color: "#10b981",
+        corePremises: [
+          {
+            id: "m_p1",
+            text: "If God does not exist, objective moral values and duties do not exist.",
+            evidence: [
+              "<strong>On atheistic naturalism, morality has no objective foundation.</strong> Without God, 'good' and 'evil' are byproducts of biological evolution and social conditioning — useful fictions for survival, but nothing more. As Richard Dawkins writes: 'There is at bottom no design, no purpose, no evil and no good, nothing but blind, pitiless indifference.'",
+              "<strong>Philosopher Michael Ruse (atheist) agrees:</strong> 'Morality is a biological adaptation no less than are hands and feet and teeth… Considered as a rationally justifiable set of claims about an objective something, ethics is illusory. I appreciate that when somebody says \"Love thy neighbour as thyself,\" they think they are referring above and beyond themselves… Nevertheless, such reference is truly without foundation. Morality is just an aid to survival and reproduction, and any deeper meaning is illusory.'",
+              "<strong>Evolution explains belief, not truth.</strong> Natural selection might explain why we believe in moral values (cooperation enhances survival), but survival value does not equal truth value. We could have evolved radically different moral intuitions and still survived. Without God, morality is like the rules of chess: useful for playing the game, but entirely conventional.",
+              "<strong>We are not talking about moral epistemology but moral ontology.</strong> The question is not whether atheists can be good people (they obviously can) or whether we can know right from wrong without believing in God (we can). The question is whether morality itself — as an objective feature of reality — has any foundation without God. Without a transcendent moral lawgiver, moral 'truths' are simply subjective preferences dressed up in the language of obligation."
+            ]
+          },
+          {
+            id: "m_p2",
+            text: "Objective moral values and duties do exist.",
+            evidence: [
+              "<strong>Deep moral experience testifies to objectivity.</strong> Was the Holocaust merely 'socially unacceptable at the time,' or was it objectively evil? Is abusing children merely your cultural opinion, or is it genuinely wrong? If you believe these things are truly wrong regardless of what anyone thinks, you already accept that objective moral values exist.",
+              "<strong>Moral disagreement presupposes an objective standard.</strong> The fact that we argue about morality implies we believe there is a right answer to find — just as disagreement about mathematics doesn't mean math is subjective.",
+              "<strong>Philosopher Louise Antony (atheist) admits:</strong> 'Any argument for moral scepticism will be less obvious than the reality of moral truths.' And remarkably, Michael Ruse — the same philosopher who called ethics 'illusory' — also says: 'The man who says that it is morally acceptable to rape little children is just as mistaken as the man who says 2+2=5.'",
+              "<strong>Moral objectivism is properly basic.</strong> Our moral awareness is a form of direct experience analogous to our perception of the physical world. We trust our senses unless given strong reasons to doubt them; we should extend the same trust to our moral sense. No one — atheist or theist — can live consistently with moral subjectivism. The objectivity of moral values and duties is a belief no more repressible than our belief in the objectivity of the external world."
+            ]
+          }
+        ],
+        coreConclusionText: "Therefore, God exists.",
+        postPremises: [
+          {
+            id: "m_prop_moral_source",
+            text: "God is the paradigm and source of objective moral goodness.",
+            propKey: "moral_source",
+            evidence: [
+              "<strong>On theism, moral values are grounded in God's unchanging nature</strong> — a being who is the paradigm of goodness itself. Moral duties are grounded in God's commands, which are not arbitrary but flow necessarily from His good nature.",
+              "<strong>The Euthyphro Dilemma dissolved:</strong> Some ask: 'Is something good because God commands it, or does God command it because it's good?' This is a false dilemma. The correct answer is a third option: God commands things because He is good. His nature is the standard of goodness, and His commands flow from that nature. The 'dilemma' only has two horns if you ignore the most natural theistic position.",
+              "On atheism, values are grounded in impersonal, valueless nature. Duties are mere human conventions — no one has the authority to impose them universally. Theism alone provides the kind of foundation that matches our moral experience."
+            ]
+          },
+          {
+            id: "m_prop_personal_moral",
+            text: "The moral ground must be personal — capable of issuing binding commands.",
+            propKey: "personal",
+            evidence: [
+              "Values and duties are inherently relational and normative — features that only make sense when grounded in a personal being's nature and commands.",
+              "Impersonal forces cannot issue binding moral obligations. Gravity doesn't command you to do anything. Only a personal being with authority can ground genuine moral duties.",
+              "The denial of this means accepting that the Holocaust was not objectively evil, that human rights are a convenient fiction, and that moral indignation is merely a subjective feeling. That is a price literally too high to pay."
+            ]
+          },
+          {
+            id: "m_prop_transcendent_moral",
+            text: "The moral ground must be transcendent.",
+            propKey: "transcendent",
+            evidence: [
+              "Objective moral truths are not physical objects — they are not made of matter, located in space, or subject to empirical measurement. Their ground must therefore be non-physical and transcendent.",
+              "If moral truths are necessary and timeless (it has always been wrong to torture innocents), their ground must exist necessarily and timelessly as well."
+            ]
+          }
+        ]
+      },
+      {
+        id: "contingency", title: "Contingency Argument",
+        icon: "🔄", color: "#8b5cf6",
+        corePremises: [
+          {
+            id: "c_p1",
+            text: "Everything that exists has an explanation of its existence, either in the necessity of its own nature or in an external cause.",
+            evidence: [
+              "<strong>The Principle of Sufficient Reason (PSR)</strong> is foundational to all rational inquiry and scientific investigation. Every time a scientist asks 'why?' they are presupposing this principle.",
+              "Denying the PSR leads to the absurd consequence that things could pop into existence for literally no reason whatsoever — a consequence far more extraordinary than anything the theist proposes.",
+              "The PSR does not say everything has an external cause — it says everything has an explanation. For necessary beings, the explanation is internal (the necessity of their own nature). For contingent beings, the explanation is external."
+            ]
+          },
+          {
+            id: "c_p2",
+            text: "The universe is contingent — it exists but might not have.",
+            evidence: [
+              "The universe contains contingent objects and depends on specific initial conditions that could have been different.",
+              "The universe's fundamental properties — its mass, expansion rate, entropy, physical constants — are not logically necessary. A different set of physical laws is conceptually coherent, demonstrating our universe is not the only possible one.",
+              "The fine-tuning of the universe's constants (from the previous argument) further illustrates this: the constants could have taken a vast range of values, but happen to take the specific life-permitting ones. This is the hallmark of contingency.",
+              "Even if the universe were eternal (which the Kalam argument gives us reason to doubt), it would still be contingent — an eternal contingent thing still requires an explanation for why it exists rather than not."
+            ]
+          }
+        ],
+        coreConclusionText: "Therefore, a necessary being external to the universe explains why the universe exists.",
+        postPremises: [
+          {
+            id: "c_prop_firstcause",
+            text: "This being is the necessary, self-existent first cause of all contingent reality.",
+            propKey: "firstcause",
+            evidence: [
+              "A necessary being's existence is explained by the necessity of its own nature — it exists in every possible world and cannot fail to exist. It is self-existent and uncaused.",
+              "As the ground of all contingent reality, it is the ultimate terminus of the explanatory chain — the 'brute fact' that is not actually brute but self-explanatory."
+            ]
+          },
+          {
+            id: "c_prop_transcendent_cont",
+            text: "The necessary being must be transcendent — beyond the physical universe.",
+            propKey: "transcendent",
+            evidence: [
+              "A being that explains the existence of all physical, contingent reality must itself transcend that reality.",
+              "Material entities are contingent by nature — they are composed of parts that could have been arranged differently, and their existence depends on prior conditions. A necessary being cannot be material."
+            ]
+          },
+          {
+            id: "c_prop_personal_cont",
+            text: "The necessary being must be personal.",
+            propKey: "personal",
+            evidence: [
+              "There are only two candidates for a necessary, non-physical being: (1) abstract objects, or (2) a personal mind. Abstract objects (numbers, sets, propositions) have no causal power — they cannot bring anything into existence. Therefore, the necessary being must be a personal mind.",
+              "This parallels the reasoning from the Kalam: the only non-physical entity capable of causal agency is a mind with will and intention."
+            ]
+          }
+        ]
+      },
+      {
+        id: "ontological", title: "Ontological Argument (Modal)",
+        icon: "💎", color: "#ec4899",
+        corePremises: [
+          {
+            id: "o_p1",
+            text: "It is possible that a maximally great being exists.",
+            evidence: [
+              "<strong>A maximally great being</strong> is defined as one possessing all great-making properties to their maximal degree — omnipotence, omniscience, moral perfection — and crucially, necessary existence (existence in every possible world).",
+              "<strong>The concept appears coherent.</strong> What is self-contradictory about the idea of a being who is all-powerful, all-knowing, and morally perfect? Square circles are impossible because their definitions contradict. But no internal contradiction has been demonstrated in the concept of maximal greatness.",
+              "<strong>Modal intuition supports possibility.</strong> We can conceive of such a being without logical absurdity. The burden falls on the sceptic to show that the concept is incoherent — a far heavier burden than most realize.",
+              "By 'possible' we mean metaphysically possible (could exist in some possible world), not merely imaginable or logically consistent in a shallow sense."
+            ]
+          },
+          {
+            id: "o_p2",
+            text: "If a maximally great being exists in some possible world, then it exists in every possible world (and therefore in the actual world).",
+            evidence: [
+              "<strong>This follows from the definition of maximal greatness.</strong> Maximal greatness includes necessary existence — existence in all possible worlds. A being that exists in only some possible worlds would not be maximally great.",
+              "<strong>S5 Modal Logic:</strong> In the widely accepted modal system S5, if something is possibly necessary, then it is necessary (◇□P → □P). So if a maximally great being is possible, it is necessary — and therefore actual.",
+              "<strong>Most philosophers accept that premises 2 onward are logically valid.</strong> The entire weight of the argument rests on premise 1: if God's existence is even possible, God exists. This is why the argument is so fascinating — and why the atheist must prove that the very concept of God is incoherent to resist the conclusion."
+            ]
+          }
+        ],
+        coreConclusionText: "Therefore, a maximally great being exists in the actual world.",
+        postPremises: [
+          {
+            id: "o_prop_maxgreat",
+            text: "This being possesses maximal greatness — omnipotence, omniscience, and moral perfection. (Entails: transcendent, first cause, personal, powerful, intelligent, moral source, ground of meaning.)",
+            propKey: "maximal_greatness",
+            evidence: [
+              "By definition, a maximally great being has every great-making property to its maximal degree. These include omnipotence (maximal power), omniscience (maximal knowledge), and moral perfection (maximal goodness).",
+              "This is not a conclusion drawn from the premises but part of the very concept being shown to be actual. If the being exists, it has these properties necessarily.",
+              "Maximal greatness entails every other divine property: a maximally great being must be transcendent, necessary (first cause), personal, powerful, intelligent, the moral source, and the ground of meaning — for a being lacking any of these would not be maximally great."
+            ]
+          }
+        ]
+      },
+      {
+        id: "resurrection", title: "Resurrection Argument",
+        icon: "✝️", color: "#ef4444",
+        corePremises: [
+          {
+            id: "r_p1",
+            text: "There are four well-established historical facts surrounding Jesus' death: his honourable burial, the discovery of his empty tomb, his post-mortem appearances, and the origin of the disciples' belief in his resurrection.",
+            evidence: [
+              "<strong>Fact 1: The Burial of Jesus by Joseph of Arimathea.</strong> Attested in multiple independent sources (Mark, Matthew, Luke, John, Acts, 1 Corinthians). Joseph was a member of the Sanhedrin — the very council that condemned Jesus. This is embarrassing for the early church and therefore unlikely to have been invented. Burial in a known tomb refutes 'lost grave' theories.",
+              "<strong>Fact 2: The Discovery of the Empty Tomb.</strong> Attested in multiple independent sources (Mark's early passion narrative, Matthew, Luke, John, Acts). Women were the primary witnesses — in 1st-century Jewish culture, women's testimony was considered unreliable. If this were legend, male disciples would be the heroes. Enemy attestation: Matthew records the Jewish leaders claiming the disciples stole the body — which presupposes the tomb was empty. Even most critical scholars accept the empty tomb as historical.",
+              "<strong>Fact 3: Post-Mortem Appearances.</strong> The earliest evidence is the creed in 1 Corinthians 15:3–8, which scholars date to within 2–5 years of the crucifixion — far too early for legendary development. Paul is passing on what he 'received,' meaning it originated even earlier. The creed lists appearances to Peter, the Twelve, 500+ at once, James, and Paul himself. Group appearances rule out hallucination (hallucinations are individual, subjective experiences). The variety of settings (indoors, outdoors), group sizes, and psychological states (fear, doubt, joy) further supports authenticity.",
+              "<strong>Fact 4: The Origin of the Disciples' Belief.</strong> After the crucifixion, the disciples were crushed, fearful, and in hiding. In Jewish thought, a crucified Messiah was a contradiction — messiahs conquer, they don't lose to Rome. Resurrection was expected at the end of the world, not in the middle of history. Yet within weeks, these same disciples were boldly proclaiming Jesus as risen Lord, even under threat of death. Jewish Messianic movements whose leaders were killed always disbanded or found a new leader — none invented a resurrection story. Something extraordinary must have happened."
+            ]
+          },
+          {
+            id: "r_p2",
+            text: "The best explanation of these facts is that God raised Jesus from the dead.",
+            evidence: [
+              "<strong>Naturalistic alternatives each fail:</strong><br>• <em>Hallucination theory:</em> Doesn't explain the empty tomb. Hallucinations are individual psychological events — they don't appear to groups of 500, share meals, or sustain conversations across multiple occasions and settings.<br>• <em>Conspiracy theory:</em> People die for what they believe is true, but not for what they know is false. The disciples were eyewitnesses — they knew whether they had seen Jesus alive. They suffered and died for their testimony. Liars make poor martyrs.<br>• <em>Legend theory:</em> The creedal formula in 1 Corinthians 15:3–7 dates to within 2–5 years of the event — far too early for legendary embellishment. The Gospels were written within the lifetimes of eyewitnesses who could correct errors.<br>• <em>Swoon theory:</em> Roman crucifixion was designed to be lethal. A half-dead Jesus, having survived flogging, crucifixion, and a spear wound, crawling out of a tomb wrapped in burial cloths, would not inspire resurrection faith — he would inspire pity.<br>• <em>Wrong tomb theory:</em> Joseph of Arimathea's tomb was known to both friend and foe. Jewish and Roman authorities could easily have produced the body if it were available.",
+              "<strong>Transformation of sceptics:</strong> James, Jesus' own brother, was a sceptic during Jesus' ministry but became a leader of the Jerusalem church — and was martyred for his faith. Paul (Saul of Tarsus) was an active persecutor of Christians who became Christianity's greatest missionary. Both attributed their transformation to post-resurrection appearances.",
+              "<strong>The resurrection alone has the causal adequacy and explanatory scope</strong> to account for all four facts together. As N.T. Wright puts it: 'The only way you can explain the rise of the early church is if something happened to Jesus' body on that first Easter morning.' That 'something' was that God raised him from the dead."
+            ]
+          }
+        ],
+        coreConclusionText: "Therefore, the resurrection of Jesus occurred; if so, the God who raised him exists.",
+        postPremises: [
+          {
+            id: "r_prop_christian",
+            text: "If God raised Jesus, then the specifically Christian God exists. (Entails all other divine properties — transcendent, first cause, personal, maximally great, powerful, intelligent, moral source, ground of meaning.)",
+            propKey: "christian_god",
+            evidence: [
+              "Jesus claimed to be the unique Son of God and the only way of reconciliation with the Father. If God raised him from the dead, God decisively vindicated those claims — including his authority to reveal the nature and character of God.",
+              "The resurrection is not merely evidence for a generic deity — it is confirmation of the specific God of the Jewish-Christian tradition, acting in history to validate Jesus' mission and message.",
+              "This means what Jesus taught carries divine authority, and we must decide how we will respond.",
+              "If the Christian God exists, then by definition He is transcendent, necessary (first cause), personal, maximally great, powerful, intelligent, the source of morality, and the ground of meaning — for the Christian God is the God of classical theism fully revealed."
+            ]
+          }
+        ]
+      },
+      {
+        id: "properlybasic", title: "Properly Basic Beliefs Argument",
+        icon: "🧭", color: "#06b6d4",
+        corePremises: [
+          {
+            id: "pb_p1",
+            text: "There are properly basic beliefs inescapable for human life — meaning, love, free will, and personal identity — that require an ontological foundation to be objectively valid.",
+            evidence: [
+              "<strong>Meaning:</strong> We are meaning-seeking creatures. Even the person who claims life has no meaning inevitably lives as if it does — making plans, cherishing goals, investing in relationships. The nihilist still acts as if life matters.",
+              "<strong>Love:</strong> We treat love as intrinsically valuable, not merely an evolutionary trick to pass on genes. A parent who says 'I only love you because evolution wired me to' is not describing the love we know and experience.",
+              "<strong>Free will:</strong> We assume responsibility for choices. We praise the brave, condemn the cruel — all presupposing that people could have done otherwise. Without genuine freedom, moral responsibility collapses.",
+              "<strong>Personal identity:</strong> We consider ourselves the same 'self' who made yesterday's promises and will face tomorrow's consequences. Without enduring identity, commitments, relationships, and accountability are meaningless.",
+              "These are not optional philosophical add-ons — they are built into the human condition. If they are objectively real, there must be something in the nature of reality that makes them so."
+            ]
+          },
+          {
+            id: "pb_p2",
+            text: "Naturalism cannot provide such a foundation; it fatally undermines each of these beliefs.",
+            evidence: [
+              "<strong>Meaning on naturalism:</strong> In a purely physical universe, there is no teleology — no ultimate goal or purpose. Bertrand Russell admitted we must build our lives 'on the firm foundation of unyielding despair.' If all outcomes are equally purposeless, objective meaning cannot exist.",
+              "<strong>Love on naturalism:</strong> Love reduces to a neurochemical state evolved to enhance survival. It has no intrinsic worth beyond its survival function. 'Love is good' reduces to 'this feeling increases reproductive success.'",
+              "<strong>Free will on naturalism:</strong> If physicalism is true, every thought and action is determined by prior physical causes. Our sense of choice is illusory — as hard determinists like Sam Harris acknowledge. If your 'decisions' are just the inevitable result of particle interactions from the Big Bang, you never truly choose anything.",
+              "<strong>Personal identity on naturalism:</strong> The 'self' is a bundle of physical and psychological states in constant flux. Strictly speaking, there is no enduring 'you' — just a momentary arrangement of matter that will be completely different in a few years.",
+              "<strong>The practical self-refutation of naturalism:</strong> You can deny meaning, love, free will, or the self in philosophy, but you cannot escape them in living. The nihilist still acts as if life matters. The reductionist still tells their spouse 'I love you' as if it means more than 'my neurons are firing.' The determinist still argues as if you could freely change your mind. The eliminative materialist still signs their name as if there is a persisting 'I.' Naturalism is not only explanatorily deficient — it is existentially unliveable."
+            ]
+          },
+          {
+            id: "pb_p3",
+            text: "Theism provides a coherent and sufficient foundation for these properly basic beliefs.",
+            evidence: [
+              "<strong>Meaning:</strong> Life is imbued with purpose by a Creator who made us for relationship with Himself. Our lives have ultimate significance because they are part of His plan.",
+              "<strong>Love:</strong> God is love — not merely loving, but love itself (1 John 4:8). Love is real because it is grounded in the eternal nature of God.",
+              "<strong>Free will:</strong> As image-bearers of God, we are endowed with genuine freedom to choose between alternatives, enabling authentic moral responsibility.",
+              "<strong>Personal identity:</strong> We are not mere physical systems, but embodied souls — unified selves created by God, enduring through change. As Isaac Newton said: 'He who thinks half-heartedly will not believe in God; but he who really thinks has to believe in God.'"
+            ]
+          }
+        ],
+        coreConclusionText: "Therefore, theism is the best explanation for these properly basic beliefs.",
+        postPremises: [
+          {
+            id: "pb_prop_meaning",
+            text: "God grounds objective meaning and purpose in reality.",
+            propKey: "meaning_purpose",
+            evidence: [
+              "If theism is true, our deep sense that life has meaning is not a cruel cosmic joke but a signpost pointing to our true home — relationship with the Creator.",
+              "The alternative is that meaning is an illusion produced by blind evolutionary processes — an explanation that is existentially unliveable and philosophically self-defeating."
+            ]
+          },
+          {
+            id: "pb_prop_personal_pb",
+            text: "God is a personal being — the ground of love, freedom, and identity.",
+            propKey: "personal",
+            evidence: [
+              "Love, free will, and personal identity are all fundamentally personal realities — they require a personal ground. An impersonal universe of matter and energy cannot give rise to genuine love, freedom, or enduring selfhood.",
+              "Theism uniquely explains why these are real: we are made in the image of a personal God who Himself loves, chooses, and possesses enduring identity."
+            ]
+          },
+          {
+            id: "pb_prop_transcendent_pb",
+            text: "The ground of these realities must be transcendent — beyond mere physical nature.",
+            propKey: "transcendent",
+            evidence: [
+              "Meaning, love, free will, and personal identity are not physical objects — they cannot be weighed, measured, or located in space. Their ground must transcend the physical order.",
+              "Naturalism (physical reality is all there is) systematically undermines each of these. Only a transcendent reality can provide the ontological foundation they require."
+            ]
+          }
+        ]
+      }
+    ];
+
+    /* ═══════════════════════════════════════════
+       ENTAILMENT MAP
+       ═══════════════════════════════════════════ */
+    const ENTAILMENT_MAP = {
+      christian_god: ['transcendent', 'firstcause', 'personal', 'maximal_greatness', 'powerful', 'intelligent', 'moral_source', 'meaning_purpose'],
+      maximal_greatness: ['transcendent', 'firstcause', 'personal', 'powerful', 'intelligent', 'moral_source', 'meaning_purpose']
+    };
+
+    /* ═══════════════════════════════════════════
+       PROPERTY REGISTRY
+       ═══════════════════════════════════════════ */
+    const PROP_META = {
+      transcendent: { label: "Transcendent", icon: "🌌", desc: "Timeless, spaceless, immaterial — beyond the universe" },
+      personal: { label: "Personal", icon: "🧠", desc: "An agent with mind, will, and intention" },
+      powerful: { label: "Enormously Powerful", icon: "💪", desc: "Power over all of reality" },
+      firstcause: { label: "First Cause / Necessary", icon: "⚡", desc: "Uncaused, self-existent, necessary being" },
+      intelligent: { label: "Supremely Intelligent", icon: "🔬", desc: "Mind of extraordinary depth and precision" },
+      moral_source: { label: "Moral Source", icon: "⚖️", desc: "Paradigm and ground of objective goodness" },
+      maximal_greatness: { label: "Maximally Great", icon: "👑", desc: "Omnipotent, omniscient, morally perfect" },
+      christian_god: { label: "Christian God", icon: "✝️", desc: "The God revealed in Jesus Christ" },
+      meaning_purpose: { label: "Ground of Meaning", icon: "🧭", desc: "Source of objective meaning and purpose" }
+    };
+
+    const PROPERTY_REGISTRY = {};
+
+    ARGUMENTS.forEach(arg => {
+      arg.postPremises.forEach(pp => {
+        if (!PROPERTY_REGISTRY[pp.propKey]) {
+          PROPERTY_REGISTRY[pp.propKey] = { key: pp.propKey, contributors: [], entailedContributors: [] };
+        }
+        PROPERTY_REGISTRY[pp.propKey].contributors.push({ argId: arg.id, postId: pp.id });
+      });
+    });
+
+    Object.keys(ENTAILMENT_MAP).forEach(sourceProp => {
+      ENTAILMENT_MAP[sourceProp].forEach(targetProp => {
+        if (!PROPERTY_REGISTRY[targetProp]) {
+          PROPERTY_REGISTRY[targetProp] = { key: targetProp, contributors: [], entailedContributors: [] };
+        }
+      });
+    });
+
+    ARGUMENTS.forEach(arg => {
+      arg.postPremises.forEach(pp => {
+        const entails = ENTAILMENT_MAP[pp.propKey];
+        if (!entails) return;
+        entails.forEach(targetProp => {
+          if (!PROPERTY_REGISTRY[targetProp]) {
+            PROPERTY_REGISTRY[targetProp] = { key: targetProp, contributors: [], entailedContributors: [] };
+          }
+          const alreadyDirect = PROPERTY_REGISTRY[targetProp].contributors.some(
+            c => c.argId === arg.id && c.postId === pp.id
+          );
+          if (!alreadyDirect) {
+            PROPERTY_REGISTRY[targetProp].entailedContributors.push({
+              argId: arg.id,
+              postId: pp.id,
+              sourceProp: pp.propKey
+            });
+          }
+        });
+      });
+    });
+
+    /* ═══════════════════════════════════════════
+       SVG ICONS
+       ═══════════════════════════════════════════ */
+    const SVG = {
+      chevron: `<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>`,
+      arrow: `<svg viewBox="0 0 20 20" fill="currentColor" style="width:10px;height:10px"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/></svg>`,
+      check: `<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>`,
+      sparkle: `<svg viewBox="0 0 20 20" fill="currentColor" style="width:18px;height:18px"><path d="M10 1l2.39 5.75L18 9.24l-4.55 3.74L14.76 19 10 15.75 5.24 19l1.31-6.02L2 9.24l5.61-2.49L10 1z"/></svg>`
+    };
+
+    /* ═══════════════════════════════════════════
+       HELPERS
+       ═══════════════════════════════════════════ */
+    function fmt(v) { return v === null ? "—" : (v * 100).toFixed(1) + "%"; }
+
+    /* ═══════════════════════════════════════════
+       PERSISTENCE
+       ═══════════════════════════════════════════ */
+    const LS_KEY = 'theism_engine_state';
+    const LS_WORLDVIEWS_KEY = 'theism_engine_worldviews';
+
+    function collectState() {
+      const state = { sliders: {}, combos: {}, version: 2 };
+      ARGUMENTS.forEach(arg => {
+        const ui = UI[arg.id];
+        if (!ui) return;
+        ui.coreSliders.forEach(s => {
+          state.sliders[s.p.id] = { value: Number(s.slider.value), activated: s.activated() };
+        });
+        ui.postSliders.forEach(s => {
+          state.sliders[s.pp.id] = { value: Number(s.slider.value), activated: s.activated() };
+        });
+      });
+      Object.keys(PROPERTY_REGISTRY).forEach(pk => {
+        const cb = document.getElementById('combochk-' + pk);
+        if (cb) state.combos[pk] = cb.checked;
+      });
+      const baseSelect = document.getElementById('baseSelect');
+      if (baseSelect) state.baseSelect = baseSelect.value;
+      return state;
+    }
+
+    function applyState(state) {
+      if (!state || !state.sliders) return;
+      ARGUMENTS.forEach(arg => {
+        const ui = UI[arg.id];
+        if (!ui) return;
+        ui.coreSliders.forEach(s => {
+          const saved = state.sliders[s.p.id];
+          if (saved && saved.activated) {
+            s.slider.value = saved.value;
+            s.display.textContent = saved.value + '%';
+            s.display.classList.remove('empty');
+            s._forceActivated = true;
+            updateSliderTrack(s.slider);
+          }
+        });
+        ui.postSliders.forEach(s => {
+          const saved = state.sliders[s.pp.id];
+          if (saved && saved.activated) {
+            s.slider.value = saved.value;
+            s.display.textContent = saved.value + '%';
+            s.display.classList.remove('empty');
+            s._forceActivated = true;
+            updateSliderTrack(s.slider);
+          }
+        });
+      });
+      if (state.combos) {
+        Object.keys(state.combos).forEach(pk => {
+          const cb = document.getElementById('combochk-' + pk);
+          if (cb) {
+            cb.checked = state.combos[pk];
+            cb.closest('.combo-check')?.classList.toggle('checked', state.combos[pk]);
+          }
+        });
+      }
+      if (state.baseSelect) {
+        const baseSelect = document.getElementById('baseSelect');
+        if (baseSelect) baseSelect.value = state.baseSelect;
+      }
+      recalcAll();
+    }
+
+    function saveToLocalStorage() {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(collectState())); } catch (e) { }
+    }
+
+    function loadFromLocalStorage() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (raw) applyState(JSON.parse(raw));
+      } catch (e) { }
+    }
+
+    /* ═══════════════════════════════════════════
+       WORLDVIEW SAVE / LOAD / EXPORT / IMPORT
+       ═══════════════════════════════════════════ */
+    function getWorldviews() {
+      try {
+        const raw = localStorage.getItem(LS_WORLDVIEWS_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) { return {}; }
+    }
+
+    function setWorldviews(wvs) {
+      try { localStorage.setItem(LS_WORLDVIEWS_KEY, JSON.stringify(wvs)); } catch (e) { }
+    }
+
+    function saveWorldview(name) {
+      if (!name || !name.trim()) return false;
+      const wvs = getWorldviews();
+      wvs[name.trim()] = { state: collectState(), savedAt: new Date().toISOString() };
+      setWorldviews(wvs);
+      return true;
+    }
+
+    function loadWorldview(name) {
+      const wvs = getWorldviews();
+      if (!wvs[name]) return false;
+      resetAllSliders(true);
+      applyState(wvs[name].state);
+      return true;
+    }
+
+    function deleteWorldview(name) {
+      const wvs = getWorldviews();
+      delete wvs[name];
+      setWorldviews(wvs);
+    }
+
+    function exportWorldview(name) {
+      const wvs = getWorldviews();
+      const data = name ? { [name]: wvs[name] } : { _current: { state: collectState(), savedAt: new Date().toISOString() } };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (name || 'current-worldview') + '.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importWorldview(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const data = JSON.parse(reader.result);
+            const wvs = getWorldviews();
+            let imported = 0;
+            Object.keys(data).forEach(name => {
+              if (data[name] && data[name].state) {
+                const finalName = name === '_current' ? 'Imported ' + new Date().toLocaleString() : name;
+                wvs[finalName] = data[name];
+                imported++;
+              }
+            });
+            setWorldviews(wvs);
+            resolve(imported);
+          } catch (e) { reject(e); }
+        };
+        reader.onerror = reject;
+        reader.readAsText(file);
+      });
+    }
+
+    /* ═══════════════════════════════════════════
+       RESET ALL
+       ═══════════════════════════════════════════ */
+    function resetAllSliders(skipSave) {
+      ARGUMENTS.forEach(arg => {
+        const ui = UI[arg.id];
+        if (!ui) return;
+        ui.coreSliders.forEach(s => {
+          s.slider.value = 50;
+          s.display.textContent = '—';
+          s.display.classList.add('empty');
+          s._forceActivated = false;
+          s.slider.style.background = '';
+        });
+        ui.postSliders.forEach(s => {
+          s.slider.value = 50;
+          s.display.textContent = '—';
+          s.display.classList.add('empty');
+          s._forceActivated = false;
+          s.slider.style.background = '';
+        });
+      });
+      Object.keys(PROPERTY_REGISTRY).forEach(pk => {
+        const cb = document.getElementById('combochk-' + pk);
+        if (cb) { cb.checked = false; cb.closest('.combo-check')?.classList.remove('checked'); }
+      });
+      const baseSelect = document.getElementById('baseSelect');
+      if (baseSelect) baseSelect.value = 'none';
+      recalcAll();
+      if (!skipSave) saveToLocalStorage();
+    }
+
+    /* ═══════════════════════════════════════════
+       TAB SYSTEM
+       ═══════════════════════════════════════════ */
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    /* ═══════════════════════════════════════════
+       BUILD ARGUMENTS PANEL
+       ═══════════════════════════════════════════ */
+    const panelArgs = document.getElementById('panel-arguments');
+    const UI = {};
+
+    ARGUMENTS.forEach(arg => {
+      const card = document.createElement('div');
+      card.className = 'arg-card';
+      card.id = 'argcard-' + arg.id;
+      card.innerHTML = `
+    <div class="arg-header">
+      <div class="arg-title-group">
+        <div class="arg-icon" style="background:${arg.color}18;color:${arg.color}">${arg.icon}</div>
+        <div>
+          <div class="arg-title">${arg.title}</div>
+          <div class="arg-subtitle">Click to expand</div>
+        </div>
+      </div>
+      <div class="arg-badge">
+        <span class="badge badge-core" id="badge-core-${arg.id}">Core: —</span>
+        <span class="badge badge-post" id="badge-post-${arg.id}">Post: —</span>
+        <span class="chevron">${SVG.chevron}</span>
+      </div>
+    </div>
+    <div class="arg-body">
+      <div class="arg-content" id="argcontent-${arg.id}"></div>
+    </div>
+  `;
+      panelArgs.appendChild(card);
+      card.querySelector('.arg-header').addEventListener('click', () => card.classList.toggle('open'));
+      const content = card.querySelector('.arg-content');
+
+      const coreLabel = document.createElement('div');
+      coreLabel.className = 'section-label';
+      coreLabel.textContent = 'Core Premises';
+      content.appendChild(coreLabel);
+
+      if (!UI[arg.id]) UI[arg.id] = { coreSliders: [], postSliders: [] };
+
+      arg.corePremises.forEach((p, i) => {
+        const pc = document.createElement('div');
+        pc.className = 'premise-card';
+        pc.innerHTML = `
+      <div class="premise-top">
+        <span class="premise-num">P${i + 1}</span>
+        <div class="premise-text">${p.text}</div>
+      </div>
+      <div class="confidence-row">
+        <div class="slider-wrap"><input type="range" class="slider" min="0" max="100" value="50" step="1"></div>
+        <div class="conf-display empty">—</div>
+      </div>
+      <button class="evidence-toggle">${SVG.arrow} Evidence & Analysis</button>
+      <div class="evidence-list"><ul>${p.evidence.map(e => `<li>${e}</li>`).join('')}</ul></div>
+    `;
+        content.appendChild(pc);
+        const slider = pc.querySelector('.slider');
+        const display = pc.querySelector('.conf-display');
+        const entry = { p, slider, display, _forceActivated: false, activated: null };
+        entry.activated = () => entry._forceActivated;
+        slider.addEventListener('input', () => {
+          entry._forceActivated = true;
+          display.textContent = slider.value + '%';
+          display.classList.remove('empty');
+          updateSliderTrack(slider);
+          recalcAll();
+          saveToLocalStorage();
+        });
+        pc.querySelector('.evidence-toggle').addEventListener('click', function () {
+          this.classList.toggle('open');
+          pc.querySelector('.evidence-list').classList.toggle('open');
+        });
+        UI[arg.id].coreSliders.push(entry);
+      });
+
+      const ccBox = document.createElement('div');
+      ccBox.className = 'conclusion-box';
+      ccBox.innerHTML = `<div class="conclusion-text">${arg.coreConclusionText}</div><div class="conclusion-value" id="coreconc-${arg.id}">—</div>`;
+      content.appendChild(ccBox);
+
+      const postLabel = document.createElement('div');
+      postLabel.className = 'section-label';
+      postLabel.innerHTML = 'Post-Argument Properties <span style="font-size:10px;color:var(--text-faint);text-transform:none;letter-spacing:0">(given the conclusion, how likely is each property?)</span>';
+      content.appendChild(postLabel);
+
+      const entailingProps = arg.postPremises.filter(pp => ENTAILMENT_MAP[pp.propKey]);
+      if (entailingProps.length > 0) {
+        const entailNotice = document.createElement('div');
+        entailNotice.style.cssText = 'padding:10px 14px;border-radius:8px;background:#a78bfa0a;border:1px solid #a78bfa22;margin-bottom:12px;font-size:12px;color:var(--accent3);line-height:1.6';
+        const entailList = entailingProps.map(pp => {
+          const targets = ENTAILMENT_MAP[pp.propKey].map(tk => PROP_META[tk]?.label || tk);
+          return `<strong>${PROP_META[pp.propKey]?.label || pp.propKey}</strong> entails: ${targets.join(', ')}`;
+        }).join('<br>');
+        entailNotice.innerHTML = `⚡ <strong>Entailment active:</strong> Because of the nature of this argument's conclusion, your confidence in the property below automatically flows into all entailed properties.<br>${entailList}`;
+        content.appendChild(entailNotice);
+      }
+
+      arg.postPremises.forEach(pp => {
+        const ppc = document.createElement('div');
+        ppc.className = 'post-premise-card';
+        const hasEntailment = !!ENTAILMENT_MAP[pp.propKey];
+        const entailBadge = hasEntailment
+          ? ` <span class="entailment-tag">⚡ ENTAILS ${ENTAILMENT_MAP[pp.propKey].length} PROPERTIES</span>`
+          : '';
+        ppc.innerHTML = `
+      <div class="premise-top">
+        <div class="premise-text">${pp.text} <span class="prop-tag">${PROP_META[pp.propKey]?.label || pp.propKey}</span>${entailBadge}</div>
+      </div>
+      <div class="confidence-row">
+        <div class="slider-wrap"><input type="range" class="slider" min="0" max="100" value="50" step="1"></div>
+        <div class="conf-display empty">—</div>
+      </div>
+      <button class="evidence-toggle">${SVG.arrow} Evidence & Analysis</button>
+      <div class="evidence-list"><ul>${pp.evidence.map(e => `<li>${e}</li>`).join('')}</ul></div>
+      <div class="contribution-line" id="contrib-${arg.id}-${pp.id}">Contribution → ${PROP_META[pp.propKey]?.label || pp.propKey}: —</div>
+    `;
+        content.appendChild(ppc);
+        const slider = ppc.querySelector('.slider');
+        const display = ppc.querySelector('.conf-display');
+        const entry = { pp, slider, display, _forceActivated: false, activated: null };
+        entry.activated = () => entry._forceActivated;
+        slider.addEventListener('input', () => {
+          entry._forceActivated = true;
+          display.textContent = slider.value + '%';
+          display.classList.remove('empty');
+          updateSliderTrack(slider);
+          recalcAll();
+          saveToLocalStorage();
+        });
+        ppc.querySelector('.evidence-toggle').addEventListener('click', function () {
+          this.classList.toggle('open');
+          ppc.querySelector('.evidence-list').classList.toggle('open');
+        });
+        UI[arg.id].postSliders.push(entry);
+      });
+
+      const pcBox = document.createElement('div');
+      pcBox.className = 'conclusion-box post';
+      pcBox.innerHTML = `<div class="conclusion-text">All properties from ${arg.title}</div><div class="conclusion-value" id="postconc-${arg.id}">—</div>`;
+      content.appendChild(pcBox);
+
+      const subToggle = document.createElement('button');
+      subToggle.className = 'subset-toggle';
+      subToggle.innerHTML = `${SVG.arrow} Show all property subsets`;
+      const subPanel = document.createElement('div');
+      subPanel.className = 'subset-panel';
+      subPanel.innerHTML = `<div class="subset-grid" id="subsets-${arg.id}"></div>`;
+      subToggle.addEventListener('click', () => { subToggle.classList.toggle('open'); subPanel.classList.toggle('open'); });
+      content.appendChild(subToggle);
+      content.appendChild(subPanel);
+    });
+
+    function updateSliderTrack(slider) {
+      const pct = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+      slider.style.background = `linear-gradient(to right, var(--accent) 0%, var(--accent) ${pct}%, var(--surface3) ${pct}%, var(--surface3) 100%)`;
+    }
+
+    /* ═══════════════════════════════════════════
+       BUILD PROPERTIES PANEL
+       ═══════════════════════════════════════════ */
+    const panelProps = document.getElementById('panel-properties');
+    Object.keys(PROPERTY_REGISTRY).forEach(pk => {
+      const meta = PROP_META[pk] || { label: pk, icon: "•", desc: "" };
+      const card = document.createElement('div');
+      card.className = 'property-card';
+      card.innerHTML = `
+    <div class="prop-header">
+      <div class="prop-name"><span class="icon">${meta.icon}</span> ${meta.label} <span style="color:var(--text-faint);font-weight:400;font-size:13px">${meta.desc}</span></div>
+      <div class="prop-combined" id="propcomb-${pk}">—</div>
+    </div>
+    <div class="contributors-list" id="propcontrib-${pk}"></div>
+  `;
+      panelProps.appendChild(card);
+    });
+
+    /* ═══════════════════════════════════════════
+       BUILD COMBINATOR PANEL
+       ═══════════════════════════════════════════ */
+    const panelCombo = document.getElementById('panel-combinator');
+    panelCombo.innerHTML = `
+  <div class="combo-builder">
+    <div class="combo-title">${SVG.sparkle} Property Combinator</div>
+    <p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Select which divine properties to include. The result represents the probability of a being existing with <em>all</em> selected properties, aggregated across every argument's evidence.</p>
+    <div class="combo-checks" id="comboChecks"></div>
+    <div class="base-select-row">
+      <label>Anchor to base argument (optional):</label>
+      <select class="styled-select" id="baseSelect">
+        <option value="none">— None (use global aggregation) —</option>
+        ${ARGUMENTS.map(a => `<option value="${a.id}">${a.icon} ${a.title}</option>`).join('')}
+      </select>
+    </div>
+    <div class="combo-result-box">
+      <div class="combo-result-label">Combined Probability</div>
+      <div class="combo-result-value" id="comboResult">—</div>
+      <div class="combo-result-note">Approximate independence across arguments & properties</div>
+    </div>
+    <div class="anchored-result" id="anchoredResult" style="display:none"></div>
+    <div id="comboBreakdown" style="margin-top:16px"></div>
+    <div id="worldviewAnalysis"></div>
+  </div>
+`;
+
+    const comboChecksEl = document.getElementById('comboChecks');
+    Object.keys(PROPERTY_REGISTRY).forEach(pk => {
+      const meta = PROP_META[pk] || { label: pk, icon: "•", desc: "" };
+      const wrap = document.createElement('label');
+      wrap.className = 'combo-check';
+      wrap.innerHTML = `
+    <input type="checkbox" id="combochk-${pk}">
+    <div class="check-box">${SVG.check}</div>
+    <div><div class="combo-check-label">${meta.icon} ${meta.label}</div><div class="combo-check-sub">${meta.desc}</div></div>
+  `;
+      const cb = wrap.querySelector('input');
+      cb.addEventListener('change', () => { wrap.classList.toggle('checked', cb.checked); recalcAll(); saveToLocalStorage(); });
+      comboChecksEl.appendChild(wrap);
+    });
+    document.getElementById('baseSelect').addEventListener('change', () => { recalcAll(); saveToLocalStorage(); });
+
+    /* ═══════════════════════════════════════════
+       BUILD TOOLBAR
+       ═══════════════════════════════════════════ */
+    (function buildToolbar() {
+      const toolbar = document.createElement('div');
+      toolbar.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:20px;';
+      toolbar.id = "toolbar";
+
+      const resetBtn = document.createElement('button');
+      resetBtn.textContent = '🔄 Reset All';
+      resetBtn.className = 'subset-toggle';
+      resetBtn.style.cssText = 'border-color:var(--rose);color:var(--rose);';
+      resetBtn.addEventListener('click', () => {
+        if (confirm('Reset all sliders and combinator selections to their original undefined state?')) {
+          resetAllSliders();
+        }
+      });
+      toolbar.appendChild(resetBtn);
+
+      const saveBtn = document.createElement('button');
+      saveBtn.textContent = '💾 Save Worldview';
+      saveBtn.className = 'subset-toggle';
+      saveBtn.addEventListener('click', () => {
+        const name = prompt('Enter a name for this worldview (e.g., your name or a label):');
+        if (name && name.trim()) {
+          saveWorldview(name.trim());
+          alert(`Worldview "${name.trim()}" saved!`);
+          refreshWorldviewList();
+        }
+      });
+      toolbar.appendChild(saveBtn);
+
+      const exportCurBtn = document.createElement('button');
+      exportCurBtn.textContent = '📤 Export Current';
+      exportCurBtn.className = 'subset-toggle';
+      exportCurBtn.addEventListener('click', () => exportWorldview(null));
+      toolbar.appendChild(exportCurBtn);
+
+      const importBtn = document.createElement('button');
+      importBtn.textContent = '📥 Import Worldview';
+      importBtn.className = 'subset-toggle';
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = '.json';
+      fileInput.style.display = 'none';
+      fileInput.addEventListener('change', async () => {
+        if (fileInput.files.length > 0) {
+          try {
+            const count = await importWorldview(fileInput.files[0]);
+            alert(`Successfully imported ${count} worldview(s)!`);
+            refreshWorldviewList();
+          } catch (e) {
+            alert('Failed to import: invalid file format.');
+          }
+          fileInput.value = '';
+        }
+      });
+      importBtn.addEventListener('click', () => fileInput.click());
+      toolbar.appendChild(importBtn);
+      toolbar.appendChild(fileInput);
+
+      const wvContainer = document.createElement('div');
+      wvContainer.style.cssText = 'width:100%;margin-top:8px;';
+      const wvToggle = document.createElement('button');
+      wvToggle.textContent = '📂 Saved Worldviews';
+      wvToggle.className = 'subset-toggle';
+      wvToggle.style.marginBottom = '8px';
+      const wvList = document.createElement('div');
+      wvList.id = 'worldview-list';
+      wvList.style.cssText = 'max-height:0;overflow:hidden;transition:max-height .4s ease;';
+      wvToggle.addEventListener('click', () => {
+        const isOpen = wvList.style.maxHeight !== '0px' && wvList.style.maxHeight !== '';
+        if (isOpen) { wvList.style.maxHeight = '0px'; }
+        else { refreshWorldviewList(); wvList.style.maxHeight = '600px'; }
+      });
+      wvContainer.appendChild(wvToggle);
+      wvContainer.appendChild(wvList);
+      toolbar.appendChild(wvContainer);
+
+      const tabBar = document.getElementById('tabBar');
+      tabBar.parentNode.appendChild(toolbar);
+    })();
+
+    function refreshWorldviewList() {
+      const wvList = document.getElementById('worldview-list');
+      const wvs = getWorldviews();
+      const names = Object.keys(wvs);
+      if (names.length === 0) {
+        wvList.innerHTML = '<div style="padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-dim);font-size:13px;">No saved worldviews yet. Click "Save Worldview" to create one.</div>';
+        return;
+      }
+      let html = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">';
+      names.forEach(name => {
+        const wv = wvs[name];
+        const date = wv.savedAt ? new Date(wv.savedAt).toLocaleString() : 'Unknown date';
+        html += `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap;">
+        <div style="min-width:0;">
+          <div style="font-weight:700;font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escHtml(name)}</div>
+          <div style="font-size:11px;color:var(--text-faint);">${escHtml(date)}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button class="wv-action-btn" data-action="load" data-name="${escAttr(name)}" style="padding:4px 10px;border-radius:6px;background:var(--accent);color:var(--bg);border:none;font-size:12px;font-weight:700;cursor:pointer;">Load</button>
+          <button class="wv-action-btn" data-action="export" data-name="${escAttr(name)}" style="padding:4px 10px;border-radius:6px;background:var(--surface2);color:var(--text-dim);border:1px solid var(--border);font-size:12px;font-weight:600;cursor:pointer;">Export</button>
+          <button class="wv-action-btn" data-action="delete" data-name="${escAttr(name)}" style="padding:4px 10px;border-radius:6px;background:var(--surface2);color:var(--rose);border:1px solid var(--rose);font-size:12px;font-weight:600;cursor:pointer;">Delete</button>
+        </div>
+      </div>
+    `;
+      });
+      html += '</div>';
+      wvList.innerHTML = html;
+
+      wvList.querySelectorAll('.wv-action-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const action = btn.dataset.action;
+          const name = btn.dataset.name;
+          if (action === 'load') {
+            if (confirm(`Load worldview "${name}"? This will replace your current values.`)) {
+              loadWorldview(name);
+              saveToLocalStorage();
+            }
+          } else if (action === 'export') {
+            exportWorldview(name);
+          } else if (action === 'delete') {
+            if (confirm(`Delete worldview "${name}"? This cannot be undone.`)) {
+              deleteWorldview(name);
+              refreshWorldviewList();
+            }
+          }
+        });
+      });
+    }
+
+    function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function escAttr(s) { return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+    /* ═══════════════════════════════════════════
+       CALCULATION ENGINE (with entailment)
+       ═══════════════════════════════════════════ */
+    function getCoreProb(argId) {
+      const ui = UI[argId];
+      const vals = ui.coreSliders.map(s => s.activated() ? Number(s.slider.value) : null);
+      if (vals.some(v => v === null)) return null;
+      return vals.reduce((a, v) => a * (v / 100), 1);
+    }
+
+    function getPostFinal(argId) {
+      const core = getCoreProb(argId);
+      if (core === null) return null;
+      const ui = UI[argId];
+      const vals = ui.postSliders.map(s => s.activated() ? Number(s.slider.value) : null);
+      if (vals.some(v => v === null)) return null;
+      return core * vals.reduce((a, v) => a * (v / 100), 1);
+    }
+
+    function getContribution(argId, postId) {
+      const core = getCoreProb(argId);
+      if (core === null) return null;
+      const ui = UI[argId];
+      const s = ui.postSliders.find(s => s.pp.id === postId);
+      if (!s || !s.activated()) return null;
+      return core * (Number(s.slider.value) / 100);
+    }
+
+    function getCombinedProperty(propKey) {
+      const reg = PROPERTY_REGISTRY[propKey];
+      if (!reg) return null;
+      const contribs = [];
+
+      reg.contributors.forEach(c => {
+        const v = getContribution(c.argId, c.postId);
+        if (v !== null) contribs.push({ argId: c.argId, postId: c.postId, val: v, entailed: false });
+      });
+
+      if (reg.entailedContributors) {
+        reg.entailedContributors.forEach(c => {
+          const v = getContribution(c.argId, c.postId);
+          if (v !== null) {
+            const isDupe = contribs.some(existing => existing.argId === c.argId && existing.postId === c.postId);
+            if (!isDupe) {
+              contribs.push({ argId: c.argId, postId: c.postId, val: v, entailed: true, sourceProp: c.sourceProp });
+            }
+          }
+        });
+      }
+
+      if (contribs.length === 0) return null;
+      const combined = 1 - contribs.reduce((acc, c) => acc * (1 - c.val), 1);
+      return { combined, contribs };
+    }
+
+    function recalcAll() {
+      let coresComputed = 0, coreSum = 0, strongestName = "—", strongestVal = -1;
+
+      ARGUMENTS.forEach(arg => {
+        const core = getCoreProb(arg.id);
+        document.getElementById('coreconc-' + arg.id).textContent = fmt(core);
+        document.getElementById('badge-core-' + arg.id).textContent = 'Core: ' + fmt(core);
+        if (core !== null) { coresComputed++; coreSum += core; if (core > strongestVal) { strongestVal = core; strongestName = arg.icon; } }
+
+        const ui = UI[arg.id];
+        ui.postSliders.forEach(s => {
+          const c = getContribution(arg.id, s.pp.id);
+          const contribEl = document.getElementById('contrib-' + arg.id + '-' + s.pp.id);
+          if (contribEl) {
+            let contribText = `Contribution → ${PROP_META[s.pp.propKey]?.label || s.pp.propKey}: ${fmt(c)}`;
+            const entails = ENTAILMENT_MAP[s.pp.propKey];
+            if (entails && c !== null) {
+              contribText += `  ⚡ Also flows into: ${entails.map(ek => PROP_META[ek]?.label || ek).join(', ')}`;
+            }
+            contribEl.textContent = contribText;
+          }
+        });
+
+        const pf = getPostFinal(arg.id);
+        document.getElementById('postconc-' + arg.id).textContent = fmt(pf);
+        document.getElementById('badge-post-' + arg.id).textContent = 'Post: ' + fmt(pf);
+        buildSubsets(arg.id);
+      });
+
+      let propsWithData = 0;
+      Object.keys(PROPERTY_REGISTRY).forEach(pk => {
+        const res = getCombinedProperty(pk);
+        document.getElementById('propcomb-' + pk).textContent = res ? fmt(res.combined) : "—";
+        if (res) propsWithData++;
+        const contribEl = document.getElementById('propcontrib-' + pk);
+        contribEl.innerHTML = '';
+        if (res) {
+          res.contribs.forEach(c => {
+            const argData = ARGUMENTS.find(a => a.id === c.argId);
+            const row = document.createElement('div');
+            row.className = 'contributor-row';
+            if (c.entailed) {
+              const sourceLabel = PROP_META[c.sourceProp]?.label || c.sourceProp;
+              row.innerHTML = `<span class="contributor-arg contributor-entailed">${argData.icon} ${argData.title} <span class="entailment-tag">entailed by ${sourceLabel}</span></span><span class="contributor-val" style="color:var(--accent3)">${fmt(c.val)}</span>`;
+            } else {
+              row.innerHTML = `<span class="contributor-arg">${argData.icon} ${argData.title}</span><span class="contributor-val">${fmt(c.val)}</span>`;
+            }
+            contribEl.appendChild(row);
+          });
+        }
+      });
+
+      document.getElementById('statStrongest').textContent = strongestVal >= 0 ? strongestName + ' ' + fmt(strongestVal) : "—";
+      document.getElementById('statAvgCore').textContent = coresComputed > 0 ? fmt(coreSum / coresComputed) : "—";
+      document.getElementById('statPropsAssessed').textContent = propsWithData + ' / ' + Object.keys(PROPERTY_REGISTRY).length;
+      document.getElementById('statArgsRated').textContent = coresComputed + ' / ' + ARGUMENTS.length;
+
+      updateCombinator();
+
+      const allProps = Object.keys(PROPERTY_REGISTRY);
+      const allVals = allProps.map(pk => getCombinedProperty(pk));
+      if (allVals.every(v => v !== null)) {
+        document.getElementById('statComposite').textContent = fmt(allVals.reduce((acc, v) => acc * v.combined, 1));
+      } else {
+        document.getElementById('statComposite').textContent = "—";
+      }
+
+      updateWorldviewAnalysis();
+    }
+
+    function buildSubsets(argId) {
+      const el = document.getElementById('subsets-' + argId);
+      el.innerHTML = '';
+      const arg = ARGUMENTS.find(a => a.id === argId);
+      const core = getCoreProb(argId);
+      if (core === null) { el.innerHTML = '<div class="subset-row"><span class="subset-label">Complete core premises first</span></div>'; return; }
+      const ui = UI[argId];
+      const postVals = ui.postSliders.map(s => s.activated() ? Number(s.slider.value) : null);
+      if (postVals.some(v => v === null)) { el.innerHTML = '<div class="subset-row"><span class="subset-label">Complete all post-premises first</span></div>'; return; }
+      const n = arg.postPremises.length;
+      const results = [];
+      for (let mask = 0; mask < (1 << n); mask++) {
+        let prob = core;
+        const labels = [];
+        for (let i = 0; i < n; i++) {
+          if (mask & (1 << i)) {
+            labels.push(PROP_META[arg.postPremises[i].propKey]?.label || arg.postPremises[i].propKey);
+            prob *= postVals[i] / 100;
+            const entails = ENTAILMENT_MAP[arg.postPremises[i].propKey];
+            if (entails) {
+              entails.forEach(ek => {
+                const lbl = PROP_META[ek]?.label || ek;
+                if (!labels.includes(lbl) && !labels.includes(lbl + ' ⚡')) labels.push(lbl + ' ⚡');
+              });
+            }
+          }
+        }
+        results.push({ labels, prob });
+      }
+      results.sort((a, b) => b.prob - a.prob);
+      results.forEach(r => {
+        const row = document.createElement('div');
+        row.className = 'subset-row';
+        row.innerHTML = `<span class="subset-label">${r.labels.length ? r.labels.join(' + ') : '(core only)'}</span><span class="subset-val">${fmt(r.prob)}</span>`;
+        el.appendChild(row);
+      });
+    }
+
+    function updateCombinator() {
+      const selectedProps = Object.keys(PROPERTY_REGISTRY).filter(pk => {
+        const cb = document.getElementById('combochk-' + pk);
+        return cb && cb.checked;
+      });
+      const resultEl = document.getElementById('comboResult');
+      const breakdownEl = document.getElementById('comboBreakdown');
+      const anchoredEl = document.getElementById('anchoredResult');
+
+      if (selectedProps.length === 0) { resultEl.textContent = "—"; breakdownEl.innerHTML = ''; anchoredEl.style.display = 'none'; return; }
+
+      const propResults = {};
+      let anyNull = false;
+      selectedProps.forEach(pk => { const res = getCombinedProperty(pk); if (!res) anyNull = true; propResults[pk] = res; });
+
+      if (anyNull) { resultEl.textContent = "Incomplete"; }
+      else { resultEl.textContent = fmt(selectedProps.reduce((acc, pk) => acc * propResults[pk].combined, 1)); }
+
+      breakdownEl.innerHTML = '<div class="section-label">Breakdown</div>';
+      selectedProps.forEach(pk => {
+        const meta = PROP_META[pk] || { label: pk, icon: "•" };
+        const res = propResults[pk];
+        const card = document.createElement('div');
+        card.className = 'property-card';
+        card.style.marginBottom = '8px';
+        let contribDetails = '';
+        if (res) {
+          const directCount = res.contribs.filter(c => !c.entailed).length;
+          const entailedCount = res.contribs.filter(c => c.entailed).length;
+          if (entailedCount > 0) {
+            contribDetails = ` <span style="font-size:11px;color:var(--accent3);font-weight:400">(${directCount} direct + ${entailedCount} entailed)</span>`;
+          }
+        }
+        card.innerHTML = `<div class="prop-header"><div class="prop-name"><span class="icon">${meta.icon}</span> ${meta.label}${contribDetails}</div><div class="prop-combined">${res ? fmt(res.combined) : '—'}</div></div>`;
+        breakdownEl.appendChild(card);
+      });
+
+      const baseId = document.getElementById('baseSelect').value;
+      if (baseId && baseId !== 'none') {
+        const baseCore = getCoreProb(baseId);
+        if (baseCore === null) { anchoredEl.style.display = 'block'; anchoredEl.innerHTML = 'Anchored: base argument core not yet defined.'; }
+        else {
+          const baseArg = ARGUMENTS.find(a => a.id === baseId);
+          let prod = baseCore, missing = false;
+          selectedProps.forEach(pk => {
+            let pp = baseArg.postPremises.find(p => p.propKey === pk);
+            if (!pp) {
+              pp = baseArg.postPremises.find(p => ENTAILMENT_MAP[p.propKey] && ENTAILMENT_MAP[p.propKey].includes(pk));
+            }
+            if (!pp) { missing = true; return; }
+            const s = UI[baseId].postSliders.find(sl => sl.pp.id === pp.id);
+            if (!s || !s.activated()) { missing = true; return; }
+            prod *= Number(s.slider.value) / 100;
+          });
+          anchoredEl.style.display = 'block';
+          anchoredEl.innerHTML = missing
+            ? `Anchored to <strong>${baseArg.icon} ${baseArg.title}</strong>: incomplete (some selected properties not assessed or entailed in this argument).`
+            : `Anchored to <strong>${baseArg.icon} ${baseArg.title}</strong>: <span class="val">${fmt(prod)}</span>`;
+        }
+      } else { anchoredEl.style.display = 'none'; }
+    }
+
+    /* ═══════════════════════════════════════════
+       WORLDVIEW ANALYSIS
+       ═══════════════════════════════════════════ */
+    const WORLDVIEW_TIERS = [
+      {
+        id: 'christian_theism',
+        name: 'Christian Theism',
+        icon: '✝️',
+        requiredProps: ['transcendent', 'firstcause', 'personal', 'maximal_greatness', 'christian_god'],
+        propsLabel: 'Transcendent + First Cause + Personal + Maximally Great + Christian God'
+      },
+      {
+        id: 'perfect_being_theism',
+        name: 'Perfect Being Theism',
+        icon: '👑',
+        requiredProps: ['transcendent', 'firstcause', 'personal', 'maximal_greatness'],
+        propsLabel: 'Transcendent + First Cause + Personal + Maximally Great'
+      },
+      {
+        id: 'theism',
+        name: 'Theism',
+        icon: '🧠',
+        requiredProps: ['transcendent', 'firstcause', 'personal'],
+        propsLabel: 'Transcendent + First Cause + Personal'
+      },
+      {
+        id: 'deism',
+        name: 'Deism',
+        icon: '🌌',
+        requiredProps: ['transcendent', 'firstcause'],
+        propsLabel: 'Transcendent + First Cause'
+      }
+    ];
+
+    function getStrengthTier(prob) {
+      if (prob > 0.5) {
+        if (prob >= 0.98) return { label: 'Extremely Strong', color: 'var(--emerald)', barColor: '#10b981' };
+        if (prob >= 0.90) return { label: 'Strong', color: 'var(--accent)', barColor: '#22d3ee' };
+        if (prob >= 0.70) return { label: 'Moderate', color: 'var(--accent2)', barColor: '#818cf8' };
+        return { label: 'Weak', color: 'var(--gold)', barColor: '#f59e0b' };
+      } else {
+        const inv = 1 - prob;
+        if (inv >= 0.98) return { label: 'Extremely Strong', color: 'var(--rose)', barColor: '#f43f5e' };
+        if (inv >= 0.90) return { label: 'Strong', color: 'var(--rose)', barColor: '#f43f5e' };
+        if (inv >= 0.70) return { label: 'Moderate', color: '#fb923c', barColor: '#fb923c' };
+        return { label: 'Weak', color: 'var(--gold)', barColor: '#f59e0b' };
+      }
+    }
+
+    function computeWorldviewTierProb(tier) {
+      let prob = 1;
+      for (const pk of tier.requiredProps) {
+        const res = getCombinedProperty(pk);
+        if (!res) return null;
+        prob *= res.combined;
+      }
+      return prob;
+    }
+
+    function updateWorldviewAnalysis() {
+      const container = document.getElementById('worldviewAnalysis');
+      if (!container) return;
+
+      const tierData = WORLDVIEW_TIERS.map(tier => ({
+        ...tier,
+        prob: computeWorldviewTierProb(tier)
+      }));
+
+      const deismData = tierData.find(t => t.id === 'deism');
+      const hasAnyData = tierData.some(t => t.prob !== null);
+
+      if (!hasAnyData) {
+        container.innerHTML = `
+      <div class="wv-analysis">
+        <div class="wv-analysis-title">🔮 Worldview Analysis</div>
+        <div class="wv-analysis-subtitle">Based on your aggregated property probabilities, here's where you land on the worldview spectrum.</div>
+        <div class="wv-verdict incomplete">
+          <div class="wv-verdict-label">Your Worldview</div>
+          <div class="wv-verdict-name">Awaiting Data</div>
+          <div class="wv-verdict-prob">Rate argument premises and properties to see your worldview analysis.</div>
+        </div>
+      </div>
+    `;
+        return;
+      }
+
+      let activeTier = null;
+      let activeProb = null;
+      for (const td of tierData) {
+        if (td.prob !== null && td.prob > 0.5) {
+          activeTier = td;
+          activeProb = td.prob;
+          break;
+        }
+      }
+
+      let isAtheist = false;
+      let verdictName, verdictProb, verdictStrength;
+
+      if (activeTier) {
+        verdictProb = activeProb;
+        verdictStrength = getStrengthTier(verdictProb);
+        verdictName = verdictStrength.label + ' ' + activeTier.name;
+      } else {
+        isAtheist = true;
+        verdictProb = deismData?.prob;
+        if (verdictProb === null) {
+          verdictName = 'Incomplete Data';
+        } else {
+          verdictStrength = getStrengthTier(verdictProb);
+          verdictName = verdictStrength.label + ' Atheism';
+        }
+      }
+
+      let tiersHtml = '';
+      for (const td of tierData) {
+        const isActive = activeTier && td.id === activeTier.id;
+        const isBelow = td.prob !== null && td.prob <= 0.5 && !isAtheist;
+        const tierClass = isActive ? 'wv-tier active' : (isBelow ? 'wv-tier below' : 'wv-tier');
+        const finalClass = isActive && isAtheist ? tierClass + ' is-atheist' : tierClass;
+
+        if (td.prob === null) {
+          tiersHtml += `
+        <div class="${tierClass}">
+          <div class="wv-tier-left">
+            <div class="wv-tier-icon">${td.icon}</div>
+            <div><div class="wv-tier-name">${td.name}</div><div class="wv-tier-props">${td.propsLabel}</div></div>
+          </div>
+          <div class="wv-tier-right">
+            <div class="wv-tier-prob" style="color:var(--text-faint)">—</div>
+            <div class="wv-tier-strength">Incomplete</div>
+          </div>
+        </div>
+      `;
+        } else {
+          const str = getStrengthTier(td.prob);
+          const pctFill = Math.round(td.prob * 100);
+          const strengthLabel = td.prob > 0.5
+            ? str.label + ' Belief'
+            : str.label + ' Disbelief';
+
+          tiersHtml += `
+        <div class="${finalClass}">
+          <div class="wv-tier-left">
+            <div class="wv-tier-icon">${td.icon}</div>
+            <div>
+              <div class="wv-tier-name">${td.name}</div>
+              <div class="wv-tier-props">${td.propsLabel}</div>
+              <div class="wv-strength-bar"><div class="wv-strength-fill" style="width:${pctFill}%;background:${td.prob > 0.5 ? str.barColor : '#f43f5e'}"></div></div>
+            </div>
+          </div>
+          <div class="wv-tier-right">
+            <div class="wv-tier-prob">${fmt(td.prob)}</div>
+            <div class="wv-tier-strength" style="color:${str.color}">${strengthLabel}</div>
+          </div>
+        </div>
+      `;
+        }
+      }
+
+      const atheismProb = deismData?.prob !== null ? (1 - deismData.prob) : null;
+      if (atheismProb !== null) {
+        const athStr = getStrengthTier(1 - deismData.prob);
+        const athPctFill = Math.round(atheismProb * 100);
+        const athActive = isAtheist;
+        const athStrengthLabel = atheismProb > 0.5
+          ? athStr.label + ' Conviction'
+          : 'Unlikely';
+
+        tiersHtml += `
+      <div class="wv-tier${athActive ? ' active is-atheist' : atheismProb <= 0.5 ? ' below' : ''}">
+        <div class="wv-tier-left">
+          <div class="wv-tier-icon">🚫</div>
+          <div>
+            <div class="wv-tier-name">Atheism</div>
+            <div class="wv-tier-props">Less than 50% for Transcendent + First Cause</div>
+            <div class="wv-strength-bar"><div class="wv-strength-fill" style="width:${athPctFill}%;background:${atheismProb > 0.5 ? '#f43f5e' : 'var(--text-faint)'}"></div></div>
+          </div>
+        </div>
+        <div class="wv-tier-right">
+          <div class="wv-tier-prob" style="color:${athActive ? 'var(--rose)' : 'var(--text-faint)'}">${fmt(atheismProb)}</div>
+          <div class="wv-tier-strength" style="color:${athActive ? 'var(--rose)' : 'var(--text-faint)'}">${athStrengthLabel}</div>
+        </div>
+      </div>
+    `;
+      }
+
+      const verdictClass = isAtheist ? 'atheist' : (activeTier ? 'theist' : 'incomplete');
+
+      container.innerHTML = `
+    <div class="wv-analysis">
+      <div class="wv-analysis-title">🔮 Worldview Analysis</div>
+      <div class="wv-analysis-subtitle">Based on your aggregated property probabilities, here's where you land on the worldview spectrum.</div>
+
+      <div class="wv-verdict ${verdictClass}">
+        <div class="wv-verdict-label">Your Worldview</div>
+        <div class="wv-verdict-name">${verdictName}</div>
+        ${verdictProb !== null ? `<div class="wv-verdict-prob">Probability at this tier: ${fmt(verdictProb)}</div>` : ''}
+      </div>
+
+      <div class="section-label">Worldview Spectrum</div>
+      <div class="wv-tier-grid">
+        ${tiersHtml}
+      </div>
+
+      <div class="wv-legend">
+        <strong>How this works:</strong> Each worldview tier requires certain combined properties (aggregated across all arguments via noisy-OR, including entailed contributions).
+        The probability shown is the product of those combined property values — i.e., the probability that a being exists with <em>all</em> of those properties.
+        A probability above 50% means you find the evidence "probably true." Tiers:
+        <strong>Weak</strong> (50–70%), <strong>Moderate</strong> (70–90%), <strong>Strong</strong> (90–98%), <strong>Extremely Strong</strong> (98%+).
+        If even Deism falls below 50%, the analysis inverts to the atheism side with matching tiers.<br><br>
+        <strong>⚡ Entailment:</strong> Properties like <em>Christian God</em> and <em>Maximally Great</em> logically entail all lower properties.
+        Evidence for these automatically flows into every property they entail — shown in purple on the Properties tab.
+      </div>
+    </div>
+  `;
+    }
+
+    /* ═══════════════════════════════════════════
+       INIT
+       ═══════════════════════════════════════════ */
+    loadFromLocalStorage();
+    recalcAll();
+  </script>
+
+</body>
+
+</html>
