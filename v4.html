@@ -1226,7 +1226,7 @@ function buildUI(){
     const postLabel=document.createElement('div');postLabel.className='section-label';postLabel.textContent='Counter-Evidence Impact on Properties';content.appendChild(postLabel);
     const noteDiv=document.createElement('p');
     noteDiv.style.cssText='font-size:12px;color:var(--text-faint);margin:0 0 12px;padding:8px 12px;background:var(--surface3);border-radius:6px;border-left:3px solid '+arg.color;
-    noteDiv.innerHTML='Rate how strongly, <em>given this argument's conclusion holds</em>, it undermines each property. The theistic probability of each property is then multiplied by <code style="font-size:11px;background:var(--surface2);padding:1px 4px;border-radius:3px">(1 − core × rating)</code> — a proper Bayesian likelihood-ratio discount.';
+    noteDiv.innerHTML='Rate how strongly, <em>given this arguments conclusion holds</em>, it undermines each property. The theistic probability of each property is then multiplied by <code style="font-size:11px;background:var(--surface2);padding:1px 4px;border-radius:3px">(1 − core × rating)</code> — a proper Bayesian likelihood-ratio discount.';
     content.appendChild(noteDiv);
     (arg.counterPremises||[]).forEach(pp=>{
       const div=document.createElement('div');div.className='post-premise-card';div.style.borderLeftColor=arg.color;
