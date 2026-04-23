@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<title>Bayesian Theism Calculator</title>
+<title>Bayesian Theism-Atheism Probability Engine</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="theme-color" content="#050a18"/>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>"/>
@@ -75,9 +75,9 @@ background-image:radial-gradient(ellipse 80% 50% at 50% -20%,#22d3ee08,transpare
 .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-faint);pointer-events:none}
 .arg-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:16px;overflow:hidden;transition:var(--transition)}
 .arg-card:hover{border-color:#22d3ee33}
-.arg-card.atheistic{border-left:3px solid var(--rose)!important}
-.arg-card.atheistic .arg-icon{background:var(--rose)22!important;color:var(--rose)!important}
-.arg-card.atheistic .badge-core{background:var(--rose)18!important;color:var(--rose)!important}
+.arg-card.atheistic{border-left:3px solid var(--rose)}
+.arg-card.atheistic .arg-icon{background:#f43f5e22;color:var(--rose)}
+.arg-card.atheistic .badge-core{background:#f43f5e18;color:var(--rose)}
 .arg-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;cursor:pointer;user-select:none;transition:var(--transition)}
 .arg-header:hover{background:var(--surface2)}
 .arg-title-group{display:flex;align-items:center;gap:12px;min-width:0}
@@ -125,17 +125,107 @@ background-image:radial-gradient(ellipse 80% 50% at 50% -20%,#22d3ee08,transpare
 .ev-ob-content li{margin-bottom:8px}.ev-ob-content li::marker{color:var(--accent)}.ev-ob-content.objection-content li::marker{color:var(--orange)}
 .ev-ob-content .rebuttal{font-size:12px;color:var(--emerald);margin-top:4px;padding-left:8px;border-left:2px solid var(--emerald)}
 .conclusion-box{background:linear-gradient(135deg,#22d3ee08,#818cf808);border:1px solid #22d3ee22;border-radius:var(--radius);padding:14px 16px;margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.conclusion-box.atheistic{background:linear-gradient(135deg,#f43f5e08,#fb923c08);border:1px solid #f43f5e22}
-.conclusion-box.atheistic .conclusion-value{color:var(--rose)}
+.conclusion-box.post{border-color:#818cf822;background:linear-gradient(135deg,#818cf808,#a78bfa08)}
+.conclusion-box.atheistic{border-color:#f43f5e22;background:linear-gradient(135deg,#f43f5e08,#fb923c08)}
 .conclusion-text{font-size:14px;font-weight:600}
 .conclusion-value{font-family:var(--mono);font-weight:800;font-size:18px;color:var(--accent);white-space:nowrap}
-.bayesian-update{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;margin-top:8px;font-size:12px;color:var(--text-dim);font-family:var(--mono)}
-.bayes-formula{background:var(--surface3);padding:8px 12px;border-radius:6px;margin-top:8px;text-align:center;font-family:var(--mono);font-size:11px}
+.conclusion-box.post .conclusion-value{color:var(--accent2)}
+.conclusion-box.atheistic .conclusion-value{color:var(--rose)}
+.post-premise-card{background:var(--surface2);border:1px solid transparent;border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;transition:var(--transition);border-left:3px solid var(--accent2)}
+.post-premise-card:hover{border-color:var(--border);border-left-color:var(--accent2)}.post-premise-card.rated{border-left-color:var(--emerald)}
+.post-premise-card.atheistic{border-left-color:var(--rose)}
+.prop-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:2px 8px;border-radius:4px;background:#818cf818;color:var(--accent2);margin-left:8px}
+.prop-tag.atheistic{background:#f43f5e18;color:var(--rose)}
+.contribution-line{font-size:12px;color:var(--text-dim);margin-top:6px;font-family:var(--mono)}
+.entailment-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:#a78bfa18;color:var(--accent3);margin-left:6px;letter-spacing:0.5px}
 .property-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;transition:var(--transition)}
 .property-card:hover{border-color:#22d3ee33}
 .prop-header{display:flex;align-items:center;justify-content:space-between}
 .prop-name{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}.prop-name .icon{font-size:18px}
 .prop-combined{font-family:var(--mono);font-weight:800;font-size:18px;color:var(--emerald)}
+.contributors-list{margin-top:10px}
+.contributor-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)}
+.contributor-row:last-child{border:none}.contributor-arg{color:var(--text-dim)}.contributor-val{font-family:var(--mono);color:var(--accent)}
+.contributor-negative{color:var(--rose);font-style:italic}
+.contributor-entailed{color:var(--accent3);font-style:italic}
+.radar-container{margin:20px 0;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);text-align:center}
+.radar-title{font-weight:700;font-size:16px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px}
+.radar-svg{max-width:100%;height:auto}
+.combo-builder{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:20px}
+.combo-title{font-weight:700;font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.combo-checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:16px}
+.combo-check{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:var(--transition);user-select:none}
+.combo-check:hover{border-color:var(--accent);background:var(--surface3)}.combo-check.checked{border-color:var(--accent);background:#22d3ee0a}
+.combo-check input{display:none}
+.check-box{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0}
+.combo-check.checked .check-box{background:var(--accent);border-color:var(--accent)}
+.check-box svg{width:12px;height:12px;color:var(--bg);opacity:0;transition:var(--transition)}.combo-check.checked .check-box svg{opacity:1}
+.combo-check-label{font-size:13px;font-weight:600}.combo-check-sub{font-size:11px;color:var(--text-dim)}
+.combo-result-box{background:linear-gradient(135deg,#f59e0b08,#22d3ee08);border:1px solid #f59e0b33;border-radius:var(--radius);padding:20px;text-align:center}
+.combo-result-label{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-faint);margin-bottom:4px}
+.combo-result-value{font-family:var(--mono);font-weight:900;font-size:32px;background:linear-gradient(135deg,var(--gold),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.combo-result-note{font-size:12px;color:var(--text-faint);margin-top:8px}
+.anchored-result{margin-top:12px;padding:12px 16px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border);font-size:13px;color:var(--text-dim)}
+.anchored-result .val{color:var(--accent2);font-family:var(--mono);font-weight:700}
+.styled-select{padding:8px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font);font-size:13px;cursor:pointer;transition:var(--transition)}
+.styled-select:hover{border-color:var(--accent)}.styled-select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px #22d3ee18}
+.base-select-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.base-select-row label{font-size:13px;color:var(--text-dim)}
+.wv-analysis{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-top:24px;position:relative;overflow:hidden}
+.wv-analysis::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient);opacity:.6}
+.wv-analysis-title{font-weight:800;font-size:18px;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.wv-analysis-subtitle{font-size:13px;color:var(--text-dim);margin-bottom:20px}
+.wv-verdict{text-align:center;padding:24px 16px;border-radius:var(--radius);margin-bottom:20px}
+.wv-verdict.theist{background:linear-gradient(135deg,#22d3ee06,#818cf808,#a78bfa06);border:1px solid #818cf833}
+.wv-verdict.atheist{background:linear-gradient(135deg,#f43f5e06,#f59e0b06);border:1px solid #f43f5e33}
+.wv-verdict.incomplete{background:var(--surface2);border:1px solid var(--border)}
+.wv-verdict-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-faint);margin-bottom:6px}
+.wv-verdict-name{font-size:clamp(20px,4vw,28px);font-weight:900;margin-bottom:4px;letter-spacing:-0.3px}
+.wv-verdict.theist .wv-verdict-name{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.wv-verdict.atheist .wv-verdict-name{color:var(--rose)}.wv-verdict.incomplete .wv-verdict-name{color:var(--text-faint)}
+.wv-verdict-prob{font-family:var(--mono);font-size:13px;color:var(--text-dim)}
+.wv-tier-grid{display:grid;gap:10px;margin-bottom:16px}
+.wv-tier{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border);transition:var(--transition)}
+.wv-tier.active{border-color:var(--accent);box-shadow:0 0 16px #22d3ee10}.wv-tier.active.is-atheist{border-color:var(--rose);box-shadow:0 0 16px #f43f5e10}
+.wv-tier-left{display:flex;align-items:center;gap:10px}.wv-tier-icon{font-size:20px;width:32px;text-align:center}
+.wv-tier-name{font-weight:700;font-size:14px}.wv-tier-right{text-align:right}
+.wv-tier-prob{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--accent)}
+.wv-tier.active .wv-tier-prob{color:var(--emerald)}.wv-tier.active.is-atheist .wv-tier-prob{color:var(--rose)}
+.wv-tier-strength{font-size:11px;color:var(--text-dim);font-weight:600}
+.wv-tier.below .wv-tier-prob{color:var(--text-faint)}.wv-tier.below{opacity:.5}
+.wv-strength-bar{height:8px;border-radius:4px;background:var(--surface3);margin-top:6px;overflow:hidden}
+.wv-strength-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.wv-legend{margin-top:16px;padding:14px;border-radius:var(--radius);background:var(--surface2);border-left:3px solid var(--accent2);font-size:12px;color:var(--text-dim);line-height:1.8}
+.wv-legend strong{color:var(--text)}
+.sensitivity-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px}
+.sensitivity-title{font-weight:700;font-size:16px;margin-bottom:4px}
+.sensitivity-subtitle{font-size:12px;color:var(--text-dim);margin-bottom:16px}
+.sensitivity-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border-radius:var(--radius);margin-bottom:8px;border-left:3px solid var(--accent);gap:12px}
+.sensitivity-item.high{border-left-color:var(--gold)}.sensitivity-item.very-high{border-left-color:var(--rose)}
+.sensitivity-premise{flex:1;font-size:13px;min-width:0}
+.sensitivity-premise-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sensitivity-premise-arg{font-size:11px;color:var(--text-faint)}
+.sensitivity-impact{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--accent);white-space:nowrap}
+.sensitivity-item.high .sensitivity-impact{color:var(--gold)}.sensitivity-item.very-high .sensitivity-impact{color:var(--rose)}
+.philosopher-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.philosopher-title{font-weight:700;font-size:16px;margin-bottom:16px}
+.philosopher-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.philosopher-card{padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:var(--transition)}
+.philosopher-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--glow)}
+.philosopher-name{font-weight:700;font-size:14px;margin-bottom:4px}
+.philosopher-stance{font-size:12px;color:var(--accent);margin-bottom:8px}
+.philosopher-desc{font-size:11px;color:var(--text-faint);line-height:1.5}
+.how-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px}
+.how-card h2{font-size:18px;margin-bottom:16px;color:var(--accent)}
+.how-steps{counter-reset:step}
+.how-step{counter-increment:step;padding:12px 16px 12px 52px;position:relative;margin-bottom:8px;border-radius:var(--radius);background:var(--surface2)}
+.how-step::before{content:counter(step);position:absolute;left:14px;top:12px;width:28px;height:28px;border-radius:8px;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--bg)}
+.how-step h3{font-size:14px;font-weight:700;margin-bottom:2px}.how-step p{font-size:13px;color:var(--text-dim)}
+.math-note{margin-top:16px;padding:14px;border-radius:var(--radius);background:var(--surface2);border-left:3px solid var(--accent);font-size:13px;color:var(--text-dim);line-height:1.7}
+.math-note code{font-family:var(--mono);color:var(--accent);font-size:12px;background:var(--surface3);padding:1px 5px;border-radius:3px}
+.glossary{margin-top:24px}.glossary-title{font-size:16px;font-weight:700;margin-bottom:12px;color:var(--accent2)}.glossary-grid{display:grid;gap:8px}
+.glossary-item{padding:12px 16px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border)}
+.glossary-term{font-weight:700;font-size:14px;color:var(--accent);margin-bottom:4px}.glossary-def{font-size:13px;color:var(--text-dim)}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
 .modal-overlay.visible{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);max-width:600px;width:100%;max-height:80vh;overflow:hidden;animation:fadeIn .3s ease}
@@ -144,40 +234,86 @@ background-image:radial-gradient(ellipse 80% 50% at 50% -20%,#22d3ee08,transpare
 .modal-close{width:32px;height:32px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text-dim);transition:var(--transition)}
 .modal-close:hover{border-color:var(--rose);color:var(--rose)}
 .modal-body{padding:20px;overflow-y:auto;max-height:calc(80vh - 80px)}
+.wv-list{margin-top:16px}
+.wv-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;gap:12px;flex-wrap:wrap}
+.wv-item-info{flex:1;min-width:150px}.wv-item-name{font-weight:700;font-size:14px}.wv-item-date{font-size:11px;color:var(--text-faint)}
+.wv-item-actions{display:flex;gap:6px;flex-wrap:wrap}
+.wv-btn{padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;transition:var(--transition);border:1px solid var(--border);background:var(--surface3);color:var(--text-dim);font-family:var(--font)}
+.wv-btn:hover{border-color:var(--accent);color:var(--text)}.wv-btn.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}.wv-btn.primary:hover{opacity:.85}
+.wv-btn.danger{border-color:var(--rose);color:var(--rose)}.wv-btn.danger:hover{background:#f43f5e18}
+.share-box{margin-top:16px;padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius)}
+.share-title{font-size:13px;font-weight:600;margin-bottom:8px}
+.share-url{width:100%;padding:10px 12px;border-radius:8px;background:var(--surface3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;word-break:break-all;resize:none}
+.share-url:focus{outline:none;border-color:var(--accent)}
+.share-btns{display:flex;gap:8px;margin-top:10px}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);padding:12px 24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;color:var(--text);box-shadow:0 10px 40px rgba(0,0,0,.3);z-index:2000;transition:transform .3s ease,opacity .3s ease;opacity:0;pointer-events:none}
 .toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
 .toast.success{border-color:var(--emerald);color:var(--emerald)}.toast.error{border-color:var(--rose);color:var(--rose)}
-.bayes-explanation{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:20px}
-.bayes-title{font-weight:800;font-size:18px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
-.formula-block{background:var(--surface2);padding:16px;border-radius:var(--radius);margin:16px 0;text-align:center}
-.formula{font-family:var(--mono);font-size:16px;color:var(--accent);font-weight:700}
-.formula-desc{font-size:12px;color:var(--text-dim);margin-top:8px}
-@media(max-width:640px){.app{padding:12px 10px 40px}.hero{padding:24px 12px 20px}.arg-header{padding:14px}.arg-content{padding:0 14px 14px}.stats-bar{grid-template-columns:repeat(2,1fr)}.tab{padding:8px 10px;font-size:12px}}
+.achievement{position:fixed;top:20px;right:20px;padding:16px 20px;background:var(--surface);border:1px solid var(--gold);border-radius:var(--radius);display:flex;align-items:center;gap:12px;z-index:2000;animation:slideIn .4s ease;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.achievement-icon{font-size:28px}.achievement-title{font-weight:700;color:var(--gold);margin-bottom:2px}.achievement-text{font-size:13px}
+.undo-redo{display:flex;gap:4px}
+.undo-btn{width:36px;height:36px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:16px;transition:var(--transition)}
+.undo-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}.undo-btn:disabled{opacity:.3;cursor:not-allowed}
+.quote-block{background:var(--surface3);border-left:3px solid var(--accent2);padding:10px 14px;margin:8px 0;border-radius:0 6px 6px 0;font-size:12px;color:var(--text-dim);font-style:italic;line-height:1.7}
+.quote-block cite{font-style:normal;font-weight:600;color:var(--accent2);display:block;margin-top:4px;font-size:11px}
+
+/* ─── Rebuttal highlight ─────────────────────────────────────────────────── */
+.ev-ob-content .rebuttal{
+  display:block;font-size:12px;color:var(--emerald);
+  margin-top:5px;padding:6px 10px;
+  border-left:2px solid var(--emerald);
+  background:#10b98108;border-radius:0 4px 4px 0;
+  font-style:normal;
+}
+/* ─── Completed arg card ─────────────────────────────────────────────────── */
+.arg-card.completed{border-left:3px solid var(--emerald)!important}
+/* ─── Evidence count on tabs ─────────────────────────────────────────────── */
+.ev-ob-tab .count{
+  display:inline-block;font-size:10px;padding:0 5px;
+  border-radius:8px;background:var(--surface3);
+  margin-left:4px;font-family:var(--mono);
+}
+
+@media(max-width:640px){
+.app{padding:12px 10px 40px}.hero{padding:24px 12px 20px}.hero-actions{flex-direction:column;align-items:center}
+.arg-header{padding:14px}.arg-content{padding:0 14px 14px}
+.combo-checks{grid-template-columns:1fr}.stats-bar{grid-template-columns:repeat(2,1fr)}
+.tab{padding:8px 10px;font-size:12px}.toolbar{flex-direction:column}
+.toolbar-left,.toolbar-right{width:100%;justify-content:center}
+.philosopher-grid{grid-template-columns:1fr}.modal{margin:10px;max-height:90vh}
+}
 </style>
 </head>
 <body>
 <div class="app">
 <div class="hero">
-<h1>🔮 Bayesian Theism Calculator</h1>
-<p>A rigorous Bayesian framework for evaluating arguments for and against theism. Every premise updates all probabilities through proper Bayes' theorem. Rate your confidence in each premise and watch your worldview emerge from the mathematics.</p>
+<h1>🔮 Bayesian Theism-Atheism Probability Engine</h1>
+<p>A complete Bayesian framework for evaluating arguments for and against theism. Rate your confidence in premises, explore evidence and objections, and watch your worldview emerge through rigorous probabilistic reasoning.</p>
 <div class="hero-actions">
-<button class="hero-btn primary" onclick="showModal('bayesModal')">📈 How Bayes Works</button>
-<button class="hero-btn" onclick="document.querySelector('[data-tab=\'theistic\']').click()">⚡ Theistic Arguments</button>
-<button class="hero-btn" onclick="document.querySelector('[data-tab=\'atheistic\']').click()">⚠️ Atheistic Arguments</button>
+<button class="hero-btn primary" onclick="startGuidedTour()">🚀 Guided Tour</button>
+<button class="hero-btn" onclick="document.getElementById('panel-theistic').scrollIntoView({behavior:'smooth'})">⚡ Theistic Arguments</button>
+<button class="hero-btn" onclick="document.getElementById('panel-atheistic').scrollIntoView({behavior:'smooth'})">🔥 Atheistic Arguments</button>
 </div>
 </div>
 
 <div class="stats-bar">
-<div class="stat-card"><div class="stat-tooltip">Posterior probability after all evidence</div><div class="stat-label">Theism Probability</div><div class="stat-value purple" id="statTheism">50.0%</div></div>
-<div class="stat-card"><div class="stat-tooltip">Strongest evidence either direction</div><div class="stat-label">Strongest Evidence</div><div class="stat-value gold" id="statStrongest">—</div></div>
-<div class="stat-card"><div class="stat-tooltip">Total Bayes factors accumulated</div><div class="stat-label">Total Update</div><div class="stat-value emerald" id="statUpdate">1.0x</div></div>
-<div class="stat-card"><div class="stat-tooltip">Arguments with premises rated</div><div class="stat-label">Evidence Rated</div><div class="stat-value rose" id="statRated">0 / 0</div></div>
+<div class="stat-card"><div class="stat-tooltip">Net Bayesian evidence across all arguments</div><div class="stat-label">Evidence Balance</div><div class="stat-value" id="statBalance">—</div></div>
+<div class="stat-card"><div class="stat-tooltip">Final probability accounting for all evidence</div><div class="stat-label">Net Theism</div><div class="stat-value gold" id="statNetTheism">—</div></div>
+<div class="stat-card"><div class="stat-tooltip">Divine properties with evidence</div><div class="stat-label">Properties Assessed</div><div class="stat-value emerald" id="statPropsAssessed">0 / 0</div></div>
+<div class="stat-card"><div class="stat-tooltip">Product of all properties (floor = Christian God)</div><div class="stat-label">Composite Theism</div><div class="stat-value purple" id="statComposite">—</div></div>
+<div class="stat-card"><div class="stat-tooltip">Arguments with all premises rated</div><div class="stat-label">Arguments Rated</div><div class="stat-value rose" id="statArgsRated">0 / 0</div></div>
 </div>
 
 <div class="toolbar">
 <div class="toolbar-left">
 <button class="toolbar-btn danger" onclick="confirmReset()">🔄 Reset All</button>
-<button class="toolbar-btn" onclick="showModal('bayesModal')">📊 Bayes Explanation</button>
+<button class="toolbar-btn" onclick="showModal('worldviewModal')">💾 Worldviews</button>
+<button class="toolbar-btn" onclick="showModal('shareModal')">🔗 Share URL</button>
+<button class="toolbar-btn" onclick="showModal('priorModal')">⚙️ Bayesian Priors</button>
+<div class="undo-redo">
+<button class="undo-btn" id="undoBtn" onclick="undo()" disabled title="Undo (Ctrl+Z)">↩</button>
+<button class="undo-btn" id="redoBtn" onclick="redo()" disabled title="Redo (Ctrl+Y)">↪</button>
+</div>
 </div>
 <div class="toolbar-right"><button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌓</button></div>
 </div>
@@ -185,15 +321,18 @@ background-image:radial-gradient(ellipse 80% 50% at 50% -20%,#22d3ee08,transpare
 <div class="progress-bar"><div class="progress-fill" id="globalProgress" style="width:0%"></div></div>
 
 <div class="tabs" id="tabBar">
-<button class="tab active" data-tab="theistic">⚡ Theistic Arguments</button>
-<button class="tab" data-tab="atheistic">⚠️ Atheistic Arguments</button>
-<button class="tab" data-tab="summary">📊 Bayesian Summary</button>
+<button class="tab active" data-tab="theistic">⚡ Theistic</button>
+<button class="tab" data-tab="atheistic">🔥 Atheistic</button>
+<button class="tab" data-tab="properties">🔗 Properties</button>
+<button class="tab" data-tab="combinator">✨ Combinator</button>
+<button class="tab" data-tab="sensitivity">📊 Analysis</button>
+<button class="tab" data-tab="howto">📘 Guide</button>
 </div>
 
 <div class="panel active" id="panel-theistic">
 <div class="search-bar">
 <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-<input type="text" class="search-input" placeholder="Search theistic arguments..." oninput="filterArguments(this.value, 'theistic')">
+<input type="text" class="search-input" id="argSearch" placeholder="Search arguments, premises, evidence..." oninput="filterArguments(this.value)">
 </div>
 <div id="theisticContainer"></div>
 </div>
@@ -201,380 +340,1146 @@ background-image:radial-gradient(ellipse 80% 50% at 50% -20%,#22d3ee08,transpare
 <div class="panel" id="panel-atheistic">
 <div class="search-bar">
 <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-<input type="text" class="search-input" placeholder="Search atheistic arguments..." oninput="filterArguments(this.value, 'atheistic')">
+<input type="text" class="search-input" id="atheisticSearch" placeholder="Search atheistic arguments..." oninput="filterAtheisticArguments(this.value)">
 </div>
 <div id="atheisticContainer"></div>
 </div>
 
-<div class="panel" id="panel-summary">
-<div class="bayes-explanation">
-<div class="bayes-title">📊 Current Bayesian State</div>
-<div class="formula-block">
-<div class="formula" id="currentFormula">P(God|E) = 50.0%</div>
-<div class="formula-desc">Posterior probability of God's existence given all evidence E</div>
+<div class="panel" id="panel-properties">
+<div class="radar-container">
+<div class="radar-title">📡 Property Radar</div>
+<svg id="radarChart" class="radar-svg" viewBox="0 0 400 400" width="400" height="400"></svg>
+<p style="font-size:12px;color:var(--text-faint);margin-top:12px">Visual representation of evidence strength for each divine property</p>
 </div>
-<div id="bayesBreakdown"></div>
+<div id="propContainer"></div>
+</div>
+
+<div class="panel" id="panel-combinator">
+<div class="combo-builder">
+<div class="combo-title">✨ Property Combinator</div>
+<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Select which divine properties to include. The result shows the probability of a being possessing <em>all</em> selected properties. Note: selecting "Christian God" is a floor — adding more properties cannot lower it below that value.</p>
+<div class="combo-checks" id="comboChecks"></div>
+<div class="base-select-row">
+<label>Anchor to argument:</label>
+<select class="styled-select" id="baseSelect"><option value="none">— Global aggregation —</option></select>
+</div>
+<div class="combo-result-box">
+<div class="combo-result-label">Combined Probability</div>
+<div class="combo-result-value" id="comboResult">—</div>
+<div class="combo-result-note">Bayesian aggregation with proper atheistic discounting</div>
+</div>
+<div class="anchored-result" id="anchoredResult" style="display:none"></div>
+<div id="comboBreakdown" style="margin-top:16px"></div>
+</div>
+<div id="worldviewAnalysis"></div>
+</div>
+
+<div class="panel" id="panel-sensitivity">
+<div class="sensitivity-panel">
+<div class="sensitivity-title">📊 Sensitivity Analysis</div>
+<div class="sensitivity-subtitle">Which premises impact your worldview most? Ranked by effect of a 10% increase on Net Theism.</div>
+<div id="sensitivityList"></div>
+</div>
+<div class="philosopher-panel">
+<div class="philosopher-title">👤 Philosopher Presets</div>
+<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Load configurations based on how notable thinkers might rate these arguments.</p>
+<div class="philosopher-grid" id="philosopherGrid"></div>
+</div>
+</div>
+
+<div class="panel" id="panel-howto">
+<div class="how-card">
+<h2>How This Bayesian System Works</h2>
+<div class="how-steps">
+<div class="how-step"><h3>Set Your Prior</h3><p>Start with your baseline belief in theism (default 50%). This represents your confidence before considering any specific arguments.</p></div>
+<div class="how-step"><h3>Rate Theistic Arguments</h3><p>For each premise, rate your confidence (0-100%). The core conclusion equals the product of premise probabilities, then gets multiplied by your prior to update your belief.</p></div>
+<div class="how-step"><h3>Rate Atheistic Arguments</h3><p>These work in reverse - strong atheistic arguments reduce your theism probability. Each atheistic conclusion is subtracted from theistic properties.</p></div>
+<div class="how-step"><h3>Bayesian Updates</h3><p>Your posterior after each argument becomes the prior for the next. Evidence accumulates properly without double-counting through rigorous Bayesian conditioning.</p></div>
+<div class="how-step"><h3>Property Synthesis</h3><p>Multiple arguments supporting the same property combine via noisy-OR. Atheistic arguments provide negative evidence that reduces property probabilities.</p></div>
+<div class="how-step"><h3>Final Worldview</h3><p>The system computes your final theism probability accounting for all evidence. The analysis shows where you land on the belief spectrum.</p></div>
+</div>
+<div class="math-note">
+<strong>Bayesian Mathematics:</strong><br>
+• Prior: <code>P(God)</code> - your starting belief<br>
+• Likelihood: <code>P(Evidence|God) / P(Evidence|¬God)</code> - how much the evidence favors theism<br>
+• Posterior: <code>P(God|Evidence) = Prior × Likelihood / Normalization</code><br>
+• Atheistic evidence: <code>P(Property) × (1 - AtheisticStrength)</code><br>
+• Final synthesis: <code>NoiseOR(PositiveEvidence) × Product(AtheisticDiscounts)</code>
+</div>
+<div class="glossary">
+<div class="glossary-title">📖 Bayesian Glossary</div>
+<div class="glossary-grid">
+<div class="glossary-item"><div class="glossary-term">Bayes' Theorem</div><div class="glossary-def">P(H|E) = P(E|H)P(H)/P(E). The fundamental rule for updating beliefs in light of evidence. Posterior = Likelihood × Prior / Evidence probability.</div></div>
+<div class="glossary-item"><div class="glossary-term">Prior Probability</div><div class="glossary-def">Your initial belief before considering specific evidence. Represents background knowledge, intuition, and default assumptions about the hypothesis.</div></div>
+<div class="glossary-item"><div class="glossary-term">Likelihood Ratio</div><div class="glossary-def">P(E|H)/P(E|¬H). How much more probable the evidence is under the hypothesis than under its negation. Values >1 favor the hypothesis.</div></div>
+<div class="glossary-item"><div class="glossary-term">Posterior Probability</div><div class="glossary-def">Your updated belief after considering the evidence. This becomes the new prior for evaluating additional evidence in sequence.</div></div>
+<div class="glossary-item"><div class="glossary-term">Noisy-OR</div><div class="glossary-def">Probabilistic combination assuming independent evidence sources: P(effect) = 1 − ∏(1 − P(causeᵢ)). Prevents double-counting while aggregating evidence.</div></div>
+<div class="glossary-item"><div class="glossary-term">Evidence Strength</div><div class="glossary-def">How decisively evidence bears on the hypothesis. Strong evidence has high likelihood ratios; weak evidence has ratios near 1.0.</div></div>
+</div>
+</div>
 </div>
 </div>
 
 <!-- Modals -->
-<div class="modal-overlay" id="bayesModal">
+<div class="modal-overlay" id="worldviewModal">
 <div class="modal">
-<div class="modal-header"><div class="modal-title">📈 Bayesian Reasoning</div><button class="modal-close" onclick="hideModal('bayesModal')">×</button></div>
+<div class="modal-header"><div class="modal-title">💾 Worldview Manager</div><button class="modal-close" onclick="hideModal('worldviewModal')">×</button></div>
 <div class="modal-body">
-<p style="margin-bottom:16px">This calculator uses <strong>Bayes' theorem</strong> to properly update probabilities:</p>
-<div class="formula-block">
-<div class="formula">P(H|E) = P(E|H) × P(H) / P(E)</div>
-<div class="formula-desc">Posterior = Likelihood × Prior / Evidence</div>
+<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Save, load, or export your configurations. Saves persist for this session.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+<button class="toolbar-btn primary" onclick="saveWorldview()">💾 Save Current</button>
+<button class="toolbar-btn" onclick="exportCurrent()">📤 Export JSON</button>
+<label class="toolbar-btn" style="cursor:pointer">📥 Import<input type="file" id="importFile" accept=".json" style="display:none" onchange="importWorldview(this.files)"></label>
 </div>
-<p style="margin-bottom:16px">Every argument you rate becomes evidence E that updates the probability of theism H. Strong theistic evidence increases P(God|Evidence), while strong atheistic evidence decreases it.</p>
-<div style="margin-top:20px">
-<h3 style="color:var(--accent);margin-bottom:8px">How it works:</h3>
-<ol style="padding-left:20px;color:var(--text-dim)">
-<li style="margin-bottom:8px">Rate your confidence in each premise (0-100%)</li>
-<li style="margin-bottom:8px">Arguments become Bayes factors for/against theism</li>
-<li style="margin-bottom:8px">All evidence combines multiplicatively</li>
-<li>Final probability emerges from the mathematics</li>
-</ol>
+<div class="wv-list" id="wvList"></div>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="shareModal">
+<div class="modal">
+<div class="modal-header"><div class="modal-title">🔗 Share Your Worldview</div><button class="modal-close" onclick="hideModal('shareModal')">×</button></div>
+<div class="modal-body">
+<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Copy this URL to share your exact configuration.</p>
+<div class="share-box">
+<div class="share-title">Shareable URL</div>
+<textarea class="share-url" id="shareUrl" readonly rows="4" style="resize:none;font-size:10px"></textarea>
+<div class="share-btns">
+<button class="toolbar-btn primary" onclick="copyShareUrl()">📋 Copy</button>
+<button class="toolbar-btn" onclick="generateShareUrl()">🔄 Regenerate</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="priorModal">
+<div class="modal">
+<div class="modal-header"><div class="modal-title">⚙️ Bayesian Priors</div><button class="modal-close" onclick="hideModal('priorModal')">×</button></div>
+<div class="modal-body">
+<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Set your baseline beliefs before considering specific arguments. These priors represent your starting point for Bayesian updating.</p>
+<div style="margin-bottom:16px">
+<label style="display:block;margin-bottom:8px;font-weight:600">Base Theism Prior (%)</label>
+<input type="range" id="theismPrior" min="0" max="100" value="50" style="width:100%" oninput="updatePriorDisplay()">
+<div style="text-align:center;margin-top:4px;font-family:var(--mono);color:var(--accent)" id="theismPriorDisplay">50%</div>
+<p style="font-size:11px;color:var(--text-faint);margin-top:4px">Your baseline belief that God exists, before considering any specific arguments</p>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;margin-bottom:8px;font-weight:600">Evidence Weight Factor</label>
+<input type="range" id="evidenceWeight" min="0.1" max="2.0" step="0.1" value="1.0" style="width:100%" oninput="updateWeightDisplay()">
+<div style="text-align:center;margin-top:4px;font-family:var(--mono);color:var(--accent)" id="evidenceWeightDisplay">1.0×</div>
+<p style="font-size:11px;color:var(--text-faint);margin-top:4px">How strongly evidence updates your beliefs (1.0 = normal, <1.0 = conservative, >1.0 = aggressive)</p>
+</div>
+<div style="text-align:center">
+<button class="toolbar-btn primary" onclick="applyPriors()">Apply Settings</button>
 </div>
 </div>
 </div>
 </div>
 
 <div class="toast" id="toast"></div>
+<div id="achievementContainer"></div>
 
 <script>
-// ─── PRIOR PROBABILITY ────────────────────────────────────────────────────
-let PRIOR_THEISM = 0.5; // Starting prior probability of theism
-
-// ─── THEISTIC ARGUMENTS ─────────────────────────────────────────────────────
-const THEISTIC_ARGUMENTS = [
-{id:"kalam",title:"Kalam Cosmological Argument",icon:"🌌",
-premises:[
-{id:"k_p1",text:"Whatever begins to exist has a cause",
-evidence:["<strong>Ex nihilo nihil fit</strong> — 'From nothing, nothing comes.' This principle underlies all scientific reasoning.","<strong>Quantum events don't violate this.</strong> Virtual particles arise from quantum fields with energy, not from absolute nothing."],
-objections:[{text:"Quantum mechanics shows uncaused events",rebuttal:"Quantum events have probabilistic causes in underlying field structures"}]
-},
-{id:"k_p2",text:"The universe began to exist",
-evidence:["<strong>Big Bang cosmology:</strong> All matter, energy, space and time originated ~13.8 billion years ago","<strong>BGV Theorem (2003):</strong> Any expanding universe must have a past boundary"],
-objections:[{text:"Multiverse could be eternal",rebuttal:"BGV applies to multiverse scenarios - they also require a beginning"}]
-}],
-conclusion:"Therefore, the universe has a cause",
-bayesFactorIfTrue: 5.0, // How much this evidence favors theism if the argument succeeds
-bayesFactorIfFalse: 0.8 // How much it favors atheism if the argument fails
-},
-{id:"finetuning",title:"Fine-Tuning Argument",icon:"🎯",
-premises:[
-{id:"f_p1",text:"The universe is fine-tuned for life",
-evidence:["<strong>Cosmological constant</strong> fine-tuned to 1 in 10^120","<strong>Multiple constants</strong> must be precisely calibrated simultaneously"],
-objections:[{text:"Anthropic principle explains this",rebuttal:"Anthropic principle doesn't explain why fine-tuned universe exists, only why we observe it"}]
-},
-{id:"f_p2",text:"Fine-tuning is best explained by design rather than chance or necessity",
-evidence:["<strong>Chance explanation fails:</strong> Probability is beyond astronomical","<strong>Necessity explanation fails:</strong> No known physics requires these values"],
-objections:[{text:"Multiverse explains fine-tuning",rebuttal:"Multiverse generators themselves require fine-tuning, pushes problem back"}]
-}],
-conclusion:"Therefore, the universe was designed by an intelligent agent",
-bayesFactorIfTrue: 10.0,
-bayesFactorIfFalse: 0.3
-},
-{id:"moral",title:"Moral Argument",icon:"⚖️",
-premises:[
-{id:"m_p1",text:"Objective moral values and duties exist",
-evidence:["<strong>Holocaust intuition:</strong> Was the Holocaust objectively wrong, or just culturally disapproved?","<strong>Moral realism is nearly universal</strong> in practice, even among theoretical subjectivists"],
-objections:[{text:"Morality is subjective/cultural",rebuttal:"Moral disagreement presupposes objective truth to disagree about, like scientific disagreement"}]
-},
-{id:"m_p2",text:"Objective moral values require God as their foundation",
-evidence:["<strong>On naturalism:</strong> We are products of blind evolution caring only about survival, not truth","<strong>Moral authority problem:</strong> Who issues genuine obligations without a moral lawgiver?"],
-objections:[{text:"Secular moral realism is possible",rebuttal:"Fails to explain moral epistemology - how evolved beings access abstract moral facts"}]
-}],
-conclusion:"Therefore, God exists as the foundation of morality",
-bayesFactorIfTrue: 4.0,
-bayesFactorIfFalse: 0.7
-}];
-
-// ─── ATHEISTIC ARGUMENTS ────────────────────────────────────────────────────
-const ATHEISTIC_ARGUMENTS = [
-{id:"suffering",title:"Argument from Gratuitous Suffering",icon:"💀",
-premises:[
-{id:"s_p1",text:"If God exists, gratuitous suffering would not exist",
-evidence:["<strong>Logical problem:</strong> An all-powerful, all-knowing, all-good God would prevent unnecessary suffering","<strong>No greater good defense:</strong> Much suffering serves no conceivable purpose","<strong>Animal suffering:</strong> Billions of years of predation, disease, and death before humans existed"],
-objections:[{text:"Free will defense explains human suffering",rebuttal:"Cannot explain animal suffering or natural disasters. Also, free will could exist without permission for extreme cruelty."}]
-},
-{id:"s_p2",text:"Gratuitous suffering exists",
-evidence:["<strong>Scale of suffering:</strong> Billions die in agony from disease, starvation, natural disasters","<strong>Innocent victims:</strong> Children born with painful terminal illnesses who die young","<strong>Animal kingdom:</strong> Parasites that eat hosts alive, prey torn apart while conscious"],
-objections:[{text:"All suffering serves unknown purpose",rebuttal:"Special pleading - we cannot verify unfalsifiable claims about hidden purposes"}]
-}],
-conclusion:"Therefore, God does not exist",
-bayesFactorIfTrue: 0.1,  // Strong evidence against theism if argument succeeds
-bayesFactorIfFalse: 1.2
-},
-{id:"hiddenness",title:"Argument from Divine Hiddenness",icon:"👻",
-premises:[
-{id:"h_p1",text:"If God exists and seeks relationship with humans, He would not remain hidden",
-evidence:["<strong>Loving parent analogy:</strong> A loving parent doesn't hide from their children","<strong>Salvation at stake:</strong> If belief affects eternal destiny, a good God ensures sufficient evidence","<strong>Capacity for relationship:</strong> God allegedly wants personal relationship with each human"],
-objections:[{text:"God provides sufficient evidence through nature/conscience",rebuttal:"Millions of sincere seekers report finding no convincing evidence despite earnest searching"}]
-},
-{id:"h_p2",text:"God remains hidden",
-evidence:["<strong>Reasonable non-belief:</strong> Many intelligent, sincere people find insufficient evidence","<strong>Cultural dependency:</strong> Religious belief strongly correlates with geographic/cultural upbringing","<strong>Ambiguous evidence:</strong> No unambiguous divine communication to all humanity"],
-objections:[{text:"God reveals himself to those who truly seek",rebuttal:"No-true-Scotsman fallacy - unfalsifiable claim that dismisses all counter-evidence"}]
-}],
-conclusion:"Therefore, God does not exist (or doesn't seek relationship)",
-bayesFactorIfTrue: 0.2,
-bayesFactorIfFalse: 1.5
-}];
-
-// ─── STATE MANAGEMENT ────────────────────────────────────────────────────────
-const state = {
-  theisticRatings: {},
-  atheisticRatings: {},
-  totalEvidence: 0,
-  ratedEvidence: 0
+// ─── BAYESIAN CORE SYSTEM ────────────────────────────────────────────────────
+let BAYESIAN_STATE = {
+  theismPrior: 0.5,
+  evidenceWeight: 1.0,
+  propertyPosteriors: {}
 };
 
-// ─── BAYESIAN CALCULATION ───────────────────────────────────────────────────
-function calculateBayesFactor(argType, argId) {
-  const args = argType === 'theistic' ? THEISTIC_ARGUMENTS : ATHEISTIC_ARGUMENTS;
-  const ratings = argType === 'theistic' ? state.theisticRatings : state.atheisticRatings;
-  const arg = args.find(a => a.id === argId);
-  if (!arg) return 1.0;
+// ─── THEISTIC ARGUMENT DATA ─────────────────────────────────────────────────
+const THEISTIC_ARGUMENTS=[
+{id:"kalam",title:"Kalam Cosmological Argument",icon:"🌌",color:"#22d3ee",
+corePremises:[
+{id:"k_p1",text:"Whatever begins to exist has a cause.",
+evidence:[
+"<strong>Ex nihilo nihil fit</strong> — 'From nothing, nothing comes.' This is not merely an intuition; it is the metaphysical bedrock of all rational inquiry and scientific investigation.",
+"<strong>The denial is worse than magic.</strong> If things could pop into existence without any cause from absolute nothing, we would expect to see anything and everything appearing without reason.",
+"<strong>Quantum events do not violate this premise.</strong> Quantum fluctuations occur within a quantum vacuum that is not nothing — it is a structured system governed by physical laws.",
+"<strong>The premise is not falsified by any known physical event.</strong> Every confirmed observation in the history of science supports it: things that begin have causes."
+],
+objections:[
+{text:"<strong>Quantum indeterminacy:</strong> Some quantum events seem to occur without deterministic causes — so causation may not be universal.",rebuttal:"This confuses deterministic causation with causation in general. Quantum events have probabilistic causes rooted in prior quantum states and physical laws."}
+]},
+{id:"k_p2",text:"The universe began to exist.",
+evidence:[
+"<strong>Hilbert's Hotel — the impossibility of an actual infinite:</strong> Mathematician David Hilbert showed that an actually infinite collection produces vivid contradictions.",
+"<strong>The Big Bang — scientific consensus:</strong> The standard cosmological model holds that all space, time, matter, and energy came into existence approximately 13.8 billion years ago.",
+"<strong>The Borde-Guth-Vilenkin Theorem (2003):</strong> Any universe which has been, on average, in a state of cosmic expansion cannot be past-eternal but must have a spacetime boundary in the finite past."
+],
+objections:[
+{text:"<strong>Cyclic/bouncing cosmologies:</strong> Models like the Ekpyrotic scenario allow the universe to have gone through infinite past cycles.",rebuttal:"Most cyclic models are ruled out by the BGV theorem, which applies to any model with average positive expansion."}
+]}
+],
+coreConclusionText:"Therefore, the universe has a cause of its beginning.",
+postPremises:[
+{id:"k_pp1",text:"The cause must be transcendent (timeless, spaceless, immaterial).",propKey:"transcendent",
+evidence:["Space, time, matter, and energy all began at the Big Bang. Whatever caused them cannot itself be made of space, time, matter, or energy."],
+objections:[]},
+{id:"k_pp2",text:"The cause must be enormously powerful.",propKey:"powerful",
+evidence:["To bring all matter, energy, space, and time into existence from nothing requires immense power."],
+objections:[]},
+{id:"k_pp3",text:"The cause must be personal — an unembodied mind with free will.",propKey:"personal",
+evidence:["Abstract objects have no causal power. Only an unembodied mind can explain an eternal cause producing a temporal effect."],
+objections:[]},
+{id:"k_pp4",text:"The cause must be the uncaused first cause.",propKey:"firstcause",
+evidence:["The argument demonstrates that an infinite regress of causes is impossible."],
+objections:[]}
+]},
+{id:"finetuning",title:"Fine-Tuning Argument",icon:"🎯",color:"#f59e0b",
+corePremises:[
+{id:"f_p1",text:"The fine-tuning of the universe for intelligent life is due to physical necessity, chance, or design.",
+evidence:[
+"<strong>This is an exhaustive logical partition.</strong> Any explanation must fall into one of these categories.",
+"<strong>The fine-tuning is real and dramatic.</strong> The fundamental constants fall within extraordinarily narrow ranges that permit life."
+],
+objections:[]},
+{id:"f_p2",text:"The fine-tuning is not due to physical necessity or chance.",
+evidence:[
+"<strong>Against necessity:</strong> There is no known principle that requires the constants to have their life-permitting values.",
+"<strong>Against chance:</strong> The cosmological constant is fine-tuned to 1 part in 10¹²⁰."
+],
+objections:[]}
+],
+coreConclusionText:"Therefore, the fine-tuning is due to design.",
+postPremises:[
+{id:"f_pp1",text:"The designer must be transcendent.",propKey:"transcendent",evidence:[],objections:[]},
+{id:"f_pp2",text:"The designer must be supremely intelligent.",propKey:"intelligent",evidence:[],objections:[]},
+{id:"f_pp3",text:"The designer must be enormously powerful.",propKey:"powerful",evidence:[],objections:[]},
+{id:"f_pp4",text:"The designer must be personal.",propKey:"personal",evidence:[],objections:[]}
+]},
+{id:"moral",title:"Moral Argument",icon:"⚖️",color:"#10b981",
+corePremises:[
+{id:"m_p1",text:"If God does not exist, objective moral values and duties do not exist.",
+evidence:[
+"<strong>On naturalism, morality reduces to biology:</strong> Without God, we are products of blind evolutionary processes.",
+"<strong>Moral obligations require an authority:</strong> On naturalism, who issues genuine moral obligations?"
+],
+objections:[]},
+{id:"m_p2",text:"Objective moral values and duties do exist.",
+evidence:[
+"<strong>The Holocaust test:</strong> Was the Holocaust objectively evil, or merely culturally disapproved of?",
+"<strong>Moral experience as properly basic:</strong> Our moral awareness is as direct as our perceptual experience."
+],
+objections:[]}
+],
+coreConclusionText:"Therefore, God exists as the ground of objective moral reality.",
+postPremises:[
+{id:"m_pp1",text:"God is the ultimate source of moral goodness.",propKey:"moral_source",evidence:[],objections:[]},
+{id:"m_pp2",text:"The ground of morality must be personal.",propKey:"personal",evidence:[],objections:[]},
+{id:"m_pp3",text:"The ground of morality must be transcendent.",propKey:"transcendent",evidence:[],objections:[]}
+]}
+];
 
-  // Calculate argument strength as product of premise confidences
-  let strength = 1.0;
-  let hasRatings = false;
+// ─── ATHEISTIC ARGUMENT DATA ────────────────────────────────────────────────
+const ATHEISTIC_ARGUMENTS=[
+{id:"suffering",title:"Argument from Gratuitous Suffering",icon:"💀",color:"#f43f5e",
+corePremises:[
+{id:"s_p1",text:"If God exists (omnipotent, omniscient, perfectly good), there would be no gratuitous suffering.",
+evidence:[
+"<strong>Logical entailment from divine attributes:</strong> An omnipotent being can prevent any suffering. An omniscient being knows about all suffering. A perfectly good being would prevent suffering that serves no purpose.",
+"<strong>The principle of prevention:</strong> If you can prevent something bad from happening without losing anything of equal moral significance, you ought to do so. A perfect God would follow this principle absolutely.",
+"<strong>Gratuitous suffering defined:</strong> Suffering that does not serve any outweighing good purpose — suffering that could be eliminated without losing any greater good or allowing greater evil.",
+"<strong>The evidential force:</strong> We need not prove that specific instances of suffering are gratuitous. The sheer quantity and intensity of suffering makes it overwhelmingly probable that some of it is pointless."
+],
+objections:[
+{text:"<strong>The greater good defense:</strong> All suffering serves some greater purpose that we cannot see.",rebuttal:"This requires us to believe that every instance of suffering — including the most horrific cases — serves necessary purposes. This places an enormous burden of proof on the theist and contradicts our moral intuitions about preventing harm when possible."},
+{text:"<strong>Free will defense:</strong> Suffering results from human free will, which is so valuable that God allows its misuse.",rebuttal:"This does not address natural disasters, animal suffering, genetic diseases, or other sources of suffering unrelated to human choice. Even for moral evil, an omnipotent God could create free beings who always choose good, or at least prevent the worst consequences."},
+{text:"<strong>Soul-making theodicy:</strong> Suffering is necessary for character development and spiritual growth.",rebuttal:"This fails to explain why extreme suffering is required, why some people experience overwhelming suffering while others experience little, and why infants and animals suffer despite having no capacity for moral development."}
+]},
+{id:"s_p2",text:"Gratuitous suffering exists in enormous quantities.",
+evidence:[
+"<strong>Natural disasters:</strong> Earthquakes, tsunamis, diseases, famines that kill millions including infants who cannot have deserved such suffering or learned from it.",
+"<strong>Animal suffering:</strong> Billions of years of predation, disease, and death in the animal kingdom before humans existed. Wild animals experience fear, pain, and death with no apparent moral purpose.",
+"<strong>Human tragedies:</strong> Children dying of cancer, genetic diseases causing lifelong agony, mental illness, accidents, and violence on an enormous scale throughout history.",
+"<strong>The scale problem:</strong> Even if some suffering serves good purposes, the sheer quantity suggests massive overkill. Why wouldn't a perfectly efficient God achieve the same goods with far less suffering?",
+"<strong>Uneven distribution:</strong> Suffering is not distributed in ways that correlate with moral desert, spiritual need, or character development. The innocent suffer alongside the guilty."
+],
+objections:[
+{text:"<strong>We cannot judge from our limited perspective whether suffering is truly gratuitous.</strong>",rebuttal:"This skeptical response undermines moral reasoning entirely. If we cannot judge that any suffering is pointless, we also cannot judge that preventing suffering is good — which contradicts the entire enterprise of theodicy. Moreover, our inability to see the point of some suffering does not mean there is a point; it may mean there is no point."},
+{text:"<strong>Suffering builds character, teaches compassion, enables heroism.</strong>",rebuttal:"These goods could be achieved with much less suffering, or through other means entirely by an omnipotent God. Moreover, much suffering destroys rather than builds character, and produces despair rather than compassion. The Holocaust did not make humanity more virtuous overall."}
+]}
+],
+coreConclusionText:"Therefore, God (as traditionally conceived) does not exist.",
+negativeProps:[
+{propKey:"powerful",strength:0.8,desc:"An omnipotent God could prevent gratuitous suffering"},
+{propKey:"intelligent",strength:0.6,desc:"An omniscient God would know about all suffering"},
+{propKey:"moral_source",strength:0.9,desc:"A perfectly good God would not permit pointless suffering"},
+{propKey:"personal",strength:0.7,desc:"A personal God who cares would intervene"},
+{propKey:"christian_god",strength:0.85,desc:"The Christian God is specifically characterized as loving and powerful"}
+]},
+{id:"hiddenness",title:"Argument from Divine Hiddenness",icon:"🌫️",color:"#6b7280",
+corePremises:[
+{id:"h_p1",text:"If God exists and is perfectly loving, God would ensure that sincere seekers can find evidence of divine existence.",
+evidence:[
+"<strong>Perfect love seeks relationship:</strong> A perfectly loving God would desire a meaningful relationship with each human being. Such relationships require that both parties know of each other's existence.",
+"<strong>The principle of reasonable availability:</strong> If God desires human beings to know, love, and obey God, then God would make evidence of divine existence reasonably available to sincere seekers.",
+"<strong>Analogy with human relationships:</strong> Loving parents do not hide from their children when the children are seeking them. A perfectly loving God would not remain hidden from creatures who genuinely desire to know the truth about God.",
+"<strong>The value of freely chosen relationship:</strong> For a relationship to be meaningful, it must be based on genuine knowledge and freely chosen. But this requires that evidence be available to those who seek it with sincere hearts."
+],
+objections:[
+{text:"<strong>God does provide evidence — through nature, conscience, religious experience, and revelation.</strong>",rebuttal:"If this evidence were adequate, we would not see such widespread sincere disagreement about God's existence among thoughtful people. The evidence alleged is either ambiguous (and interpreted differently by equally rational people) or restricted to particular cultures and times in ways that seem arbitrary."},
+{text:"<strong>God remains hidden to preserve human freedom — clear evidence would coerce belief.</strong>",rebuttal:"This confuses evidence with coercion. Knowing that someone exists does not eliminate freedom in relationship with them. Moreover, if evidence coerces belief, then God has provided too much evidence to many believers and too little to many seekers. The distribution seems arbitrary rather than optimally calibrated for freedom."}
+]},
+{id:"h_p2",text:"There are sincere seekers who find no convincing evidence of God's existence.",
+evidence:[
+"<strong>Honest intellectual inquiry:</strong> Many philosophers, scientists, and thoughtful people have seriously investigated theistic claims with open minds and found the evidence unconvincing.",
+"<strong>Cultural isolation:</strong> Billions of people throughout history have lived in cultures with no exposure to major theistic traditions. If they sought truth about ultimate reality, they had no access to allegedly revelatory evidence.",
+"<strong>Nonresistant nonbelief:</strong> Some people want God to exist, would welcome a relationship with God, have investigated theistic claims carefully, but remain unconvinced by the evidence available to them.",
+"<strong>The demographic problem:</strong> Religious belief correlates strongly with geographical and cultural factors rather than with sincerity of seeking or intellectual ability. This suggests cultural transmission rather than divine disclosure as the primary factor."
+],
+objections:[
+{text:"<strong>Those who claim to find no evidence are not truly seeking, or are suppressing evidence due to moral rebellion.</strong>",rebuttal:"This unfalsifiable response attributes bad faith to all nonbelievers despite contrary evidence. Many nonbelievers demonstrate moral seriousness, intellectual honesty, and genuine openness to evidence. Some believers become nonbelievers despite wanting to believe — suggesting the problem is evidential, not motivational."},
+{text:"<strong>God's evidence is spiritual and requires faith to perceive.</strong>",rebuttal:"This makes the evidence question circular: you need faith to see the evidence for faith. Moreover, people of different religions make identical claims about their contradictory spiritual evidence, providing no way to distinguish genuine spiritual insight from wishful thinking or cultural conditioning."}
+]}
+],
+coreConclusionText:"Therefore, God (as perfectly loving) does not exist, or God's love is not what we would expect.",
+negativeProps:[
+{propKey:"personal",strength:0.7,desc:"A personal God would not remain hidden from sincere seekers"},
+{propKey:"moral_source",strength:0.6,desc:"A perfectly good God would provide adequate evidence"},
+{propKey:"christian_god",strength:0.8,desc:"The Christian God is described as seeking relationship with humans"},
+{propKey:"intelligent",strength:0.3,desc:"Poor evidential distribution seems suboptimal for an all-knowing God"}
+]}
+];
 
-  for (const premise of arg.premises) {
-    if (ratings[premise.id] !== undefined) {
-      hasRatings = true;
-      strength *= ratings[premise.id] / 100;
+// ─── ENTAILMENT & PROPERTIES ────────────────────────────────────────────────
+const ENTAILMENT_MAP={
+christian_god:['transcendent','firstcause','personal','maximal_greatness','powerful','intelligent','moral_source'],
+maximal_greatness:['transcendent','firstcause','personal','powerful','intelligent','moral_source']
+};
+
+const PROP_META={
+transcendent:{label:"Transcendent",icon:"🌌",desc:"Timeless, spaceless, immaterial"},
+personal:{label:"Personal",icon:"🧠",desc:"Mind, will, intention"},
+powerful:{label:"Powerful",icon:"💪",desc:"Omnipotent or near-omnipotent"},
+firstcause:{label:"First Cause",icon:"⚡",desc:"Necessary, uncaused"},
+intelligent:{label:"Intelligent",icon:"🔬",desc:"Supreme intellect"},
+moral_source:{label:"Moral Source",icon:"⚖️",desc:"Ground of goodness"},
+maximal_greatness:{label:"Maximally Great",icon:"👑",desc:"All perfections"},
+christian_god:{label:"Christian God",icon:"✝️",desc:"Revealed in Christ"}
+};
+
+const PHILOSOPHERS=[
+{name:"Leo (Creator)",stance:"Bayesian Theist",desc:"High confidence in theistic arguments, moderate impact from atheistic arguments.",
+preset:{
+theismPrior:60,
+k_p1:99,k_p2:97,k_pp1:95,k_pp2:90,k_pp3:88,k_pp4:85,
+f_p1:95,f_p2:90,f_pp1:92,f_pp2:95,f_pp3:88,f_pp4:90,
+m_p1:92,m_p2:95,m_pp1:98,m_pp2:95,m_pp3:90,
+s_p1:65,s_p2:70,h_p1:60,h_p2:75
+}},
+{name:"William Lane Craig",stance:"Christian Apologist",desc:"Strong on classical arguments, dismissive of atheistic arguments.",
+preset:{
+theismPrior:85,
+k_p1:97,k_p2:92,k_pp1:95,k_pp2:90,k_pp3:88,k_pp4:92,
+f_p1:95,f_p2:85,f_pp1:90,f_pp2:90,f_pp3:85,f_pp4:80,
+m_p1:90,m_p2:95,m_pp1:92,m_pp2:88,m_pp3:85,
+s_p1:25,s_p2:30,h_p1:20,h_p2:35
+}},
+{name:"Graham Oppy",stance:"Atheist Philosopher",desc:"Skeptical of theistic arguments, convinced by atheistic ones.",
+preset:{
+theismPrior:15,
+k_p1:60,k_p2:40,k_pp1:45,k_pp2:50,k_pp3:25,k_pp4:35,
+f_p1:85,f_p2:20,f_pp1:30,f_pp2:25,f_pp3:35,f_pp4:20,
+m_p1:25,m_p2:55,m_pp1:30,m_pp2:25,m_pp3:20,
+s_p1:90,s_p2:95,h_p1:85,h_p2:90
+}},
+{name:"Open-minded Agnostic",stance:"Seeking Truth",desc:"Takes all arguments seriously, willing to be persuaded by evidence.",
+preset:{
+theismPrior:50,
+k_p1:70,k_p2:65,k_pp1:65,k_pp2:70,k_pp3:55,k_pp4:60,
+f_p1:85,f_p2:60,f_pp1:65,f_pp2:70,f_pp3:65,f_pp4:55,
+m_p1:55,m_p2:70,m_pp1:65,m_pp2:60,m_pp3:60,
+s_p1:75,s_p2:80,h_p1:70,h_p2:85
+}}
+];
+
+// ─── STATE MANAGEMENT ───────────────────────────────────────────────────────
+const UI={};
+let undoStack=[],redoStack=[];
+const worldviews={};
+let themeState='dark';
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function fmt(v){return v===null?'—':(v*100).toFixed(1)+'%'}
+function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast visible'+(type?' '+type:'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('visible'),3000)}
+function showAchievement(title,text){const c=document.getElementById('achievementContainer');const d=document.createElement('div');d.className='achievement';d.innerHTML=`<div class="achievement-icon">🏆</div><div class="achievement-text"><div class="achievement-title">${title}</div>${text}</div>`;c.appendChild(d);setTimeout(()=>d.remove(),5000)}
+function toggleTheme(){themeState=themeState==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',themeState)}
+function showModal(id){document.getElementById(id).classList.add('visible');if(id==='worldviewModal')refreshWvList();if(id==='shareModal')generateShareUrl();if(id==='priorModal'){document.getElementById('theismPrior').value=BAYESIAN_STATE.theismPrior*100;document.getElementById('evidenceWeight').value=BAYESIAN_STATE.evidenceWeight;updatePriorDisplay();updateWeightDisplay()}}
+function hideModal(id){document.getElementById(id).classList.remove('visible')}
+
+// ─── BAYESIAN FUNCTIONS ─────────────────────────────────────────────────────
+function updatePriorDisplay(){
+  const val = document.getElementById('theismPrior').value;
+  document.getElementById('theismPriorDisplay').textContent = val + '%';
+}
+
+function updateWeightDisplay(){
+  const val = parseFloat(document.getElementById('evidenceWeight').value);
+  document.getElementById('evidenceWeightDisplay').textContent = val.toFixed(1) + '×';
+}
+
+function applyPriors(){
+  BAYESIAN_STATE.theismPrior = parseInt(document.getElementById('theismPrior').value) / 100;
+  BAYESIAN_STATE.evidenceWeight = parseFloat(document.getElementById('evidenceWeight').value);
+  hideModal('priorModal');
+  recalcAll();
+  showToast('Bayesian priors updated', 'success');
+}
+
+function bayesianUpdate(prior, likelihood, evidenceWeight = 1.0) {
+  // Apply evidence weighting to likelihood
+  const weightedLR = Math.pow(likelihood, evidenceWeight);
+
+  // Bayes' theorem: P(H|E) = P(E|H)P(H) / [P(E|H)P(H) + P(E|¬H)P(¬H)]
+  const numerator = weightedLR * prior;
+  const denominator = weightedLR * prior + (1 - prior);
+
+  return denominator === 0 ? prior : numerator / denominator;
+}
+
+function computeLikelihoodRatio(argumentStrength) {
+  // Convert argument strength (0-1) to likelihood ratio
+  // Strong evidence should have high likelihood ratios
+  const strength = Math.max(0.01, Math.min(0.99, argumentStrength));
+  return strength / (1 - strength);
+}
+
+function noiseOr(probabilities) {
+  return 1 - probabilities.reduce((acc, p) => acc * (1 - p), 1);
+}
+
+// ─── STATE COLLECTION ───────────────────────────────────────────────────────
+function collectState(){
+  const s = {
+    sliders: {},
+    combos: {},
+    base: 'none',
+    bayesian: {
+      theismPrior: BAYESIAN_STATE.theismPrior,
+      evidenceWeight: BAYESIAN_STATE.evidenceWeight
     }
+  };
+
+  // Collect theistic sliders
+  THEISTIC_ARGUMENTS.forEach(arg => {
+    const u = UI[arg.id];
+    if (!u) return;
+    u.coreSliders?.forEach(x => {
+      s.sliders[x.p.id] = {v: +x.slider.value, a: x.activated};
+    });
+    u.postSliders?.forEach(x => {
+      s.sliders[x.pp.id] = {v: +x.slider.value, a: x.activated};
+    });
+  });
+
+  // Collect atheistic sliders
+  ATHEISTIC_ARGUMENTS.forEach(arg => {
+    const u = UI[arg.id];
+    if (!u) return;
+    u.coreSliders?.forEach(x => {
+      s.sliders[x.p.id] = {v: +x.slider.value, a: x.activated};
+    });
+  });
+
+  Object.keys(PROP_META).forEach(k => {
+    const c = document.getElementById('combo-' + k);
+    if (c) s.combos[k] = c.checked;
+  });
+
+  s.base = document.getElementById('baseSelect').value;
+  return s;
+}
+
+// ─── PROBABILITY CALCULATIONS ───────────────────────────────────────────────
+function getTheisticCoreProb(argId) {
+  const u = UI[argId];
+  if (!u?.coreSliders) return null;
+
+  const values = u.coreSliders.map(x => x.activated ? +x.slider.value : null);
+  if (values.some(x => x === null)) return null;
+
+  return values.reduce((a, b) => a * (b / 100), 1);
+}
+
+function getAtheisticCoreProb(argId) {
+  const u = UI[argId];
+  if (!u?.coreSliders) return null;
+
+  const values = u.coreSliders.map(x => x.activated ? +x.slider.value : null);
+  if (values.some(x => x === null)) return null;
+
+  return values.reduce((a, b) => a * (b / 100), 1);
+}
+
+function getTheisticContrib(argId, postId) {
+  const core = getTheisticCoreProb(argId);
+  if (core === null) return null;
+
+  const u = UI[argId];
+  const s = u.postSliders?.find(x => x.pp.id === postId);
+  if (!s?.activated) return null;
+
+  return core * (+s.slider.value / 100);
+}
+
+function getCombinedProperty(propKey) {
+  // Get positive evidence from theistic arguments
+  const positiveContribs = [];
+
+  THEISTIC_ARGUMENTS.forEach(arg => {
+    arg.postPremises?.forEach(pp => {
+      if (pp.propKey === propKey) {
+        const contrib = getTheisticContrib(arg.id, pp.id);
+        if (contrib !== null) {
+          positiveContribs.push({
+            argId: arg.id,
+            postId: pp.id,
+            val: contrib,
+            type: 'direct'
+          });
+        }
+      }
+    });
+  });
+
+  // Add entailed contributions
+  Object.keys(ENTAILMENT_MAP).forEach(sourceKey => {
+    if (ENTAILMENT_MAP[sourceKey].includes(propKey)) {
+      THEISTIC_ARGUMENTS.forEach(arg => {
+        arg.postPremises?.forEach(pp => {
+          if (pp.propKey === sourceKey) {
+            const contrib = getTheisticContrib(arg.id, pp.id);
+            if (contrib !== null && !positiveContribs.some(c => c.argId === arg.id && c.postId === pp.id)) {
+              positiveContribs.push({
+                argId: arg.id,
+                postId: pp.id,
+                val: contrib,
+                type: 'entailed',
+                source: sourceKey
+              });
+            }
+          }
+        });
+      });
+    }
+  });
+
+  // Calculate negative evidence from atheistic arguments
+  let negativeMultiplier = 1.0;
+  const negativeContribs = [];
+
+  ATHEISTIC_ARGUMENTS.forEach(arg => {
+    const core = getAtheisticCoreProb(arg.id);
+    if (core !== null && arg.negativeProps) {
+      arg.negativeProps.forEach(neg => {
+        if (neg.propKey === propKey) {
+          const impact = core * neg.strength * BAYESIAN_STATE.evidenceWeight;
+          negativeMultiplier *= (1 - impact);
+          negativeContribs.push({
+            argId: arg.id,
+            val: impact,
+            type: 'negative',
+            desc: neg.desc
+          });
+        }
+      });
+    }
+  });
+
+  if (positiveContribs.length === 0 && negativeContribs.length === 0) return null;
+
+  // Combine positive evidence using noisy-OR
+  const positiveProb = positiveContribs.length > 0 ? 
+    noiseOr(positiveContribs.map(c => c.val)) : 0;
+
+  // Apply negative evidence as Bayesian discount
+  const finalProb = positiveProb * negativeMultiplier;
+
+  return {
+    combined: Math.max(0, Math.min(1, finalProb)),
+    positiveContribs,
+    negativeContribs,
+    positiveOnly: positiveProb,
+    negativeMultiplier
+  };
+}
+
+function computeNetTheism() {
+  // Start with prior
+  let posterior = BAYESIAN_STATE.theismPrior;
+
+  // Update with theistic arguments
+  THEISTIC_ARGUMENTS.forEach(arg => {
+    const core = getTheisticCoreProb(arg.id);
+    if (core !== null) {
+      const likelihood = computeLikelihoodRatio(core);
+      posterior = bayesianUpdate(posterior, likelihood, BAYESIAN_STATE.evidenceWeight);
+    }
+  });
+
+  // Update with atheistic arguments (negative evidence)
+  ATHEISTIC_ARGUMENTS.forEach(arg => {
+    const core = getAtheisticCoreProb(arg.id);
+    if (core !== null) {
+      // Atheistic arguments provide evidence against theism
+      const likelihood = 1 / computeLikelihoodRatio(core);
+      posterior = bayesianUpdate(posterior, likelihood, BAYESIAN_STATE.evidenceWeight);
+    }
+  });
+
+  return posterior;
+}
+
+// ─── MAIN RECALCULATION ─────────────────────────────────────────────────────
+function recalcAll() {
+  let theisticDone = 0, atheisticDone = 0, totalPremises = 0, ratedPremises = 0;
+
+  // Process theistic arguments
+  THEISTIC_ARGUMENTS.forEach(arg => {
+    const u = UI[arg.id];
+    if (!u) return;
+
+    const core = getTheisticCoreProb(arg.id);
+    const coreEl = document.getElementById('core-' + arg.id);
+    const badgeEl = document.getElementById('badge-core-' + arg.id);
+
+    if (coreEl) coreEl.textContent = fmt(core);
+    if (badgeEl) badgeEl.textContent = 'Core:' + fmt(core);
+
+    const argPremises = (arg.corePremises?.length || 0) + (arg.postPremises?.length || 0);
+    const argRated = (u.coreSliders?.filter(x => x.activated).length || 0) + 
+                    (u.postSliders?.filter(x => x.activated).length || 0);
+
+    totalPremises += argPremises;
+    ratedPremises += argRated;
+
+    if (core !== null) theisticDone++;
+
+    const progEl = document.getElementById('prog-' + arg.id);
+    const progTxtEl = document.getElementById('progtxt-' + arg.id);
+
+    if (progEl && argPremises > 0) progEl.style.width = (argRated / argPremises * 100) + '%';
+    if (progTxtEl) progTxtEl.textContent = argRated + '/' + argPremises;
+  });
+
+  // Process atheistic arguments
+  ATHEISTIC_ARGUMENTS.forEach(arg => {
+    const u = UI[arg.id];
+    if (!u) return;
+
+    const core = getAtheisticCoreProb(arg.id);
+    const coreEl = document.getElementById('core-' + arg.id);
+    const badgeEl = document.getElementById('badge-core-' + arg.id);
+
+    if (coreEl) coreEl.textContent = fmt(core);
+    if (badgeEl) badgeEl.textContent = 'Core:' + fmt(core);
+
+    const argPremises = arg.corePremises?.length || 0;
+    const argRated = u.coreSliders?.filter(x => x.activated).length || 0;
+
+    totalPremises += argPremises;
+    ratedPremises += argRated;
+
+    if (core !== null) atheisticDone++;
+
+    const progEl = document.getElementById('prog-' + arg.id);
+    const progTxtEl = document.getElementById('progtxt-' + arg.id);
+
+    if (progEl && argPremises > 0) progEl.style.width = (argRated / argPremises * 100) + '%';
+    if (progTxtEl) progTxtEl.textContent = argRated + '/' + argPremises;
+  });
+
+  // Update property displays
+  let propsAssessed = 0;
+  Object.keys(PROP_META).forEach(propKey => {
+    const result = getCombinedProperty(propKey);
+    const propEl = document.getElementById('propcomb-' + propKey);
+    const contribEl = document.getElementById('propcontrib-' + propKey);
+
+    if (propEl) propEl.textContent = result ? fmt(result.combined) : '—';
+    if (result) propsAssessed++;
+
+    if (contribEl) {
+      contribEl.innerHTML = '';
+      if (result) {
+        // Show positive contributions
+        result.positiveContribs?.forEach(c => {
+          const arg = THEISTIC_ARGUMENTS.find(a => a.id === c.argId);
+          if (arg) {
+            const row = document.createElement('div');
+            row.className = 'contributor-row';
+            row.innerHTML = c.type === 'entailed' ?
+              `<span class="contributor-arg contributor-entailed">${arg.icon} ${arg.title} <span class="entailment-tag">via ${PROP_META[c.source]?.label || c.source}</span></span><span class="contributor-val" style="color:var(--accent3)">${fmt(c.val)}</span>` :
+              `<span class="contributor-arg">${arg.icon} ${arg.title}</span><span class="contributor-val">${fmt(c.val)}</span>`;
+            contribEl.appendChild(row);
+          }
+        });
+
+        // Show negative contributions
+        result.negativeContribs?.forEach(c => {
+          const arg = ATHEISTIC_ARGUMENTS.find(a => a.id === c.argId);
+          if (arg) {
+            const row = document.createElement('div');
+            row.className = 'contributor-row';
+            row.innerHTML = `<span class="contributor-arg contributor-negative">${arg.icon} ${arg.title} (${c.desc})</span><span class="contributor-val" style="color:var(--rose)">-${fmt(c.val)}</span>`;
+            contribEl.appendChild(row);
+          }
+        });
+      }
+    }
+  });
+
+  // Calculate net theism and stats
+  const netTheism = computeNetTheism();
+  const evidence = netTheism - BAYESIAN_STATE.theismPrior;
+
+  // Update statistics
+  const statEls = {
+    statBalance: document.getElementById('statBalance'),
+    statNetTheism: document.getElementById('statNetTheism'),
+    statPropsAssessed: document.getElementById('statPropsAssessed'),
+    statArgsRated: document.getElementById('statArgsRated'),
+    globalProgress: document.getElementById('globalProgress')
+  };
+
+  if (statEls.statBalance) {
+    statEls.statBalance.textContent = evidence >= 0 ? '+' + fmt(Math.abs(evidence)) : fmt(evidence);
+    statEls.statBalance.style.color = evidence >= 0 ? 'var(--emerald)' : 'var(--rose)';
   }
 
-  if (!hasRatings) return 1.0;
+  if (statEls.statNetTheism) statEls.statNetTheism.textContent = fmt(netTheism);
+  if (statEls.statPropsAssessed) statEls.statPropsAssessed.textContent = propsAssessed + '/' + Object.keys(PROP_META).length;
+  if (statEls.statArgsRated) statEls.statArgsRated.textContent = (theisticDone + atheisticDone) + '/' + (THEISTIC_ARGUMENTS.length + ATHEISTIC_ARGUMENTS.length);
+  if (statEls.globalProgress && totalPremises > 0) statEls.globalProgress.style.width = (ratedPremises / totalPremises * 100) + '%';
 
-  // Interpolate between success and failure Bayes factors
-  const successFactor = arg.bayesFactorIfTrue;
-  const failureFactor = arg.bayesFactorIfFalse;
-
-  return strength * successFactor + (1 - strength) * failureFactor;
+  updateCombinator();
+  updateWorldview();
+  updateSensitivity();
+  drawRadar();
 }
 
-function calculatePosteriorProbability() {
-  let totalBayesFactor = 1.0;
+// ─── WORLDVIEW ANALYSIS ─────────────────────────────────────────────────────
+const WV_TIERS = [
+  {id: 'christian', name: 'Christian Theism', icon: '✝️', props: ['transcendent', 'firstcause', 'personal', 'christian_god']},
+  {id: 'perfect', name: 'Perfect Being Theism', icon: '👑', props: ['transcendent', 'firstcause', 'personal', 'powerful', 'intelligent', 'moral_source']},
+  {id: 'theism', name: 'Classical Theism', icon: '🧠', props: ['transcendent', 'firstcause', 'personal']},
+  {id: 'deism', name: 'Deism', icon: '🌌', props: ['transcendent', 'firstcause']}
+];
 
-  // Accumulate evidence from all arguments
-  THEISTIC_ARGUMENTS.forEach(arg => {
-    totalBayesFactor *= calculateBayesFactor('theistic', arg.id);
-  });
+function updateWorldview() {
+  const container = document.getElementById('worldviewAnalysis');
+  if (!container) return;
 
-  ATHEISTIC_ARGUMENTS.forEach(arg => {
-    totalBayesFactor *= calculateBayesFactor('atheistic', arg.id);
-  });
+  const netTheism = computeNetTheism();
+  const evidence = netTheism - BAYESIAN_STATE.theismPrior;
 
-  // Apply Bayes' theorem: P(H|E) = P(E|H) * P(H) / P(E)
-  // Where P(E|H)/P(E|~H) is our Bayes factor
-  const odds = PRIOR_THEISM / (1 - PRIOR_THEISM);
-  const posteriorOdds = odds * totalBayesFactor;
-  const posterior = posteriorOdds / (1 + posteriorOdds);
+  // Determine worldview verdict
+  let verdict, verdictClass;
+  if (netTheism > 0.7) {
+    verdict = 'Strong Theism';
+    verdictClass = 'theist';
+  } else if (netTheism > 0.5) {
+    verdict = 'Weak Theism';
+    verdictClass = 'theist';
+  } else if (netTheism < 0.3) {
+    verdict = 'Strong Atheism';
+    verdictClass = 'atheist';
+  } else if (netTheism < 0.5) {
+    verdict = 'Weak Atheism';
+    verdictClass = 'atheist';
+  } else {
+    verdict = 'Perfect Agnosticism';
+    verdictClass = 'incomplete';
+  }
 
-  return { posterior: Math.max(0.001, Math.min(0.999, posterior)), bayesFactor: totalBayesFactor };
+  const evidenceDirection = evidence > 0 ? 'Evidence supports theism' : evidence < 0 ? 'Evidence supports atheism' : 'Evidence is balanced';
+
+  container.innerHTML = `
+    <div class="wv-analysis">
+      <div class="wv-analysis-title">🔮 Bayesian Worldview Analysis</div>
+      <div class="wv-analysis-subtitle">Based on your prior (${fmt(BAYESIAN_STATE.theismPrior)}) and evidence evaluation.</div>
+      <div class="wv-verdict ${verdictClass}">
+        <div class="wv-verdict-label">Your Worldview</div>
+        <div class="wv-verdict-name">${verdict}</div>
+        <div class="wv-verdict-prob">${evidenceDirection} • Net: ${fmt(netTheism)}</div>
+      </div>
+      <div class="wv-legend">
+        <strong>Interpretation:</strong> Started at ${fmt(BAYESIAN_STATE.theismPrior)} prior, evidence moved you ${evidence >= 0 ? '+' : ''}${fmt(evidence)} to ${fmt(netTheism)} posterior. 
+        ${netTheism > 0.5 ? 'You should probably believe in God.' : netTheism < 0.5 ? 'You should probably not believe in God.' : 'The evidence is perfectly balanced.'}
+      </div>
+    </div>
+  `;
 }
 
-// ─── UI UPDATES ──────────────────────────────────────────────────────────────
-function updateAllStats() {
-  const { posterior, bayesFactor } = calculatePosteriorProbability();
+// ─── COMBINATOR & OTHER UI ──────────────────────────────────────────────────
+function updateCombinator() {
+  // Implementation similar to original but with Bayesian calculations
+  const selectedProps = Object.keys(PROP_META).filter(k => document.getElementById('combo-' + k)?.checked);
+  const resultEl = document.getElementById('comboResult');
 
-  document.getElementById('statTheism').textContent = (posterior * 100).toFixed(1) + '%';
-  document.getElementById('currentFormula').textContent = `P(God|E) = ${(posterior * 100).toFixed(1)}%`;
-  document.getElementById('statUpdate').textContent = bayesFactor.toFixed(2) + 'x';
-  document.getElementById('statRated').textContent = `${state.ratedEvidence} / ${state.totalEvidence}`;
+  if (!selectedProps.length) {
+    if (resultEl) resultEl.textContent = '—';
+    return;
+  }
 
-  // Find strongest evidence
-  let strongest = { name: '—', value: 1.0 };
-  THEISTIC_ARGUMENTS.forEach(arg => {
-    const bf = calculateBayesFactor('theistic', arg.id);
-    if (Math.abs(Math.log(bf)) > Math.abs(Math.log(strongest.value))) {
-      strongest = { name: arg.icon + ' ' + (bf > 1 ? '+' : '') + (Math.log(bf) * 10).toFixed(1), value: bf };
-    }
-  });
-  ATHEISTIC_ARGUMENTS.forEach(arg => {
-    const bf = calculateBayesFactor('atheistic', arg.id);
-    if (Math.abs(Math.log(bf)) > Math.abs(Math.log(strongest.value))) {
-      strongest = { name: arg.icon + ' ' + (bf > 1 ? '+' : '') + (Math.log(bf) * 10).toFixed(1), value: bf };
-    }
-  });
+  const results = selectedProps.map(prop => getCombinedProperty(prop)).filter(r => r !== null);
 
-  document.getElementById('statStrongest').textContent = strongest.name;
+  if (results.length === 0) {
+    if (resultEl) resultEl.textContent = 'Incomplete';
+    return;
+  }
 
-  // Update breakdown
-  updateBayesBreakdown();
+  const finalProb = results.reduce((acc, result) => acc * result.combined, 1);
+  if (resultEl) resultEl.textContent = fmt(finalProb);
 }
 
-function updateBayesBreakdown() {
-  const breakdown = document.getElementById('bayesBreakdown');
-  let html = '<h3 style="margin:16px 0 12px;color:var(--accent)">Evidence Breakdown:</h3>';
+function updateSensitivity() {
+  // Sensitivity analysis for net theism
+  const container = document.getElementById('sensitivityList');
+  if (!container) return;
 
-  // Theistic evidence
-  html += '<h4 style="margin:12px 0 8px;color:var(--emerald)">Theistic Evidence:</h4>';
-  THEISTIC_ARGUMENTS.forEach(arg => {
-    const bf = calculateBayesFactor('theistic', arg.id);
-    const strength = Math.log(bf) * 10; // Convert to decibels-like scale
-    if (bf !== 1.0) {
-      html += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
-        <span>${arg.icon} ${arg.title}</span>
-        <span style="font-family:var(--mono);color:${bf > 1 ? 'var(--emerald)' : 'var(--rose)'}">
-          ${bf > 1 ? '+' : ''}${strength.toFixed(1)}db
-        </span>
-      </div>`;
-    }
+  const baseNet = computeNetTheism();
+  const items = [];
+
+  // Test all sliders
+  [...THEISTIC_ARGUMENTS, ...ATHEISTIC_ARGUMENTS].forEach(arg => {
+    const ui = UI[arg.id];
+    if (!ui) return;
+
+    [...(ui.coreSliders || []), ...(ui.postSliders || [])].forEach(slider => {
+      if (!slider.activated) return;
+
+      const originalValue = +slider.slider.value;
+      slider.slider.value = Math.min(100, originalValue + 10);
+
+      const newNet = computeNetTheism();
+      const impact = (newNet - baseNet) * 100;
+
+      slider.slider.value = originalValue; // Reset
+
+      items.push({
+        name: slider.p?.text || slider.pp?.text || 'Unknown',
+        arg: arg.title,
+        icon: arg.icon,
+        impact
+      });
+    });
   });
 
-  // Atheistic evidence
-  html += '<h4 style="margin:12px 0 8px;color:var(--rose)">Atheistic Evidence:</h4>';
-  ATHEISTIC_ARGUMENTS.forEach(arg => {
-    const bf = calculateBayesFactor('atheistic', arg.id);
-    const strength = Math.log(bf) * 10;
-    if (bf !== 1.0) {
-      html += `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border)">
-        <span>${arg.icon} ${arg.title}</span>
-        <span style="font-family:var(--mono);color:${bf > 1 ? 'var(--emerald)' : 'var(--rose)'}">
-          ${bf > 1 ? '+' : ''}${strength.toFixed(1)}db
-        </span>
-      </div>`;
-    }
-  });
+  items.sort((a, b) => Math.abs(b.impact) - Math.abs(a.impact));
 
-  breakdown.innerHTML = html;
+  container.innerHTML = items.slice(0, 15).map(item => {
+    const className = Math.abs(item.impact) >= 2 ? 'very-high' : Math.abs(item.impact) >= 1 ? 'high' : '';
+    return `
+      <div class="sensitivity-item ${className}">
+        <div class="sensitivity-premise">
+          <div class="sensitivity-premise-name">${item.name.slice(0, 60)}${item.name.length > 60 ? '...' : ''}</div>
+          <div class="sensitivity-premise-arg">${item.icon} ${item.arg}</div>
+        </div>
+        <div class="sensitivity-impact">${item.impact >= 0 ? '+' : ''}${item.impact.toFixed(2)}%</div>
+      </div>
+    `;
+  }).join('');
 }
 
-// ─── UI BUILDERS ─────────────────────────────────────────────────────────────
-function buildArgument(arg, type, container) {
+function drawRadar() {
+  // Radar chart implementation
+  const svg = document.getElementById('radarChart');
+  if (!svg) return;
+
+  const props = Object.keys(PROP_META);
+  const values = props.map(prop => {
+    const result = getCombinedProperty(prop);
+    return result ? result.combined : 0;
+  });
+
+  const cx = 200, cy = 200, r = 150;
+  let html = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="1"/>`;
+
+  // Draw concentric circles
+  [0.25, 0.5, 0.75, 1].forEach(f => {
+    html += `<circle cx="${cx}" cy="${cy}" r="${r * f}" fill="none" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2,2"/>`;
+  });
+
+  // Draw axes and plot values
+  const points = [];
+  props.forEach((prop, i) => {
+    const angle = (Math.PI * 2 * i / props.length) - Math.PI / 2;
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    const labelX = cx + Math.cos(angle) * (r + 22);
+    const labelY = cy + Math.sin(angle) * (r + 22);
+
+    html += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--border)" stroke-width="0.5"/>`;
+    html += `<text x="${labelX}" y="${labelY}" fill="var(--text-dim)" font-size="10" text-anchor="middle" dominant-baseline="middle">${PROP_META[prop].icon}</text>`;
+
+    const valueX = cx + Math.cos(angle) * r * values[i];
+    const valueY = cy + Math.sin(angle) * r * values[i];
+    points.push(`${valueX},${valueY}`);
+  });
+
+  if (points.length) {
+    html += `<polygon points="${points.join(' ')}" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="2"/>`;
+    points.forEach(point => {
+      const [x, y] = point.split(',');
+      html += `<circle cx="${x}" cy="${y}" r="4" fill="var(--accent)"/>`;
+    });
+  }
+
+  svg.innerHTML = html;
+}
+
+// ─── UI BUILDING ─────────────────────────────────────────────────────────────
+function buildArgumentCard(arg, isAtheistic = false) {
+  const container = isAtheistic ? 'atheisticContainer' : 'theisticContainer';
+  const argContainer = document.getElementById(container);
+  if (!argContainer) return;
+
   const card = document.createElement('div');
-  card.className = `arg-card ${type === 'atheistic' ? 'atheistic' : ''}`;
-  card.id = `card-${arg.id}`;
+  card.className = `arg-card${isAtheistic ? ' atheistic' : ''}`;
+  card.id = 'card-' + arg.id;
 
   card.innerHTML = `
     <div class="arg-header">
       <div class="arg-title-group">
-        <div class="arg-icon" style="background:${type === 'atheistic' ? 'var(--rose)' : '#22d3ee'}22;color:${type === 'atheistic' ? 'var(--rose)' : '#22d3ee'}">${arg.icon}</div>
+        <div class="arg-icon" style="background:${arg.color}22;color:${arg.color}">${arg.icon}</div>
         <div>
           <div class="arg-title">${arg.title}</div>
           <div class="arg-subtitle">Click to expand</div>
         </div>
       </div>
       <div class="arg-badge">
-        <span class="badge badge-core" id="badge-${arg.id}" style="${type === 'atheistic' ? 'background:var(--rose)18;color:var(--rose)' : ''}">—</span>
+        <span class="badge badge-core" id="badge-core-${arg.id}">Core:—</span>
+        <span class="chevron">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/>
+          </svg>
+        </span>
       </div>
     </div>
     <div class="arg-body">
+      <div class="arg-progress">
+        <span class="arg-progress-text" id="progtxt-${arg.id}">0/0</span>
+        <div class="arg-progress-bar">
+          <div class="arg-progress-fill" id="prog-${arg.id}"></div>
+        </div>
+      </div>
       <div class="arg-content" id="content-${arg.id}"></div>
     </div>
   `;
 
-  container.appendChild(card);
-  card.querySelector('.arg-header').onclick = () => card.classList.toggle('open');
+  argContainer.appendChild(card);
 
-  const content = document.getElementById(`content-${arg.id}`);
+  const header = card.querySelector('.arg-header');
+  header.onclick = () => card.classList.toggle('open');
 
-  // Build premises
-  arg.premises.forEach((premise, i) => {
-    const premiseDiv = document.createElement('div');
-    premiseDiv.className = 'premise-card';
+  const content = document.getElementById('content-' + arg.id);
+  UI[arg.id] = {coreSliders: [], postSliders: []};
 
-    const objHtml = (premise.objections || []).map(o => {
-      const objText = typeof o === 'string' ? o : o.text;
-      const rebuttal = typeof o === 'object' && o.rebuttal ? `<div class="rebuttal">↩ <strong>Rebuttal:</strong> ${o.rebuttal}</div>` : '';
-      return `<li>${objText}${rebuttal}</li>`;
-    }).join('');
+  // Add core premises
+  if (arg.corePremises?.length > 0) {
+    const coreLabel = document.createElement('div');
+    coreLabel.className = 'section-label';
+    coreLabel.textContent = 'Core Premises';
+    content.appendChild(coreLabel);
 
-    premiseDiv.innerHTML = `
-      <div class="premise-top">
-        <span class="premise-num">P${i+1}</span>
-        <div class="premise-text">${premise.text}</div>
-      </div>
-      <div class="confidence-row">
-        <div class="slider-wrap">
-          <input type="range" class="slider" min="0" max="100" value="50" id="slider-${premise.id}">
-        </div>
-        <div class="conf-display empty" id="display-${premise.id}">—</div>
-      </div>
-      <div class="quick-btns">
-        <button class="quick-btn" data-v="0">0%</button>
-        <button class="quick-btn" data-v="25">25%</button>
-        <button class="quick-btn" data-v="50">50%</button>
-        <button class="quick-btn" data-v="75">75%</button>
-        <button class="quick-btn" data-v="100">100%</button>
-      </div>
-      <div class="evidence-objection-wrap">
-        <div class="ev-ob-tabs">
-          <button class="ev-ob-tab active" data-type="ev">✅ Evidence (${(premise.evidence || []).length})</button>
-          <button class="ev-ob-tab objection" data-type="obj">⚠️ Objections (${(premise.objections || []).length})</button>
-        </div>
-        <div class="ev-ob-content active">
-          <ul>${(premise.evidence || []).map(e => '<li>' + e + '</li>').join('')}</ul>
-        </div>
-        <div class="ev-ob-content objection-content">
-          <ul>${objHtml}</ul>
-        </div>
-      </div>
+    arg.corePremises.forEach((premise, index) => {
+      const premiseDiv = buildPremiseCard(premise, index + 1, arg, false);
+      content.appendChild(premiseDiv);
+    });
+
+    // Add conclusion
+    const conclusionDiv = document.createElement('div');
+    conclusionDiv.className = `conclusion-box${isAtheistic ? ' atheistic' : ''}`;
+    conclusionDiv.innerHTML = `
+      <div class="conclusion-text">${arg.coreConclusionText}</div>
+      <div class="conclusion-value" id="core-${arg.id}">—</div>
     `;
+    content.appendChild(conclusionDiv);
+  }
 
-    content.appendChild(premiseDiv);
+  // Add post premises for theistic arguments
+  if (!isAtheistic && arg.postPremises?.length > 0) {
+    const postLabel = document.createElement('div');
+    postLabel.className = 'section-label';
+    postLabel.textContent = 'Property Analysis';
+    content.appendChild(postLabel);
 
-    const slider = document.getElementById(`slider-${premise.id}`);
-    const display = document.getElementById(`display-${premise.id}`);
+    arg.postPremises.forEach(postPremise => {
+      const postDiv = buildPostPremiseCard(postPremise, arg);
+      content.appendChild(postDiv);
+    });
+  }
 
-    slider.oninput = () => {
-      const value = parseInt(slider.value);
-      display.textContent = value + '%';
-      display.classList.remove('empty');
-      premiseDiv.classList.add('rated');
+  // Show negative properties for atheistic arguments
+  if (isAtheistic && arg.negativeProps?.length > 0) {
+    const negLabel = document.createElement('div');
+    negLabel.className = 'section-label';
+    negLabel.textContent = 'Properties Undermined';
+    content.appendChild(negLabel);
 
-      // Update state
-      if (type === 'theistic') {
-        state.theisticRatings[premise.id] = value;
-      } else {
-        state.atheisticRatings[premise.id] = value;
-      }
+    arg.negativeProps.forEach(negProp => {
+      const negDiv = document.createElement('div');
+      negDiv.className = 'post-premise-card atheistic';
+      negDiv.innerHTML = `
+        <div class="premise-text">
+          Undermines: ${PROP_META[negProp.propKey]?.label || negProp.propKey}
+          <span class="prop-tag atheistic">-${(negProp.strength * 100).toFixed(0)}%</span>
+        </div>
+        <p style="font-size:12px;color:var(--text-dim);margin-top:8px">${negProp.desc}</p>
+      `;
+      content.appendChild(negDiv);
+    });
+  }
+}
 
-      // Update Bayesian calculations
-      updateAllStats();
-      updateTrack(slider);
+function buildPremiseCard(premise, number, arg, isPost = false) {
+  const div = document.createElement('div');
+  div.className = isPost ? 'post-premise-card' : 'premise-card';
+
+  const objHtml = (premise.objections || []).map(obj => {
+    const objText = typeof obj === 'string' ? obj : obj.text;
+    const rebuttal = typeof obj === 'object' && obj.rebuttal ? 
+      `<div class="rebuttal">↩ <strong>Rebuttal:</strong> ${obj.rebuttal}</div>` : '';
+    return `<li>${objText}${rebuttal}</li>`;
+  }).join('');
+
+  div.innerHTML = `
+    <div class="premise-top">
+      ${!isPost ? `<span class="premise-num">P${number}</span>` : ''}
+      <div class="premise-text">${premise.text}</div>
+    </div>
+    <div class="confidence-row">
+      <div class="slider-wrap">
+        <input type="range" class="slider" min="0" max="100" value="50">
+      </div>
+      <div class="conf-display empty">—</div>
+    </div>
+    <div class="quick-btns">
+      <button class="quick-btn" data-v="0">0%</button>
+      <button class="quick-btn" data-v="25">25%</button>
+      <button class="quick-btn" data-v="50">50%</button>
+      <button class="quick-btn" data-v="75">75%</button>
+      <button class="quick-btn" data-v="100">100%</button>
+    </div>
+    <div class="evidence-objection-wrap">
+      <div class="ev-ob-tabs">
+        <button class="ev-ob-tab active" data-type="ev">✅ Evidence (${(premise.evidence || []).length})</button>
+        <button class="ev-ob-tab objection" data-type="obj">⚠️ Objections (${(premise.objections || []).length})</button>
+      </div>
+      <div class="ev-ob-content active">
+        <ul>${(premise.evidence || []).map(e => `<li>${e}</li>`).join('')}</ul>
+      </div>
+      <div class="ev-ob-content objection-content">
+        <ul>${objHtml}</ul>
+      </div>
+    </div>
+  `;
+
+  const slider = div.querySelector('.slider');
+  const display = div.querySelector('.conf-display');
+  const entry = {
+    p: premise,
+    slider,
+    display,
+    activated: false,
+    card: div
+  };
+
+  slider.oninput = () => {
+    entry.activated = true;
+    display.textContent = slider.value + '%';
+    display.classList.remove('empty');
+    div.classList.add('rated');
+    updateTrack(slider);
+    pushUndo();
+    recalcAll();
+  };
+
+  // Quick buttons
+  div.querySelectorAll('.quick-btn').forEach(btn => {
+    btn.onclick = () => {
+      slider.value = btn.dataset.v;
+      slider.oninput();
     };
-
-    // Quick buttons
-    premiseDiv.querySelectorAll('.quick-btn').forEach(btn => {
-      btn.onclick = () => {
-        slider.value = btn.dataset.v;
-        slider.oninput();
-      };
-    });
-
-    // Evidence/objection tabs
-    premiseDiv.querySelectorAll('.ev-ob-tab').forEach(tab => {
-      tab.onclick = () => {
-        premiseDiv.querySelectorAll('.ev-ob-tab').forEach(t => t.classList.remove('active'));
-        premiseDiv.querySelectorAll('.ev-ob-content').forEach(c => c.classList.remove('active'));
-        tab.classList.add('active');
-        premiseDiv.querySelectorAll('.ev-ob-content')[tab.dataset.type === 'ev' ? 0 : 1].classList.add('active');
-      };
-    });
   });
 
-  // Conclusion
-  const conclusion = document.createElement('div');
-  conclusion.className = `conclusion-box ${type === 'atheistic' ? 'atheistic' : ''}`;
-  conclusion.innerHTML = `
-    <div class="conclusion-text">${arg.conclusion}</div>
-    <div class="conclusion-value" id="conclusion-${arg.id}">—</div>
-  `;
-  content.appendChild(conclusion);
+  // Evidence/objection tabs
+  div.querySelectorAll('.ev-ob-tab').forEach(tab => {
+    tab.onclick = () => {
+      div.querySelectorAll('.ev-ob-tab').forEach(t => t.classList.remove('active'));
+      div.querySelectorAll('.ev-ob-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      div.querySelectorAll('.ev-ob-content')[tab.dataset.type === 'ev' ? 0 : 1].classList.add('active');
+    };
+  });
 
-  // Bayesian update display
-  const bayesUpdate = document.createElement('div');
-  bayesUpdate.className = 'bayesian-update';
-  bayesUpdate.id = `bayes-${arg.id}`;
-  bayesUpdate.innerHTML = 'Bayes Factor: 1.0x (no evidence yet)';
-  content.appendChild(bayesUpdate);
+  UI[arg.id].coreSliders.push(entry);
+  return div;
+}
+
+function buildPostPremiseCard(postPremise, arg) {
+  const div = document.createElement('div');
+  div.className = 'post-premise-card';
+
+  const entailments = ENTAILMENT_MAP[postPremise.propKey] || [];
+
+  div.innerHTML = `
+    <div class="premise-top">
+      <div class="premise-text">
+        ${postPremise.text}
+        <span class="prop-tag">${PROP_META[postPremise.propKey]?.label || postPremise.propKey}</span>
+        ${entailments.length ? `<span class="entailment-tag">⚡${entailments.length}</span>` : ''}
+      </div>
+    </div>
+    <div class="confidence-row">
+      <div class="slider-wrap">
+        <input type="range" class="slider" min="0" max="100" value="50">
+      </div>
+      <div class="conf-display empty">—</div>
+    </div>
+    <div class="quick-btns">
+      <button class="quick-btn" data-v="0">0%</button>
+      <button class="quick-btn" data-v="25">25%</button>
+      <button class="quick-btn" data-v="50">50%</button>
+      <button class="quick-btn" data-v="75">75%</button>
+      <button class="quick-btn" data-v="100">100%</button>
+    </div>
+    <div class="contribution-line" id="contrib-${arg.id}-${postPremise.id}">→ —</div>
+  `;
+
+  const slider = div.querySelector('.slider');
+  const display = div.querySelector('.conf-display');
+  const entry = {
+    pp: postPremise,
+    slider,
+    display,
+    activated: false,
+    card: div
+  };
+
+  slider.oninput = () => {
+    entry.activated = true;
+    display.textContent = slider.value + '%';
+    display.classList.remove('empty');
+    div.classList.add('rated');
+    updateTrack(slider);
+    pushUndo();
+    recalcAll();
+  };
+
+  div.querySelectorAll('.quick-btn').forEach(btn => {
+    btn.onclick = () => {
+      slider.value = btn.dataset.v;
+      slider.oninput();
+    };
+  });
+
+  UI[arg.id].postSliders = UI[arg.id].postSliders || [];
+  UI[arg.id].postSliders.push(entry);
+  return div;
 }
 
 function updateTrack(slider) {
@@ -582,90 +1487,485 @@ function updateTrack(slider) {
   slider.style.background = `linear-gradient(90deg, var(--accent) ${percent}%, var(--surface3) ${percent}%)`;
 }
 
-// ─── INITIALIZATION ─────────────────────────────────────────────────────────
-function init() {
-  const theisticContainer = document.getElementById('theisticContainer');
-  const atheisticContainer = document.getElementById('atheisticContainer');
-
-  // Count total evidence
-  state.totalEvidence = THEISTIC_ARGUMENTS.reduce((sum, arg) => sum + arg.premises.length, 0) + 
-                       ATHEISTIC_ARGUMENTS.reduce((sum, arg) => sum + arg.premises.length, 0);
-
+function buildUI() {
   // Build theistic arguments
-  THEISTIC_ARGUMENTS.forEach(arg => buildArgument(arg, 'theistic', theisticContainer));
+  THEISTIC_ARGUMENTS.forEach(arg => buildArgumentCard(arg, false));
 
-  // Build atheistic arguments  
-  ATHEISTIC_ARGUMENTS.forEach(arg => buildArgument(arg, 'atheistic', atheisticContainer));
+  // Build atheistic arguments
+  ATHEISTIC_ARGUMENTS.forEach(arg => buildArgumentCard(arg, true));
 
-  updateAllStats();
+  // Build property cards
+  const propContainer = document.getElementById('propContainer');
+  if (propContainer) {
+    Object.keys(PROP_META).forEach(propKey => {
+      const meta = PROP_META[propKey];
+      const div = document.createElement('div');
+      div.className = 'property-card';
+      div.innerHTML = `
+        <div class="prop-header">
+          <div class="prop-name">
+            <span class="icon">${meta.icon}</span>
+            ${meta.label}
+            <span style="color:var(--text-faint);font-weight:400;font-size:12px;margin-left:8px">${meta.desc}</span>
+          </div>
+          <div class="prop-combined" id="propcomb-${propKey}">—</div>
+        </div>
+        <div class="contributors-list" id="propcontrib-${propKey}"></div>
+      `;
+      propContainer.appendChild(div);
+    });
+  }
+
+  // Build combinator
+  const comboContainer = document.getElementById('comboChecks');
+  if (comboContainer) {
+    Object.keys(PROP_META).forEach(propKey => {
+      const meta = PROP_META[propKey];
+      const label = document.createElement('label');
+      label.className = 'combo-check';
+      label.innerHTML = `
+        <input type="checkbox" id="combo-${propKey}">
+        <div class="check-box">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="combo-check-label">${meta.icon} ${meta.label}</div>
+          <div class="combo-check-sub">${meta.desc}</div>
+        </div>
+      `;
+
+      const checkbox = label.querySelector('input');
+      checkbox.onchange = (e) => {
+        label.classList.toggle('checked', e.target.checked);
+        recalcAll();
+      };
+
+      comboContainer.appendChild(label);
+    });
+  }
+
+  // Build base select
+  const baseSelect = document.getElementById('baseSelect');
+  if (baseSelect) {
+    THEISTIC_ARGUMENTS.forEach(arg => {
+      const option = document.createElement('option');
+      option.value = arg.id;
+      option.textContent = `${arg.icon} ${arg.title}`;
+      baseSelect.appendChild(option);
+    });
+    baseSelect.onchange = () => recalcAll();
+  }
+
+  // Build philosopher presets
+  const philGrid = document.getElementById('philosopherGrid');
+  if (philGrid) {
+    PHILOSOPHERS.forEach(phil => {
+      const div = document.createElement('div');
+      div.className = 'philosopher-card';
+      div.innerHTML = `
+        <div class="philosopher-name">${phil.name}</div>
+        <div class="philosopher-stance">${phil.stance}</div>
+        <div class="philosopher-desc">${phil.desc}</div>
+      `;
+
+      div.onclick = () => {
+        if (!confirm(`Load ${phil.name}'s worldview?`)) return;
+
+        pushUndo();
+
+        // Apply preset values
+        if (phil.preset.theismPrior) {
+          BAYESIAN_STATE.theismPrior = phil.preset.theismPrior / 100;
+        }
+
+        [...THEISTIC_ARGUMENTS, ...ATHEISTIC_ARGUMENTS].forEach(arg => {
+          const ui = UI[arg.id];
+          if (!ui) return;
+
+          [...(ui.coreSliders || []), ...(ui.postSliders || [])].forEach(slider => {
+            const premiseId = slider.p?.id || slider.pp?.id;
+            if (premiseId && phil.preset[premiseId] !== undefined) {
+              const value = phil.preset[premiseId];
+              slider.slider.value = value;
+              slider.display.textContent = value + '%';
+              slider.display.classList.remove('empty');
+              slider.activated = true;
+              slider.card.classList.add('rated');
+              updateTrack(slider.slider);
+            }
+          });
+        });
+
+        recalcAll();
+        showToast(`Loaded ${phil.name}'s worldview`, 'success');
+      };
+
+      philGrid.appendChild(div);
+    });
+  }
 }
 
-// ─── UTILITY FUNCTIONS ──────────────────────────────────────────────────────
-function showToast(msg, type) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.className = 'toast visible' + (type ? ' ' + type : '');
-  clearTimeout(toast._timer);
-  toast._timer = setTimeout(() => toast.classList.remove('visible'), 3000);
+// ─── SEARCH & FILTERING ─────────────────────────────────────────────────────
+function filterArguments(query) {
+  const cards = document.querySelectorAll('#theisticContainer .arg-card');
+  cards.forEach(card => {
+    const visible = card.textContent.toLowerCase().includes(query.toLowerCase());
+    card.style.display = visible ? '' : 'none';
+  });
 }
 
-function toggleTheme() {
-  const current = document.documentElement.getAttribute('data-theme');
-  document.documentElement.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+function filterAtheisticArguments(query) {
+  const cards = document.querySelectorAll('#atheisticContainer .arg-card');
+  cards.forEach(card => {
+    const visible = card.textContent.toLowerCase().includes(query.toLowerCase());
+    card.style.display = visible ? '' : 'none';
+  });
 }
 
-function showModal(id) { document.getElementById(id).classList.add('visible'); }
-function hideModal(id) { document.getElementById(id).classList.remove('visible'); }
+// ─── UNDO/REDO SYSTEM ───────────────────────────────────────────────────────
+function pushUndo() {
+  undoStack.push(JSON.stringify(collectState()));
+  if (undoStack.length > 50) undoStack.shift();
+  redoStack = [];
+  updateUndoButtons();
+}
 
+function undo() {
+  if (!undoStack.length) return;
+  redoStack.push(JSON.stringify(collectState()));
+  applyState(JSON.parse(undoStack.pop()), true);
+  updateUndoButtons();
+  showToast('Undone', 'success');
+}
+
+function redo() {
+  if (!redoStack.length) return;
+  undoStack.push(JSON.stringify(collectState()));
+  applyState(JSON.parse(redoStack.pop()), true);
+  updateUndoButtons();
+  showToast('Redone', 'success');
+}
+
+function updateUndoButtons() {
+  const undoBtn = document.getElementById('undoBtn');
+  const redoBtn = document.getElementById('redoBtn');
+  if (undoBtn) undoBtn.disabled = !undoStack.length;
+  if (redoBtn) redoBtn.disabled = !redoStack.length;
+}
+
+function applyState(state, skipUndo) {
+  if (!skipUndo) pushUndo();
+  if (!state) return;
+
+  // Apply Bayesian state
+  if (state.bayesian) {
+    BAYESIAN_STATE.theismPrior = state.bayesian.theismPrior || 0.5;
+    BAYESIAN_STATE.evidenceWeight = state.bayesian.evidenceWeight || 1.0;
+  }
+
+  // Apply slider values
+  if (state.sliders) {
+    [...THEISTIC_ARGUMENTS, ...ATHEISTIC_ARGUMENTS].forEach(arg => {
+      const ui = UI[arg.id];
+      if (!ui) return;
+
+      [...(ui.coreSliders || []), ...(ui.postSliders || [])].forEach(slider => {
+        const premiseId = slider.p?.id || slider.pp?.id;
+        if (premiseId && state.sliders[premiseId]) {
+          const data = state.sliders[premiseId];
+          if (data.a) {
+            slider.slider.value = data.v;
+            slider.display.textContent = data.v + '%';
+            slider.display.classList.remove('empty');
+            slider.activated = true;
+            slider.card.classList.add('rated');
+            updateTrack(slider.slider);
+          } else {
+            slider.slider.value = 50;
+            slider.display.textContent = '—';
+            slider.display.classList.add('empty');
+            slider.activated = false;
+            slider.card.classList.remove('rated');
+            slider.slider.style.background = '';
+          }
+        }
+      });
+    });
+  }
+
+  // Apply combo selections
+  if (state.combos) {
+    Object.keys(state.combos).forEach(propKey => {
+      const checkbox = document.getElementById('combo-' + propKey);
+      if (checkbox) {
+        checkbox.checked = state.combos[propKey];
+        const label = checkbox.closest('.combo-check');
+        if (label) label.classList.toggle('checked', state.combos[propKey]);
+      }
+    });
+  }
+
+  // Apply base selection
+  if (state.base) {
+    const baseSelect = document.getElementById('baseSelect');
+    if (baseSelect) baseSelect.value = state.base;
+  }
+
+  recalcAll();
+}
+
+// ─── WORLDVIEW MANAGEMENT ───────────────────────────────────────────────────
+function saveWorldview() {
+  const name = prompt('Name this worldview:');
+  if (!name?.trim()) return;
+
+  worldviews[name.trim()] = {
+    state: collectState(),
+    date: new Date().toISOString()
+  };
+
+  refreshWvList();
+  showToast('Saved!', 'success');
+  showAchievement('Worldview Saved', 'Configuration preserved');
+}
+
+function refreshWvList() {
+  const container = document.getElementById('wvList');
+  if (!container) return;
+
+  const keys = Object.keys(worldviews);
+  if (!keys.length) {
+    container.innerHTML = '<p style="color:var(--text-faint);text-align:center;padding:20px">No saved worldviews this session</p>';
+    return;
+  }
+
+  container.innerHTML = keys.map(name => `
+    <div class="wv-item">
+      <div class="wv-item-info">
+        <div class="wv-item-name">${name}</div>
+        <div class="wv-item-date">${worldviews[name].date ? new Date(worldviews[name].date).toLocaleString() : '—'}</div>
+      </div>
+      <div class="wv-item-actions">
+        <button class="wv-btn primary" onclick="loadWv('${name.replace(/'/g, "\\'")}')">Load</button>
+        <button class="wv-btn" onclick="exportWv('${name.replace(/'/g, "\\'")}')">Export</button>
+        <button class="wv-btn danger" onclick="deleteWv('${name.replace(/'/g, "\\'")}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadWv(name) {
+  const worldview = worldviews[name];
+  if (worldview) {
+    applyState(worldview.state);
+    hideModal('worldviewModal');
+    showToast(`Loaded "${name}"`, 'success');
+  }
+}
+
+function deleteWv(name) {
+  if (!confirm(`Delete "${name}"?`)) return;
+  delete worldviews[name];
+  refreshWvList();
+  showToast('Deleted');
+}
+
+function exportWv(name) {
+  const worldview = worldviews[name];
+  if (!worldview) return;
+
+  const blob = new Blob([JSON.stringify({[name]: worldview}, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCurrent() {
+  const blob = new Blob([JSON.stringify({
+    _current: {
+      state: collectState(),
+      date: new Date().toISOString()
+    }
+  }, null, 2)], {type: 'application/json'});
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'bayesian-worldview-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Exported!', 'success');
+}
+
+function importWorldview(files) {
+  if (!files.length) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      let count = 0;
+
+      Object.keys(data).forEach(name => {
+        if (data[name]?.state) {
+          const finalName = name === '_current' ? 'Imported ' + new Date().toLocaleString() : name;
+          worldviews[finalName] = data[name];
+          count++;
+        }
+      });
+
+      refreshWvList();
+      showToast(`Imported ${count}`, 'success');
+    } catch (e) {
+      showToast('Invalid file', 'error');
+    }
+  };
+
+  reader.readAsText(files[0]);
+  document.getElementById('importFile').value = '';
+}
+
+// ─── SHARING ─────────────────────────────────────────────────────────────────
+function generateShareUrl() {
+  try {
+    const state = JSON.stringify(collectState());
+    const encoded = btoa(unescape(encodeURIComponent(state)));
+    document.getElementById('shareUrl').value = location.origin + location.pathname + '?s=' + encoded;
+  } catch (e) {
+    document.getElementById('shareUrl').value = '(Could not encode)';
+  }
+}
+
+function copyShareUrl() {
+  const urlField = document.getElementById('shareUrl');
+  urlField.select();
+  try {
+    document.execCommand('copy');
+    showToast('Copied!', 'success');
+  } catch (e) {
+    showToast('Select text and copy manually', 'error');
+  }
+}
+
+// ─── RESET & UTILITY ─────────────────────────────────────────────────────────
 function confirmReset() {
-  if (!confirm('Reset all ratings? This will clear all your evidence assessments.')) return;
+  if (!confirm('Reset all ratings and return to default priors?')) return;
 
-  state.theisticRatings = {};
-  state.atheisticRatings = {};
-  state.ratedEvidence = 0;
+  pushUndo();
 
-  // Reset UI
-  document.querySelectorAll('.slider').forEach(slider => {
-    slider.value = 50;
-    slider.style.background = '';
+  // Reset Bayesian state
+  BAYESIAN_STATE.theismPrior = 0.5;
+  BAYESIAN_STATE.evidenceWeight = 1.0;
+
+  // Reset all sliders
+  [...THEISTIC_ARGUMENTS, ...ATHEISTIC_ARGUMENTS].forEach(arg => {
+    const ui = UI[arg.id];
+    if (!ui) return;
+
+    [...(ui.coreSliders || []), ...(ui.postSliders || [])].forEach(slider => {
+      slider.slider.value = 50;
+      slider.display.textContent = '—';
+      slider.display.classList.add('empty');
+      slider.activated = false;
+      slider.card.classList.remove('rated');
+      slider.slider.style.background = '';
+    });
   });
 
-  document.querySelectorAll('.conf-display').forEach(display => {
-    display.textContent = '—';
-    display.classList.add('empty');
+  // Reset combos
+  Object.keys(PROP_META).forEach(propKey => {
+    const checkbox = document.getElementById('combo-' + propKey);
+    if (checkbox) {
+      checkbox.checked = false;
+      const label = checkbox.closest('.combo-check');
+      if (label) label.classList.remove('checked');
+    }
   });
 
-  document.querySelectorAll('.premise-card').forEach(card => {
-    card.classList.remove('rated');
-  });
+  const baseSelect = document.getElementById('baseSelect');
+  if (baseSelect) baseSelect.value = 'none';
 
-  updateAllStats();
+  recalcAll();
   showToast('Reset complete', 'success');
 }
 
-function filterArguments(query, type) {
-  const container = type === 'theistic' ? 'theisticContainer' : 'atheisticContainer';
-  const cards = document.querySelectorAll(`#${container} .arg-card`);
-  query = query.toLowerCase();
+function startGuidedTour() {
+  const theisticTab = document.querySelector('[data-tab="theistic"]');
+  if (theisticTab) theisticTab.click();
 
-  cards.forEach(card => {
-    const matches = card.textContent.toLowerCase().includes(query);
-    card.style.display = matches ? '' : 'none';
+  setTimeout(() => {
+    const firstCard = document.querySelector('#theisticContainer .arg-card');
+    if (firstCard) {
+      firstCard.classList.add('open');
+      firstCard.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }
+    showToast('Rate premises based on evidence, then explore atheistic arguments!');
+  }, 300);
+}
+
+// ─── TAB MANAGEMENT ─────────────────────────────────────────────────────────
+function initializeTabs() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.onclick = () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+
+      tab.classList.add('active');
+      const panelId = 'panel-' + tab.dataset.tab;
+      const panel = document.getElementById(panelId);
+      if (panel) panel.classList.add('active');
+    };
   });
 }
 
-// ─── TAB SWITCHING ──────────────────────────────────────────────────────────
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.onclick = () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
-  };
+// ─── KEYBOARD SHORTCUTS ─────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key === 'z') {
+    e.preventDefault();
+    undo();
+  }
+  if (e.ctrlKey && e.key === 'y') {
+    e.preventDefault();
+    redo();
+  }
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault();
+    saveWorldview();
+  }
+  if (e.key >= '1' && e.key <= '6') {
+    const tabs = document.querySelectorAll('.tab');
+    const index = parseInt(e.key) - 1;
+    if (tabs[index]) tabs[index].click();
+  }
 });
 
-// ─── INITIALIZE ─────────────────────────────────────────────────────────────
-init();
+// ─── INITIALIZATION ─────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  initializeTabs();
+  buildUI();
+  updateUndoButtons();
+  recalcAll();
+
+  // Check for shared state in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const sharedState = urlParams.get('s');
+  if (sharedState) {
+    try {
+      const decoded = decodeURIComponent(escape(atob(sharedState)));
+      const state = JSON.parse(decoded);
+      applyState(state, true);
+      showToast('Loaded shared worldview', 'success');
+    } catch (e) {
+      showToast('Invalid shared URL', 'error');
+    }
+  }
+});
 </script>
 </body>
 </html>
