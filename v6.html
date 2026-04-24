@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Bayesian Theism-Atheism Probability Engine</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#050a18"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔮</text></svg>"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#050a18;--surface:#0c1529;--surface2:#111d35;--surface3:#182642;
+--border:#1e3055;--text:#e2e8f0;--text-dim:#7e8fa6;--text-faint:#4a5975;
+--accent:#22d3ee;--accent2:#818cf8;--accent3:#a78bfa;
+--gold:#f59e0b;--emerald:#10b981;--rose:#f43f5e;--orange:#fb923c;
+--gradient:linear-gradient(135deg,#22d3ee,#818cf8);
+--glow:0 0 20px #22d3ee18,0 0 60px #22d3ee08;
+--radius:12px;--radius-lg:16px;
+--font:'Segoe UI',system-ui,-apple-system,sans-serif;
+--mono:'Cascadia Code','Fira Code','Consolas',monospace;
+--transition:0.3s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="light"]{
+--bg:#f8fafc;--surface:#ffffff;--surface2:#f1f5f9;--surface3:#e2e8f0;
+--border:#cbd5e1;--text:#1e293b;--text-dim:#475569;--text-faint:#94a3b8;
+--accent:#0ea5e9;--accent2:#6366f1;--accent3:#8b5cf6;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6;min-height:100vh;
+background-image:radial-gradient(ellipse 80% 50% at 50% -20%,#22d3ee08,transparent),radial-gradient(ellipse 60% 40% at 80% 100%,#818cf808,transparent);transition:background .3s,color .3s}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+::selection{background:var(--accent);color:var(--bg)}
+.app{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+.hero{text-align:center;padding:40px 20px 32px;position:relative}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:300px;height:300px;background:radial-gradient(circle,#22d3ee10,transparent 70%);pointer-events:none}
+.hero h1{font-size:clamp(24px,5vw,38px);font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;margin-bottom:8px}
+.hero p{color:var(--text-dim);font-size:15px;max-width:680px;margin:0 auto}
+.hero-actions{display:flex;justify-content:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+.hero-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:var(--transition);border:1px solid var(--border);background:var(--surface);color:var(--text-dim);font-family:var(--font)}
+.hero-btn:hover{border-color:var(--accent);color:var(--accent)}
+.hero-btn.primary{background:var(--gradient);color:var(--bg);border:none}
+.hero-btn.primary:hover{opacity:.9;transform:translateY(-1px)}
+.stats-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:24px 0}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;transition:var(--transition);position:relative;overflow:hidden;cursor:help}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gradient);opacity:0;transition:var(--transition)}
+.stat-card:hover::before{opacity:1}
+.stat-card:hover{border-color:#22d3ee44;box-shadow:var(--glow);transform:translateY(-2px)}
+.stat-label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-faint);margin-bottom:4px}
+.stat-value{font-size:22px;font-weight:800;font-family:var(--mono);color:var(--accent)}
+.stat-value.gold{color:var(--gold)}.stat-value.emerald{color:var(--emerald)}.stat-value.purple{color:var(--accent3)}.stat-value.rose{color:var(--rose)}
+.stat-tooltip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--surface3);padding:8px 12px;border-radius:6px;font-size:11px;color:var(--text);white-space:nowrap;opacity:0;pointer-events:none;transition:var(--transition);z-index:100;border:1px solid var(--border)}
+.stat-card:hover .stat-tooltip{opacity:1;bottom:calc(100% + 8px)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+.toolbar-left{display:flex;flex-wrap:wrap;gap:8px;flex:1}.toolbar-right{display:flex;gap:8px;align-items:center}
+.toolbar-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text-dim);font-size:13px;cursor:pointer;transition:var(--transition);font-family:var(--font);white-space:nowrap}
+.toolbar-btn:hover{background:var(--surface3);color:var(--text);border-color:var(--accent)}
+.toolbar-btn.danger{border-color:var(--rose);color:var(--rose)}.toolbar-btn.danger:hover{background:#f43f5e18}
+.theme-toggle{width:40px;height:40px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:var(--transition)}
+.theme-toggle:hover{border-color:var(--accent);background:var(--surface3)}
+.tabs{display:flex;gap:4px;padding:4px;background:var(--surface);border-radius:var(--radius);margin-bottom:24px;overflow-x:auto;border:1px solid var(--border)}
+.tab{flex:1;min-width:fit-content;padding:10px 16px;border-radius:8px;background:transparent;border:none;color:var(--text-dim);font-size:13px;font-weight:600;cursor:pointer;transition:var(--transition);white-space:nowrap;font-family:var(--font)}
+.tab:hover{color:var(--text);background:var(--surface2)}
+.tab.active{background:var(--surface3);color:var(--accent);box-shadow:0 0 12px #22d3ee12}
+.panel{display:none;animation:fadeIn .35s ease}.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.progress-bar{height:4px;background:var(--surface3);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.progress-fill{height:100%;background:var(--gradient);border-radius:2px;transition:width .5s ease}
+.search-bar{margin-bottom:16px;position:relative}
+.search-input{width:100%;padding:12px 16px 12px 44px;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border);color:var(--text);font-size:14px;font-family:var(--font);transition:var(--transition)}
+.search-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px #22d3ee18}
+.search-input::placeholder{color:var(--text-faint)}
+.search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text-faint);pointer-events:none}
+.arg-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:16px;overflow:hidden;transition:var(--transition)}
+.arg-card:hover{border-color:#22d3ee33}
+.arg-card.atheistic{border-left:3px solid var(--rose)}
+.arg-card.atheistic .arg-icon{background:#f43f5e22;color:var(--rose)}
+.arg-card.atheistic .badge-core{background:#f43f5e18;color:var(--rose)}
+.arg-header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;cursor:pointer;user-select:none;transition:var(--transition)}
+.arg-header:hover{background:var(--surface2)}
+.arg-title-group{display:flex;align-items:center;gap:12px;min-width:0}
+.arg-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.arg-title{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arg-subtitle{font-size:12px;color:var(--text-dim)}
+.arg-badge{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.badge{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;font-family:var(--mono);white-space:nowrap}
+.badge-core{background:#22d3ee18;color:var(--accent)}.badge-post{background:#818cf818;color:var(--accent2)}
+.chevron{width:20px;height:20px;color:var(--text-faint);transition:var(--transition);flex-shrink:0}
+.arg-card.open .chevron{transform:rotate(180deg)}
+.arg-body{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.4,0,.2,1)}
+.arg-card.open .arg-body{max-height:60000px}
+.arg-content{padding:0 20px 20px}
+.arg-progress{display:flex;align-items:center;gap:8px;padding:12px 20px;background:var(--surface2);border-top:1px solid var(--border)}
+.arg-progress-text{font-size:12px;color:var(--text-dim)}
+.arg-progress-bar{flex:1;height:6px;background:var(--surface3);border-radius:3px;overflow:hidden}
+.arg-progress-fill{height:100%;background:var(--gradient);border-radius:3px;transition:width .3s ease}
+.section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-faint);margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.premise-card{background:var(--surface2);border:1px solid transparent;border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;transition:var(--transition)}
+.premise-card:hover{border-color:var(--border)}.premise-card.rated{border-left:3px solid var(--emerald)}
+.premise-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.premise-text{flex:1;font-size:14px;line-height:1.5}
+.premise-num{font-size:11px;font-weight:700;color:var(--accent);background:#22d3ee12;padding:2px 8px;border-radius:4px;flex-shrink:0;font-family:var(--mono)}
+.confidence-row{display:flex;align-items:center;gap:12px;margin-top:10px}
+.slider-wrap{flex:1;position:relative;height:32px;display:flex;align-items:center}
+.slider{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:3px;background:var(--surface3);outline:none;cursor:pointer}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 10px #22d3ee44;transition:transform .15s}
+.slider::-webkit-slider-thumb:hover{transform:scale(1.2);box-shadow:0 0 16px #22d3ee66}
+.slider::-moz-range-thumb{width:20px;height:20px;border:none;border-radius:50%;background:var(--accent);cursor:pointer}
+.conf-display{min-width:56px;text-align:center;font-family:var(--mono);font-weight:700;font-size:15px;color:var(--accent);padding:4px 8px;border-radius:6px;background:var(--surface3);border:1px solid var(--border)}
+.conf-display.empty{color:var(--text-faint)}
+.quick-btns{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+.quick-btn{padding:4px 8px;border-radius:4px;background:var(--surface3);border:1px solid var(--border);color:var(--text-faint);font-size:10px;cursor:pointer;transition:var(--transition);font-family:var(--mono)}
+.quick-btn:hover{border-color:var(--accent);color:var(--accent)}
+.evidence-objection-wrap{margin-top:10px}
+.ev-ob-tabs{display:flex;gap:2px}
+.ev-ob-tab{padding:6px 12px;border-radius:6px 6px 0 0;background:var(--surface3);border:1px solid var(--border);border-bottom:none;color:var(--text-dim);font-size:11px;cursor:pointer;transition:var(--transition);font-family:var(--font)}
+.ev-ob-tab:hover{color:var(--text)}.ev-ob-tab.active{background:var(--surface2);color:var(--accent);border-color:var(--accent)}
+.ev-ob-tab.objection.active{color:var(--orange);border-color:var(--orange)}
+.ev-ob-content{display:none;border:1px solid var(--border);border-radius:0 var(--radius) var(--radius) var(--radius);background:var(--surface2);padding:12px 16px}
+.ev-ob-content.active{display:block}.ev-ob-content.objection-content{border-color:var(--orange)}
+.ev-ob-content ul{margin:0;padding:0 0 0 20px;font-size:13px;color:var(--text-dim);line-height:1.8}
+.ev-ob-content li{margin-bottom:8px}.ev-ob-content li::marker{color:var(--accent)}.ev-ob-content.objection-content li::marker{color:var(--orange)}
+.ev-ob-content .rebuttal{font-size:12px;color:var(--emerald);margin-top:4px;padding-left:8px;border-left:2px solid var(--emerald)}
+.conclusion-box{background:linear-gradient(135deg,#22d3ee08,#818cf808);border:1px solid #22d3ee22;border-radius:var(--radius);padding:14px 16px;margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.conclusion-box.post{border-color:#818cf822;background:linear-gradient(135deg,#818cf808,#a78bfa08)}
+.conclusion-box.atheistic{border-color:#f43f5e22;background:linear-gradient(135deg,#f43f5e08,#fb923c08)}
+.conclusion-text{font-size:14px;font-weight:600}
+.conclusion-value{font-family:var(--mono);font-weight:800;font-size:18px;color:var(--accent);white-space:nowrap}
+.conclusion-box.post .conclusion-value{color:var(--accent2)}
+.conclusion-box.atheistic .conclusion-value{color:var(--rose)}
+.post-premise-card{background:var(--surface2);border:1px solid transparent;border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;transition:var(--transition);border-left:3px solid var(--accent2)}
+.post-premise-card:hover{border-color:var(--border);border-left-color:var(--accent2)}.post-premise-card.rated{border-left-color:var(--emerald)}
+.post-premise-card.atheistic{border-left-color:var(--rose)}
+.prop-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;padding:2px 8px;border-radius:4px;background:#818cf818;color:var(--accent2);margin-left:8px}
+.prop-tag.atheistic{background:#f43f5e18;color:var(--rose)}
+.contribution-line{font-size:12px;color:var(--text-dim);margin-top:6px;font-family:var(--mono)}
+.entailment-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;background:#a78bfa18;color:var(--accent3);margin-left:6px;letter-spacing:0.5px}
+.property-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;transition:var(--transition)}
+.property-card:hover{border-color:#22d3ee33}
+.prop-header{display:flex;align-items:center;justify-content:space-between}
+.prop-name{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}.prop-name .icon{font-size:18px}
+.prop-combined{font-family:var(--mono);font-weight:800;font-size:18px;color:var(--emerald)}
+.contributors-list{margin-top:10px}
+.contributor-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)}
+.contributor-row:last-child{border:none}.contributor-arg{color:var(--text-dim)}.contributor-val{font-family:var(--mono);color:var(--accent)}
+.contributor-negative{color:var(--rose);font-style:italic}
+.contributor-entailed{color:var(--accent3);font-style:italic}
+.radar-container{margin:20px 0;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);text-align:center}
+.radar-title{font-weight:700;font-size:16px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px}
+.radar-svg{max-width:100%;height:auto}
+.combo-builder{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-top:20px}
+.combo-title{font-weight:700;font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.combo-checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:16px}
+.combo-check{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:var(--transition);user-select:none}
+.combo-check:hover{border-color:var(--accent);background:var(--surface3)}.combo-check.checked{border-color:var(--accent);background:#22d3ee0a}
+.combo-check input{display:none}
+.check-box{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0}
+.combo-check.checked .check-box{background:var(--accent);border-color:var(--accent)}
+.check-box svg{width:12px;height:12px;color:var(--bg);opacity:0;transition:var(--transition)}.combo-check.checked .check-box svg{opacity:1}
+.combo-check-label{font-size:13px;font-weight:600}.combo-check-sub{font-size:11px;color:var(--text-dim)}
+.combo-result-box{background:linear-gradient(135deg,#f59e0b08,#22d3ee08);border:1px solid #f59e0b33;border-radius:var(--radius);padding:20px;text-align:center}
+.combo-result-label{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-faint);margin-bottom:4px}
+.combo-result-value{font-family:var(--mono);font-weight:900;font-size:32px;background:linear-gradient(135deg,var(--gold),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.combo-result-note{font-size:12px;color:var(--text-faint);margin-top:8px}
+.anchored-result{margin-top:12px;padding:12px 16px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border);font-size:13px;color:var(--text-dim)}
+.anchored-result .val{color:var(--accent2);font-family:var(--mono);font-weight:700}
+.styled-select{padding:8px 12px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font);font-size:13px;cursor:pointer;transition:var(--transition)}
+.styled-select:hover{border-color:var(--accent)}.styled-select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px #22d3ee18}
+.base-select-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.base-select-row label{font-size:13px;color:var(--text-dim)}
+.wv-analysis{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-top:24px;position:relative;overflow:hidden}
+.wv-analysis::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gradient);opacity:.6}
+.wv-analysis-title{font-weight:800;font-size:18px;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+.wv-analysis-subtitle{font-size:13px;color:var(--text-dim);margin-bottom:20px}
+.wv-verdict{text-align:center;padding:24px 16px;border-radius:var(--radius);margin-bottom:20px}
+.wv-verdict.theist{background:linear-gradient(135deg,#22d3ee06,#818cf808,#a78bfa06);border:1px solid #818cf833}
+.wv-verdict.atheist{background:linear-gradient(135deg,#f43f5e06,#f59e0b06);border:1px solid #f43f5e33}
+.wv-verdict.incomplete{background:var(--surface2);border:1px solid var(--border)}
+.wv-verdict-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-faint);margin-bottom:6px}
+.wv-verdict-name{font-size:clamp(20px,4vw,28px);font-weight:900;margin-bottom:4px;letter-spacing:-0.3px}
+.wv-verdict.theist .wv-verdict-name{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.wv-verdict.atheist .wv-verdict-name{color:var(--rose)}.wv-verdict.incomplete .wv-verdict-name{color:var(--text-faint)}
+.wv-verdict-prob{font-family:var(--mono);font-size:13px;color:var(--text-dim)}
+.wv-tier-grid{display:grid;gap:10px;margin-bottom:16px}
+.wv-tier{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:var(--radius);background:var(--surface2);border:1px solid var(--border);transition:var(--transition)}
+.wv-tier.active{border-color:var(--accent);box-shadow:0 0 16px #22d3ee10}.wv-tier.active.is-atheist{border-color:var(--rose);box-shadow:0 0 16px #f43f5e10}
+.wv-tier-left{display:flex;align-items:center;gap:10px}.wv-tier-icon{font-size:20px;width:32px;text-align:center}
+.wv-tier-name{font-weight:700;font-size:14px}.wv-tier-right{text-align:right}
+.wv-tier-prob{font-family:var(--mono);font-weight:700;font-size:15px;color:var(--accent)}
+.wv-tier.active .wv-tier-prob{color:var(--emerald)}.wv-tier.active.is-atheist .wv-tier-prob{color:var(--rose)}
+.wv-tier-strength{font-size:11px;color:var(--text-dim);font-weight:600}
+.wv-tier.below .wv-tier-prob{color:var(--text-faint)}.wv-tier.below{opacity:.5}
+.wv-strength-bar{height:8px;border-radius:4px;background:var(--surface3);margin-top:6px;overflow:hidden}
+.wv-strength-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.wv-legend{margin-top:16px;padding:14px;border-radius:var(--radius);background:var(--surface2);border-left:3px solid var(--accent2);font-size:12px;color:var(--text-dim);line-height:1.8}
+.wv-legend strong{color:var(--text)}
+.sensitivity-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px}
+.sensitivity-title{font-weight:700;font-size:16px;margin-bottom:4px}
+.sensitivity-subtitle{font-size:12px;color:var(--text-dim);margin-bottom:16px}
+.sensitivity-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border-radius:var(--radius);margin-bottom:8px;border-left:3px solid var(--accent);gap:12px}
+.sensitivity-item.high{border-left-color:var(--gold)}.sensitivity-item.very-high{border-left-color:var(--rose)}
+.sensitivity-premise{flex:1;font-size:13px;min-width:0}
+.sensitivity-premise-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sensitivity-premise-arg{font-size:11px;color:var(--text-faint)}
+.sensitivity-impact{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--accent);white-space:nowrap}
+.sensitivity-item.high .sensitivity-impact{color:var(--gold)}.sensitivity-item.very-high .sensitivity-impact{color:var(--rose)}
+.philosopher-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px}
+.philosopher-title{font-weight:700;font-size:16px;margin-bottom:16px}
+.philosopher-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.philosopher-card{padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:var(--transition)}
+.philosopher-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--glow)}
+.philosopher-name{font-weight:700;font-size:14px;margin-bottom:4px}
+.philosopher-stance{font-size:12px;color:var(--accent);margin-bottom:8px}
+.philosopher-desc{font-size:11px;color:var(--text-faint);line-height:1.5}
+.how-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px}
+.how-card h2{font-size:18px;margin-bottom:16px;color:var(--accent)}
+.how-steps{counter-reset:step}
+.how-step{counter-increment:step;padding:12px 16px 12px 52px;position:relative;margin-bottom:8px;border-radius:var(--radius);background:var(--surface2)}
+.how-step::before{content:counter(step);position:absolute;left:14px;top:12px;width:28px;height:28px;border-radius:8px;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--bg)}
+.how-step h3{font-size:14px;font-weight:700;margin-bottom:2px}.how-step p{font-size:13px;color:var(--text-dim)}
+.math-note{margin-top:16px;padding:14px;border-radius:var(--radius);background:var(--surface2);border-left:3px solid var(--accent);font-size:13px;color:var(--text-dim);line-height:1.7}
+.math-note code{font-family:var(--mono);color:var(--accent);font-size:12px;background:var(--surface3);padding:1px 5px;border-radius:3px}
+.glossary{margin-top:24px}.glossary-title{font-size:16px;font-weight:700;margin-bottom:12px;color:var(--accent2)}.glossary-grid{display:grid;gap:8px}
+.glossary-item{padding:12px 16px;background:var(--surface2);border-radius:var(--radius);border:1px solid var(--border)}
+.glossary-term{font-weight:700;font-size:14px;color:var(--accent);margin-bottom:4px}.glossary-def{font-size:13px;color:var(--text-dim)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal-overlay.visible{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);max-width:600px;width:100%;max-height:80vh;overflow:hidden;animation:fadeIn .3s ease}
+.modal-header{padding:20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-weight:700;font-size:18px}
+.modal-close{width:32px;height:32px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--text-dim);transition:var(--transition)}
+.modal-close:hover{border-color:var(--rose);color:var(--rose)}
+.modal-body{padding:20px;overflow-y:auto;max-height:calc(80vh - 80px)}
+.wv-list{margin-top:16px}
+.wv-item{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;gap:12px;flex-wrap:wrap}
+.wv-item-info{flex:1;min-width:150px}.wv-item-name{font-weight:700;font-size:14px}.wv-item-date{font-size:11px;color:var(--text-faint)}
+.wv-item-actions{display:flex;gap:6px;flex-wrap:wrap}
+.wv-btn{padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;transition:var(--transition);border:1px solid var(--border);background:var(--surface3);color:var(--text-dim);font-family:var(--font)}
+.wv-btn:hover{border-color:var(--accent);color:var(--text)}.wv-btn.primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}.wv-btn.primary:hover{opacity:.85}
+.wv-btn.danger{border-color:var(--rose);color:var(--rose)}.wv-btn.danger:hover{background:#f43f5e18}
+.share-box{margin-top:16px;padding:16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius)}
+.share-title{font-size:13px;font-weight:600;margin-bottom:8px}
+.share-url{width:100%;padding:10px 12px;border-radius:8px;background:var(--surface3);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;word-break:break-all;resize:none}
+.share-url:focus{outline:none;border-color:var(--accent)}
+.share-btns{display:flex;gap:8px;margin-top:10px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);padding:12px 24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;color:var(--text);box-shadow:0 10px 40px rgba(0,0,0,.3);z-index:2000;transition:transform .3s ease,opacity .3s ease;opacity:0;pointer-events:none}
+.toast.visible{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.success{border-color:var(--emerald);color:var(--emerald)}.toast.error{border-color:var(--rose);color:var(--rose)}
+.achievement{position:fixed;top:20px;right:20px;padding:16px 20px;background:var(--surface);border:1px solid var(--gold);border-radius:var(--radius);display:flex;align-items:center;gap:12px;z-index:2000;animation:slideIn .4s ease;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.achievement-icon{font-size:28px}.achievement-title{font-weight:700;color:var(--gold);margin-bottom:2px}.achievement-text{font-size:13px}
+.undo-redo{display:flex;gap:4px}
+.undo-btn{width:36px;height:36px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:16px;transition:var(--transition)}
+.undo-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}.undo-btn:disabled{opacity:.3;cursor:not-allowed}
+.quote-block{background:var(--surface3);border-left:3px solid var(--accent2);padding:10px 14px;margin:8px 0;border-radius:0 6px 6px 0;font-size:12px;color:var(--text-dim);font-style:italic;line-height:1.7}
+.quote-block cite{font-style:normal;font-weight:600;color:var(--accent2);display:block;margin-top:4px;font-size:11px}
+
+/* ─── Rebuttal highlight ─────────────────────────────────────────────────── */
+.ev-ob-content .rebuttal{
+  display:block;font-size:12px;color:var(--emerald);
+  margin-top:5px;padding:6px 10px;
+  border-left:2px solid var(--emerald);
+  background:#10b98108;border-radius:0 4px 4px 0;
+  font-style:normal;
+}
+/* ─── Completed arg card ─────────────────────────────────────────────────── */
+.arg-card.completed{border-left:3px solid var(--emerald)!important}
+/* ─── Evidence count on tabs ─────────────────────────────────────────────── */
+.ev-ob-tab .count{
+  display:inline-block;font-size:10px;padding:0 5px;
+  border-radius:8px;background:var(--surface3);
+  margin-left:4px;font-family:var(--mono);
+}
+
+@media(max-width:640px){
+.app{padding:12px 10px 40px}.hero{padding:24px 12px 20px}.hero-actions{flex-direction:column;align-items:center}
+.arg-header{padding:14px}.arg-content{padding:0 14px 14px}
+.combo-checks{grid-template-columns:1fr}.stats-bar{grid-template-columns:repeat(2,1fr)}
+.tab{padding:8px 10px;font-size:12px}.toolbar{flex-direction:column}
+.toolbar-left,.toolbar-right{width:100%;justify-content:center}
+.philosopher-grid{grid-template-columns:1fr}.modal{margin:10px;max-height:90vh}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="hero">
+<h1>🔮 Bayesian Theism-Atheism Probability Engine</h1>
+<p>A complete Bayesian framework for evaluating arguments for and against theism. Rate your confidence in premises, explore evidence and objections, and watch your worldview emerge through rigorous probabilistic reasoning.</p>
+<div class="hero-actions">
+<button class="hero-btn primary" onclick="startGuidedTour()">🚀 Guided Tour</button>
+<button class="hero-btn" onclick="document.getElementById('panel-theistic').scrollIntoView({behavior:'smooth'})">⚡ Theistic Arguments</button>
+<button class="hero-btn" onclick="document.getElementById('panel-atheistic').scrollIntoView({behavior:'smooth'})">🔥 Atheistic Arguments</button>
+</div>
+</div>
+
+<div class="stats-bar">
+<div class="stat-card"><div class="stat-tooltip">Net Bayesian evidence across all arguments</div><div class="stat-label">Evidence Balance</div><div class="stat-value" id="statBalance">—</div></div>
+<div class="stat-card"><div class="stat-tooltip">Final probability accounting for all evidence</div><div class="stat-label">Net Theism</div><div class="stat-value gold" id="statNetTheism">—</div></div>
+<div class="stat-card"><div class="stat-tooltip">Divine properties with evidence</div><div class="stat-label">Properties Assessed</div><div class="stat-value emerald" id="statPropsAssessed">0 / 0</div></div>
+<div class="stat-card"><div class="stat-tooltip">Product of all properties (floor = Christian God)</div><div class="stat-label">Composite Theism</div><div class="stat-value purple" id="statComposite">—</div></div>
+<div class="stat-card"><div class="stat-tooltip">Arguments with all premises rated</div><div class="stat-label">Arguments Rated</div><div class="stat-value rose" id="statArgsRated">0 / 0</div></div>
+</div>
+
+<div class="toolbar">
+<div class="toolbar-left">
+<button class="toolbar-btn danger" onclick="confirmReset()">🔄 Reset All</button>
+<button class="toolbar-btn" onclick="showModal('worldviewModal')">💾 Worldviews</button>
+<button class="toolbar-btn" onclick="showModal('shareModal')">🔗 Share URL</button>
+<button class="toolbar-btn" onclick="showModal('priorModal')">⚙️ Bayesian Priors</button>
+<div class="undo-redo">
+<button class="undo-btn" id="undoBtn" onclick="undo()" disabled title="Undo (Ctrl+Z)">↩</button>
+<button class="undo-btn" id="redoBtn" onclick="redo()" disabled title="Redo (Ctrl+Y)">↪</button>
+</div>
+</div>
+<div class="toolbar-right"><button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌓</button></div>
+</div>
+
+<div class="progress-bar"><div class="progress-fill" id="globalProgress" style="width:0%"></div></div>
+
+<div class="tabs" id="tabBar">
+<button class="tab active" data-tab="theistic">⚡ Theistic</button>
+<button class="tab" data-tab="atheistic">🔥 Atheistic</button>
+<button class="tab" data-tab="properties">🔗 Properties</button>
+<button class="tab" data-tab="combinator">✨ Combinator</button>
+<button class="tab" data-tab="sensitivity">📊 Analysis</button>
+<button class="tab" data-tab="howto">📘 Guide</button>
+</div>
+
+<div class="panel active" id="panel-theistic">
+<div class="search-bar">
+<svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+<input type="text" class="search-input" id="argSearch" placeholder="Search arguments, premises, evidence..." oninput="filterArguments(this.value)">
+</div>
+<div id="theisticContainer"></div>
+</div>
+
+<div class="panel" id="panel-atheistic">
+<div class="search-bar">
+<svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+<input type="text" class="search-input" id="atheisticSearch" placeholder="Search atheistic arguments..." oninput="filterAtheisticArguments(this.value)">
+</div>
+<div id="atheisticContainer"></div>
+</div>
+
+<div class="panel" id="panel-properties">
+<div class="radar-container">
+<div class="radar-title">📡 Property Radar</div>
+<svg id="radarChart" class="radar-svg" viewBox="0 0 400 400" width="400" height="400"></svg>
+<p style="font-size:12px;color:var(--text-faint);margin-top:12px">Visual representation of evidence strength for each divine property</p>
+</div>
+<div id="propContainer"></div>
+</div>
+
+<div class="panel" id="panel-combinator">
+<div class="combo-builder">
+<div class="combo-title">✨ Property Combinator</div>
+<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Select which divine properties to include. The result shows the probability of a being possessing <em>all</em> selected properties. Note: selecting "Christian God" is a floor — adding more properties cannot lower it below that value.</p>
+<div class="combo-checks" id="comboChecks"></div>
+<div class="base-select-row">
+<label>Anchor to argument:</label>
+<select class="styled-select" id="baseSelect"><option value="none">— Global aggregation —</option></select>
+</div>
+<div class="combo-result-box">
+<div class="combo-result-label">Combined Probability</div>
+<div class="combo-result-value" id="comboResult">—</div>
+<div class="combo-result-note">Bayesian aggregation with proper atheistic discounting</div>
+</div>
+<div class="anchored-result" id="anchoredResult" style="display:none"></div>
+<div id="comboBreakdown" style="margin-top:16px"></div>
+</div>
+<div id="worldviewAnalysis"></div>
+</div>
+
+<div class="panel" id="panel-sensitivity">
+<div class="sensitivity-panel">
+<div class="sensitivity-title">📊 Sensitivity Analysis</div>
+<div class="sensitivity-subtitle">Which premises impact your worldview most? Ranked by effect of a 10% increase on Net Theism.</div>
+<div id="sensitivityList"></div>
+</div>
+<div class="philosopher-panel">
+<div class="philosopher-title">👤 Philosopher Presets</div>
+<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Load configurations based on how notable thinkers might rate these arguments.</p>
+<div class="philosopher-grid" id="philosopherGrid"></div>
+</div>
+</div>
+
+<div class="panel" id="panel-howto">
+<div class="how-card">
+<h2>How This Bayesian System Works</h2>
+<div class="how-steps">
+<div class="how-step"><h3>Set Your Prior</h3><p>Start with your baseline belief in theism (default 50%). This represents your confidence before considering any specific arguments.</p></div>
+<div class="how-step"><h3>Rate Theistic Arguments</h3><p>For each premise, rate your confidence (0-100%). The core conclusion equals the product of premise probabilities, then gets multiplied by your prior to update your belief.</p></div>
+<div class="how-step"><h3>Rate Atheistic Arguments</h3><p>These work in reverse - strong atheistic arguments reduce your theism probability. Each atheistic conclusion is subtracted from theistic properties.</p></div>
+<div class="how-step"><h3>Bayesian Updates</h3><p>Your posterior after each argument becomes the prior for the next. Evidence accumulates properly without double-counting through rigorous Bayesian conditioning.</p></div>
+<div class="how-step"><h3>Property Synthesis</h3><p>Multiple arguments supporting the same property combine via noisy-OR. Atheistic arguments provide negative evidence that reduces property probabilities.</p></div>
+<div class="how-step"><h3>Final Worldview</h3><p>The system computes your final theism probability accounting for all evidence. The analysis shows where you land on the belief spectrum.</p></div>
+</div>
+<div class="math-note">
+<strong>Bayesian Mathematics:</strong><br>
+• Prior: <code>P(God)</code> - your starting belief<br>
+• Likelihood: <code>P(Evidence|God) / P(Evidence|¬God)</code> - how much the evidence favors theism<br>
+• Posterior: <code>P(God|Evidence) = Prior × Likelihood / Normalization</code><br>
+• Atheistic evidence: <code>P(Property) × (1 - AtheisticStrength)</code><br>
+• Final synthesis: <code>NoiseOR(PositiveEvidence) × Product(AtheisticDiscounts)</code>
+</div>
+<div class="glossary">
+<div class="glossary-title">📖 Bayesian Glossary</div>
+<div class="glossary-grid">
+<div class="glossary-item"><div class="glossary-term">Bayes' Theorem</div><div class="glossary-def">P(H|E) = P(E|H)P(H)/P(E). The fundamental rule for updating beliefs in light of evidence. Posterior = Likelihood × Prior / Evidence probability.</div></div>
+<div class="glossary-item"><div class="glossary-term">Prior Probability</div><div class="glossary-def">Your initial belief before considering specific evidence. Represents background knowledge, intuition, and default assumptions about the hypothesis.</div></div>
+<div class="glossary-item"><div class="glossary-term">Likelihood Ratio</div><div class="glossary-def">P(E|H)/P(E|¬H). How much more probable the evidence is under the hypothesis than under its negation. Values >1 favor the hypothesis.</div></div>
+<div class="glossary-item"><div class="glossary-term">Posterior Probability</div><div class="glossary-def">Your updated belief after considering the evidence. This becomes the new prior for evaluating additional evidence in sequence.</div></div>
+<div class="glossary-item"><div class="glossary-term">Noisy-OR</div><div class="glossary-def">Probabilistic combination assuming independent evidence sources: P(effect) = 1 − ∏(1 − P(causeᵢ)). Prevents double-counting while aggregating evidence.</div></div>
+<div class="glossary-item"><div class="glossary-term">Evidence Strength</div><div class="glossary-def">How decisively evidence bears on the hypothesis. Strong evidence has high likelihood ratios; weak evidence has ratios near 1.0.</div></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Modals -->
+<div class="modal-overlay" id="worldviewModal">
+<div class="modal">
+<div class="modal-header"><div class="modal-title">💾 Worldview Manager</div><button class="modal-close" onclick="hideModal('worldviewModal')">×</button></div>
+<div class="modal-body">
+<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Save, load, or export your configurations. Saves persist for this session.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+<button class="toolbar-btn primary" onclick="saveWorldview()">💾 Save Current</button>
+<button class="toolbar-btn" onclick="exportCurrent()">📤 Export JSON</button>
+<label class="toolbar-btn" style="cursor:pointer">📥 Import<input type="file" id="importFile" accept=".json" style="display:none" onchange="importWorldview(this.files)"></label>
+</div>
+<div class="wv-list" id="wvList"></div>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="shareModal">
+<div class="modal">
+<div class="modal-header"><div class="modal-title">🔗 Share Your Worldview</div><button class="modal-close" onclick="hideModal('shareModal')">×</button></div>
+<div class="modal-body">
+<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Copy this URL to share your exact configuration.</p>
+<div class="share-box">
+<div class="share-title">Shareable URL</div>
+<textarea class="share-url" id="shareUrl" readonly rows="4" style="resize:none;font-size:10px"></textarea>
+<div class="share-btns">
+<button class="toolbar-btn primary" onclick="copyShareUrl()">📋 Copy</button>
+<button class="toolbar-btn" onclick="generateShareUrl()">🔄 Regenerate</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="priorModal">
+<div class="modal">
+<div class="modal-header"><div class="modal-title">⚙️ Bayesian Priors</div><button class="modal-close" onclick="hideModal('priorModal')">×</button></div>
+<div class="modal-body">
+<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px">Set your baseline beliefs before considering specific arguments. These priors represent your starting point for Bayesian updating.</p>
+<div style="margin-bottom:16px">
+<label style="display:block;margin-bottom:8px;font-weight:600">Base Theism Prior (%)</label>
+<input type="range" id="theismPrior" min="0" max="100" value="50" style="width:100%" oninput="updatePriorDisplay()">
+<div style="text-align:center;margin-top:4px;font-family:var(--mono);color:var(--accent)" id="theismPriorDisplay">50%</div>
+<p style="font-size:11px;color:var(--text-faint);margin-top:4px">Your baseline belief that God exists, before considering any specific arguments</p>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;margin-bottom:8px;font-weight:600">Evidence Weight Factor</label>
+<input type="range" id="evidenceWeight" min="0.1" max="2.0" step="0.1" value="1.0" style="width:100%" oninput="updateWeightDisplay()">
+<div style="text-align:center;margin-top:4px;font-family:var(--mono);color:var(--accent)" id="evidenceWeightDisplay">1.0×</div>
+<p style="font-size:11px;color:var(--text-faint);margin-top:4px">How strongly evidence updates your beliefs (1.0 = normal, <1.0 = conservative, >1.0 = aggressive)</p>
+</div>
+<div style="text-align:center">
+<button class="toolbar-btn primary" onclick="applyPriors()">Apply Settings</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="achievementContainer"></div>
+
+<script src="arguments.js"></script>
+<script>
+// ─── BAYESIAN CORE SYSTEM ────────────────────────────────────────────────────
+let BAYESIAN_STATE = {
+  theismPrior: 0.5,
+  evidenceWeight: 1.0,
+  propertyPosteriors: {}
+};
+
+// ─── STATE MANAGEMENT ───────────────────────────────────────────────────────
+const UI={};
+let undoStack=[],redoStack=[];
+const worldviews={};
+let themeState='dark';
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function fmt(v){return v===null?'—':(v*100).toFixed(1)+'%'}
+function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast visible'+(type?' '+type:'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('visible'),3000)}
+function showAchievement(title,text){const c=document.getElementById('achievementContainer');const d=document.createElement('div');d.className='achievement';d.innerHTML=`<div class="achievement-icon">🏆</div><div class="achievement-text"><div class="achievement-title">${title}</div>${text}</div>`;c.appendChild(d);setTimeout(()=>d.remove(),5000)}
+function toggleTheme(){themeState=themeState==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',themeState)}
+function showModal(id){document.getElementById(id).classList.add('visible');if(id==='worldviewModal')refreshWvList();if(id==='shareModal')generateShareUrl();if(id==='priorModal'){document.getElementById('theismPrior').value=BAYESIAN_STATE.theismPrior*100;document.getElementById('evidenceWeight').value=BAYESIAN_STATE.evidenceWeight;updatePriorDisplay();updateWeightDisplay()}}
+function hideModal(id){document.getElementById(id).classList.remove('visible')}
+
+// ─── BAYESIAN FUNCTIONS ─────────────────────────────────────────────────────
+function updatePriorDisplay(){
+  const val = document.getElementById('theismPrior').value;
+  document.getElementById('theismPriorDisplay').textContent = val + '%';
+}
+
+function updateWeightDisplay(){
+  const val = parseFloat(document.getElementById('evidenceWeight').value);
+  document.getElementById('evidenceWeightDisplay').textContent = val.toFixed(1) + '×';
+}
+
+function applyPriors(){
+  BAYESIAN_STATE.theismPrior = parseInt(document.getElementById('theismPrior').value) / 100;
+  BAYESIAN_STATE.evidenceWeight = parseFloat(document.getElementById('evidenceWeight').value);
+  hideModal('priorModal');
+  recalcAll();
+  showToast('Bayesian priors updated', 'success');
+}
+
+function bayesianUpdate(prior, likelihood, evidenceWeight = 1.0) {
+  // Apply evidence weighting to likelihood
+  const weightedLR = Math.pow(likelihood, evidenceWeight);
+
+  // Bayes' theorem: P(H|E) = P(E|H)P(H) / [P(E|H)P(H) + P(E|¬H)P(¬H)]
+  const numerator = weightedLR * prior;
+  const denominator = weightedLR * prior + (1 - prior);
+
+  return denominator === 0 ? prior : numerator / denominator;
+}
+
+function computeLikelihoodRatio(argumentStrength) {
+  // Convert argument strength (0-1) to likelihood ratio
+  // Strong evidence should have high likelihood ratios
+  const strength = Math.max(0.01, Math.min(0.99, argumentStrength));
+  return strength / (1 - strength);
+}
+
+function noiseOr(probabilities) {
+  return 1 - probabilities.reduce((acc, p) => acc * (1 - p), 1);
+}
+
+// ─── STATE COLLECTION ───────────────────────────────────────────────────────
+function collectState(){
+  const s = {
+    sliders: {},
+    combos: {},
+    base: 'none',
+    bayesian: {
+      theismPrior: BAYESIAN_STATE.theismPrior,
+      evidenceWeight: BAYESIAN_STATE.evidenceWeight
+    }
+  };
+
+  // Collect theistic sliders
+  THEISTIC_ARGUMENTS.forEach(arg => {
+    const u = UI[arg.id];
+    if (!u) return;
+    u.coreSliders?.forEach(x => {
+      s.sliders[x.p.id] = {v: +x.slider.value, a: x.activated};
+    });
+    u.postSliders?.forEach(x => {
+      s.sliders[x.pp.id] = {v: +x.slider.value, a: x.activated};
+    });
+  });
+
+  // Collect atheistic sliders
+  ATHEISTIC_ARGUMENTS.forEach(arg => {
+    const u = UI[arg.id];
+    if (!u) return;
+    u.coreSliders?.forEach(x => {
+      s.sliders[x.p.id] = {v: +x.slider.value, a: x.activated};
+    });
+  });
+
+  Object.keys(PROP_META).forEach(k => {
+    const c = document.getElementById('combo-' + k);
+    if (c) s.combos[k] = c.checked;
+  });
+
+  s.base = document.getElementById('baseSelect').value;
+  return s;
+}
+
+// ─── PROBABILITY CALCULATIONS ───────────────────────────────────────────────
+function getTheisticCoreProb(argId) {
+  const u = UI[argId];
+  if (!u?.coreSliders) return null;
+
+  const values = u.coreSliders.map(x => x.activated ? +x.slider.value : null);
+  if (values.some(x => x === null)) return null;
+
+  return values.reduce((a, b) => a * (b / 100), 1);
+}
+
+function getAtheisticCoreProb(argId) {
+  const u = UI[argId];
+  if (!u?.coreSliders) return null;
+
+  const values = u.coreSliders.map(x => x.activated ? +x.slider.value : null);
+  if (values.some(x => x === null)) return null;
+
+  return values.reduce((a, b) => a * (b / 100), 1);
+}
+
+function getTheisticContrib(argId, postId) {
+  const core = getTheisticCoreProb(argId);
+  if (core === null) return null;
+
+  const u = UI[argId];
+  const s = u.postSliders?.find(x => x.pp.id === postId);
+  if (!s?.activated) return null;
+
+  return core * (+s.slider.value / 100);
+}
+
+function getCombinedProperty(propKey) {
+  // Get positive evidence from theistic arguments
+  const positiveContribs = [];
+
+  THEISTIC_ARGUMENTS.forEach(arg => {
+    arg.postPremises?.forEach(pp => {
+      if (pp.propKey === propKey) {
+        const contrib = getTheisticContrib(arg.id, pp.id);
+        if (contrib !== null) {
+          positiveContribs.push({
+            argId: arg.id,
+            postId: pp.id,
+            val: contrib,
+            type: 'direct'
+          });
+        }
+      }
+    });
+  });
+
+  // Add entailed contributions
+  Object.keys(ENTAILMENT_MAP).forEach(sourceKey => {
+    if (ENTAILMENT_MAP[sourceKey].includes(propKey)) {
+      THEISTIC_ARGUMENTS.forEach(arg => {
+        arg.postPremises?.forEach(pp => {
+          if (pp.propKey === sourceKey) {
+            const contrib = getTheisticContrib(arg.id, pp.id);
+            if (contrib !== null && !positiveContribs.some(c => c.argId === arg.id && c.postId === pp.id)) {
+              positiveContribs.push({
+                argId: arg.id,
+                postId: pp.id,
+                val: contrib,
+                type: 'entailed',
+                source: sourceKey
+              });
+            }
+          }
+        });
+      });
+    }
+  });
+
+  // Calculate negative evidence from atheistic arguments
+  let negativeMultiplier = 1.0;
+  const negativeContribs = [];
+
+  ATHEISTIC_ARGUMENTS.forEach(arg => {
+    const core = getAtheisticCoreProb(arg.id);
+    if (core !== null && arg.negativeProps) {
+      arg.negativeProps.forEach(neg => {
+        if (neg.propKey === propKey) {
+          const impact = core * neg.strength * BAYESIAN_STATE.evidenceWeight;
+          negativeMultiplier *= (1 - impact);
+          negativeContribs.push({
+            argId: arg.id,
+            val: impact,
+            type: 'negative',
+            desc: neg.desc
+          });
+        }
+      });
+    }
+  });
+
+  if (positiveContribs.length === 0 && negativeContribs.length === 0) return null;
+
+  // Combine positive evidence using noisy-OR
+  const positiveProb = positiveContribs.length > 0 ? 
+    noiseOr(positiveContribs.map(c => c.val)) : 0;
+
+  // Apply negative evidence as Bayesian discount
+  const finalProb = positiveProb * negativeMultiplier;
+
+  return {
+    combined: Math.max(0, Math.min(1, finalProb)),
+    positiveContribs,
+    negativeContribs,
+    positiveOnly: positiveProb,
+    negativeMultiplier
+  };
+}
+
+function computeNetTheism() {
+  // Start with prior
+  let posterior = BAYESIAN_STATE.theismPrior;
+
+  // Update with theistic arguments
+  THEISTIC_ARGUMENTS.forEach(arg => {
+    const core = getTheisticCoreProb(arg.id);
+    if (core !== null) {
+      const likelihood = computeLikelihoodRatio(core);
+      posterior = bayesianUpdate(posterior, likelihood, BAYESIAN_STATE.evidenceWeight);
+    }
+  });
+
+  // Update with atheistic arguments (negative evidence)
+  ATHEISTIC_ARGUMENTS.forEach(arg => {
+    const core = getAtheisticCoreProb(arg.id);
+    if (core !== null) {
+      // Atheistic arguments provide evidence against theism
+      const likelihood = 1 / computeLikelihoodRatio(core);
+      posterior = bayesianUpdate(posterior, likelihood, BAYESIAN_STATE.evidenceWeight);
+    }
+  });
+
+  return posterior;
+}
+
+// ─── MAIN RECALCULATION ─────────────────────────────────────────────────────
+function recalcAll() {
+  let theisticDone = 0, atheisticDone = 0, totalPremises = 0, ratedPremises = 0;
+
+  // Process theistic arguments
+  THEISTIC_ARGUMENTS.forEach(arg => {
+    const u = UI[arg.id];
+    if (!u) return;
+
+    const core = getTheisticCoreProb(arg.id);
+    const coreEl = document.getElementById('core-' + arg.id);
+    const badgeEl = document.getElementById('badge-core-' + arg.id);
+
+    if (coreEl) coreEl.textContent = fmt(core);
+    if (badgeEl) badgeEl.textContent = 'Core:' + fmt(core);
+
+    const argPremises = (arg.corePremises?.length || 0) + (arg.postPremises?.length || 0);
+    const argRated = (u.coreSliders?.filter(x => x.activated).length || 0) + 
+                    (u.postSliders?.filter(x => x.activated).length || 0);
+
+    totalPremises += argPremises;
+    ratedPremises += argRated;
+
+    if (core !== null) theisticDone++;
+
+    const progEl = document.getElementById('prog-' + arg.id);
+    const progTxtEl = document.getElementById('progtxt-' + arg.id);
+
+    if (progEl && argPremises > 0) progEl.style.width = (argRated / argPremises * 100) + '%';
+    if (progTxtEl) progTxtEl.textContent = argRated + '/' + argPremises;
+  });
+
+  // Process atheistic arguments
+  ATHEISTIC_ARGUMENTS.forEach(arg => {
+    const u = UI[arg.id];
+    if (!u) return;
+
+    const core = getAtheisticCoreProb(arg.id);
+    const coreEl = document.getElementById('core-' + arg.id);
+    const badgeEl = document.getElementById('badge-core-' + arg.id);
+
+    if (coreEl) coreEl.textContent = fmt(core);
+    if (badgeEl) badgeEl.textContent = 'Core:' + fmt(core);
+
+    const argPremises = arg.corePremises?.length || 0;
+    const argRated = u.coreSliders?.filter(x => x.activated).length || 0;
+
+    totalPremises += argPremises;
+    ratedPremises += argRated;
+
+    if (core !== null) atheisticDone++;
+
+    const progEl = document.getElementById('prog-' + arg.id);
+    const progTxtEl = document.getElementById('progtxt-' + arg.id);
+
+    if (progEl && argPremises > 0) progEl.style.width = (argRated / argPremises * 100) + '%';
+    if (progTxtEl) progTxtEl.textContent = argRated + '/' + argPremises;
+  });
+
+  // Update property displays
+  let propsAssessed = 0;
+  Object.keys(PROP_META).forEach(propKey => {
+    const result = getCombinedProperty(propKey);
+    const propEl = document.getElementById('propcomb-' + propKey);
+    const contribEl = document.getElementById('propcontrib-' + propKey);
+
+    if (propEl) propEl.textContent = result ? fmt(result.combined) : '—';
+    if (result) propsAssessed++;
+
+    if (contribEl) {
+      contribEl.innerHTML = '';
+      if (result) {
+        // Show positive contributions
+        result.positiveContribs?.forEach(c => {
+          const arg = THEISTIC_ARGUMENTS.find(a => a.id === c.argId);
+          if (arg) {
+            const row = document.createElement('div');
+            row.className = 'contributor-row';
+            row.innerHTML = c.type === 'entailed' ?
+              `<span class="contributor-arg contributor-entailed">${arg.icon} ${arg.title} <span class="entailment-tag">via ${PROP_META[c.source]?.label || c.source}</span></span><span class="contributor-val" style="color:var(--accent3)">${fmt(c.val)}</span>` :
+              `<span class="contributor-arg">${arg.icon} ${arg.title}</span><span class="contributor-val">${fmt(c.val)}</span>`;
+            contribEl.appendChild(row);
+          }
+        });
+
+        // Show negative contributions
+        result.negativeContribs?.forEach(c => {
+          const arg = ATHEISTIC_ARGUMENTS.find(a => a.id === c.argId);
+          if (arg) {
+            const row = document.createElement('div');
+            row.className = 'contributor-row';
+            row.innerHTML = `<span class="contributor-arg contributor-negative">${arg.icon} ${arg.title} (${c.desc})</span><span class="contributor-val" style="color:var(--rose)">-${fmt(c.val)}</span>`;
+            contribEl.appendChild(row);
+          }
+        });
+      }
+    }
+  });
+
+  // Calculate net theism and stats
+  const netTheism = computeNetTheism();
+  const evidence = netTheism - BAYESIAN_STATE.theismPrior;
+
+  // Update statistics
+  const statEls = {
+    statBalance: document.getElementById('statBalance'),
+    statNetTheism: document.getElementById('statNetTheism'),
+    statPropsAssessed: document.getElementById('statPropsAssessed'),
+    statArgsRated: document.getElementById('statArgsRated'),
+    globalProgress: document.getElementById('globalProgress')
+  };
+
+  if (statEls.statBalance) {
+    statEls.statBalance.textContent = evidence >= 0 ? '+' + fmt(Math.abs(evidence)) : fmt(evidence);
+    statEls.statBalance.style.color = evidence >= 0 ? 'var(--emerald)' : 'var(--rose)';
+  }
+
+  if (statEls.statNetTheism) statEls.statNetTheism.textContent = fmt(netTheism);
+  if (statEls.statPropsAssessed) statEls.statPropsAssessed.textContent = propsAssessed + '/' + Object.keys(PROP_META).length;
+  if (statEls.statArgsRated) statEls.statArgsRated.textContent = (theisticDone + atheisticDone) + '/' + (THEISTIC_ARGUMENTS.length + ATHEISTIC_ARGUMENTS.length);
+  if (statEls.globalProgress && totalPremises > 0) statEls.globalProgress.style.width = (ratedPremises / totalPremises * 100) + '%';
+
+  updateCombinator();
+  updateWorldview();
+  updateSensitivity();
+  drawRadar();
+}
+
+// ─── WORLDVIEW ANALYSIS ─────────────────────────────────────────────────────
+const WV_TIERS = [
+  {id: 'christian', name: 'Christian Theism', icon: '✝️', props: ['transcendent', 'firstcause', 'personal', 'christian_god']},
+  {id: 'perfect', name: 'Perfect Being Theism', icon: '👑', props: ['transcendent', 'firstcause', 'personal', 'powerful', 'intelligent', 'moral_source']},
+  {id: 'theism', name: 'Classical Theism', icon: '🧠', props: ['transcendent', 'firstcause', 'personal']},
+  {id: 'deism', name: 'Deism', icon: '🌌', props: ['transcendent', 'firstcause']}
+];
+
+function updateWorldview() {
+  const container = document.getElementById('worldviewAnalysis');
+  if (!container) return;
+
+  const netTheism = computeNetTheism();
+  const evidence = netTheism - BAYESIAN_STATE.theismPrior;
+
+  // Determine worldview verdict
+  let verdict, verdictClass;
+  if (netTheism > 0.7) {
+    verdict = 'Strong Theism';
+    verdictClass = 'theist';
+  } else if (netTheism > 0.5) {
+    verdict = 'Weak Theism';
+    verdictClass = 'theist';
+  } else if (netTheism < 0.3) {
+    verdict = 'Strong Atheism';
+    verdictClass = 'atheist';
+  } else if (netTheism < 0.5) {
+    verdict = 'Weak Atheism';
+    verdictClass = 'atheist';
+  } else {
+    verdict = 'Perfect Agnosticism';
+    verdictClass = 'incomplete';
+  }
+
+  const evidenceDirection = evidence > 0 ? 'Evidence supports theism' : evidence < 0 ? 'Evidence supports atheism' : 'Evidence is balanced';
+
+  container.innerHTML = `
+    <div class="wv-analysis">
+      <div class="wv-analysis-title">🔮 Bayesian Worldview Analysis</div>
+      <div class="wv-analysis-subtitle">Based on your prior (${fmt(BAYESIAN_STATE.theismPrior)}) and evidence evaluation.</div>
+      <div class="wv-verdict ${verdictClass}">
+        <div class="wv-verdict-label">Your Worldview</div>
+        <div class="wv-verdict-name">${verdict}</div>
+        <div class="wv-verdict-prob">${evidenceDirection} • Net: ${fmt(netTheism)}</div>
+      </div>
+      <div class="wv-legend">
+        <strong>Interpretation:</strong> Started at ${fmt(BAYESIAN_STATE.theismPrior)} prior, evidence moved you ${evidence >= 0 ? '+' : ''}${fmt(evidence)} to ${fmt(netTheism)} posterior. 
+        ${netTheism > 0.5 ? 'You should probably believe in God.' : netTheism < 0.5 ? 'You should probably not believe in God.' : 'The evidence is perfectly balanced.'}
+      </div>
+    </div>
+  `;
+}
+
+// ─── COMBINATOR & OTHER UI ──────────────────────────────────────────────────
+function updateCombinator() {
+  // Implementation similar to original but with Bayesian calculations
+  const selectedProps = Object.keys(PROP_META).filter(k => document.getElementById('combo-' + k)?.checked);
+  const resultEl = document.getElementById('comboResult');
+
+  if (!selectedProps.length) {
+    if (resultEl) resultEl.textContent = '—';
+    return;
+  }
+
+  const results = selectedProps.map(prop => getCombinedProperty(prop)).filter(r => r !== null);
+
+  if (results.length === 0) {
+    if (resultEl) resultEl.textContent = 'Incomplete';
+    return;
+  }
+
+  const finalProb = results.reduce((acc, result) => acc * result.combined, 1);
+  if (resultEl) resultEl.textContent = fmt(finalProb);
+}
+
+function updateSensitivity() {
+  // Sensitivity analysis for net theism
+  const container = document.getElementById('sensitivityList');
+  if (!container) return;
+
+  const baseNet = computeNetTheism();
+  const items = [];
+
+  // Test all sliders
+  [...THEISTIC_ARGUMENTS, ...ATHEISTIC_ARGUMENTS].forEach(arg => {
+    const ui = UI[arg.id];
+    if (!ui) return;
+
+    [...(ui.coreSliders || []), ...(ui.postSliders || [])].forEach(slider => {
+      if (!slider.activated) return;
+
+      const originalValue = +slider.slider.value;
+      slider.slider.value = Math.min(100, originalValue + 10);
+
+      const newNet = computeNetTheism();
+      const impact = (newNet - baseNet) * 100;
+
+      slider.slider.value = originalValue; // Reset
+
+      items.push({
+        name: slider.p?.text || slider.pp?.text || 'Unknown',
+        arg: arg.title,
+        icon: arg.icon,
+        impact
+      });
+    });
+  });
+
+  items.sort((a, b) => Math.abs(b.impact) - Math.abs(a.impact));
+
+  container.innerHTML = items.slice(0, 15).map(item => {
+    const className = Math.abs(item.impact) >= 2 ? 'very-high' : Math.abs(item.impact) >= 1 ? 'high' : '';
+    return `
+      <div class="sensitivity-item ${className}">
+        <div class="sensitivity-premise">
+          <div class="sensitivity-premise-name">${item.name.slice(0, 60)}${item.name.length > 60 ? '...' : ''}</div>
+          <div class="sensitivity-premise-arg">${item.icon} ${item.arg}</div>
+        </div>
+        <div class="sensitivity-impact">${item.impact >= 0 ? '+' : ''}${item.impact.toFixed(2)}%</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function drawRadar() {
+  // Radar chart implementation
+  const svg = document.getElementById('radarChart');
+  if (!svg) return;
+
+  const props = Object.keys(PROP_META);
+  const values = props.map(prop => {
+    const result = getCombinedProperty(prop);
+    return result ? result.combined : 0;
+  });
+
+  const cx = 200, cy = 200, r = 150;
+  let html = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--border)" stroke-width="1"/>`;
+
+  // Draw concentric circles
+  [0.25, 0.5, 0.75, 1].forEach(f => {
+    html += `<circle cx="${cx}" cy="${cy}" r="${r * f}" fill="none" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="2,2"/>`;
+  });
+
+  // Draw axes and plot values
+  const points = [];
+  props.forEach((prop, i) => {
+    const angle = (Math.PI * 2 * i / props.length) - Math.PI / 2;
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    const labelX = cx + Math.cos(angle) * (r + 22);
+    const labelY = cy + Math.sin(angle) * (r + 22);
+
+    html += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="var(--border)" stroke-width="0.5"/>`;
+    html += `<text x="${labelX}" y="${labelY}" fill="var(--text-dim)" font-size="10" text-anchor="middle" dominant-baseline="middle">${PROP_META[prop].icon}</text>`;
+
+    const valueX = cx + Math.cos(angle) * r * values[i];
+    const valueY = cy + Math.sin(angle) * r * values[i];
+    points.push(`${valueX},${valueY}`);
+  });
+
+  if (points.length) {
+    html += `<polygon points="${points.join(' ')}" fill="var(--accent)" fill-opacity="0.2" stroke="var(--accent)" stroke-width="2"/>`;
+    points.forEach(point => {
+      const [x, y] = point.split(',');
+      html += `<circle cx="${x}" cy="${y}" r="4" fill="var(--accent)"/>`;
+    });
+  }
+
+  svg.innerHTML = html;
+}
+
+// ─── UI BUILDING ─────────────────────────────────────────────────────────────
+function buildArgumentCard(arg, isAtheistic = false) {
+  const container = isAtheistic ? 'atheisticContainer' : 'theisticContainer';
+  const argContainer = document.getElementById(container);
+  if (!argContainer) return;
+
+  const card = document.createElement('div');
+  card.className = `arg-card${isAtheistic ? ' atheistic' : ''}`;
+  card.id = 'card-' + arg.id;
+
+  card.innerHTML = `
+    <div class="arg-header">
+      <div class="arg-title-group">
+        <div class="arg-icon" style="background:${arg.color}22;color:${arg.color}">${arg.icon}</div>
+        <div>
+          <div class="arg-title">${arg.title}</div>
+          <div class="arg-subtitle">Click to expand</div>
+        </div>
+      </div>
+      <div class="arg-badge">
+        <span class="badge badge-core" id="badge-core-${arg.id}">Core:—</span>
+        <span class="chevron">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/>
+          </svg>
+        </span>
+      </div>
+    </div>
+    <div class="arg-body">
+      <div class="arg-progress">
+        <span class="arg-progress-text" id="progtxt-${arg.id}">0/0</span>
+        <div class="arg-progress-bar">
+          <div class="arg-progress-fill" id="prog-${arg.id}"></div>
+        </div>
+      </div>
+      <div class="arg-content" id="content-${arg.id}"></div>
+    </div>
+  `;
+
+  argContainer.appendChild(card);
+
+  const header = card.querySelector('.arg-header');
+  header.onclick = () => card.classList.toggle('open');
+
+  const content = document.getElementById('content-' + arg.id);
+  UI[arg.id] = {coreSliders: [], postSliders: []};
+
+  // Add core premises
+  if (arg.corePremises?.length > 0) {
+    const coreLabel = document.createElement('div');
+    coreLabel.className = 'section-label';
+    coreLabel.textContent = 'Core Premises';
+    content.appendChild(coreLabel);
+
+    arg.corePremises.forEach((premise, index) => {
+      const premiseDiv = buildPremiseCard(premise, index + 1, arg, false);
+      content.appendChild(premiseDiv);
+    });
+
+    // Add conclusion
+    const conclusionDiv = document.createElement('div');
+    conclusionDiv.className = `conclusion-box${isAtheistic ? ' atheistic' : ''}`;
+    conclusionDiv.innerHTML = `
+      <div class="conclusion-text">${arg.coreConclusionText}</div>
+      <div class="conclusion-value" id="core-${arg.id}">—</div>
+    `;
+    content.appendChild(conclusionDiv);
+  }
+
+  // Add post premises for theistic arguments
+  if (!isAtheistic && arg.postPremises?.length > 0) {
+    const postLabel = document.createElement('div');
+    postLabel.className = 'section-label';
+    postLabel.textContent = 'Property Analysis';
+    content.appendChild(postLabel);
+
+    arg.postPremises.forEach(postPremise => {
+      const postDiv = buildPostPremiseCard(postPremise, arg);
+      content.appendChild(postDiv);
+    });
+  }
+
+  // Show negative properties for atheistic arguments
+  if (isAtheistic && arg.negativeProps?.length > 0) {
+    const negLabel = document.createElement('div');
+    negLabel.className = 'section-label';
+    negLabel.textContent = 'Properties Undermined';
+    content.appendChild(negLabel);
+
+    arg.negativeProps.forEach(negProp => {
+      const negDiv = document.createElement('div');
+      negDiv.className = 'post-premise-card atheistic';
+      negDiv.innerHTML = `
+        <div class="premise-text">
+          Undermines: ${PROP_META[negProp.propKey]?.label || negProp.propKey}
+          <span class="prop-tag atheistic">-${(negProp.strength * 100).toFixed(0)}%</span>
+        </div>
+        <p style="font-size:12px;color:var(--text-dim);margin-top:8px">${negProp.desc}</p>
+      `;
+      content.appendChild(negDiv);
+    });
+  }
+}
+
+function buildPremiseCard(premise, number, arg, isPost = false) {
+  const div = document.createElement('div');
+  div.className = isPost ? 'post-premise-card' : 'premise-card';
+
+  const objHtml = (premise.objections || []).map(obj => {
+    const objText = typeof obj === 'string' ? obj : obj.text;
+    const rebuttal = typeof obj === 'object' && obj.rebuttal ? 
+      `<div class="rebuttal">↩ <strong>Rebuttal:</strong> ${obj.rebuttal}</div>` : '';
+    return `<li>${objText}${rebuttal}</li>`;
+  }).join('');
+
+  div.innerHTML = `
+    <div class="premise-top">
+      ${!isPost ? `<span class="premise-num">P${number}</span>` : ''}
+      <div class="premise-text">${premise.text}</div>
+    </div>
+    <div class="confidence-row">
+      <div class="slider-wrap">
+        <input type="range" class="slider" min="0" max="100" value="50">
+      </div>
+      <div class="conf-display empty">—</div>
+    </div>
+    <div class="quick-btns">
+      <button class="quick-btn" data-v="0">0%</button>
+      <button class="quick-btn" data-v="25">25%</button>
+      <button class="quick-btn" data-v="50">50%</button>
+      <button class="quick-btn" data-v="75">75%</button>
+      <button class="quick-btn" data-v="100">100%</button>
+    </div>
+    <div class="evidence-objection-wrap">
+      <div class="ev-ob-tabs">
+        <button class="ev-ob-tab active" data-type="ev">✅ Evidence (${(premise.evidence || []).length})</button>
+        <button class="ev-ob-tab objection" data-type="obj">⚠️ Objections (${(premise.objections || []).length})</button>
+      </div>
+      <div class="ev-ob-content active">
+        <ul>${(premise.evidence || []).map(e => `<li>${e}</li>`).join('')}</ul>
+      </div>
+      <div class="ev-ob-content objection-content">
+        <ul>${objHtml}</ul>
+      </div>
+    </div>
+  `;
+
+  const slider = div.querySelector('.slider');
+  const display = div.querySelector('.conf-display');
+  const entry = {
+    p: premise,
+    slider,
+    display,
+    activated: false,
+    card: div
+  };
+
+  slider.oninput = () => {
+    entry.activated = true;
+    display.textContent = slider.value + '%';
+    display.classList.remove('empty');
+    div.classList.add('rated');
+    updateTrack(slider);
+    pushUndo();
+    recalcAll();
+  };
+
+  // Quick buttons
+  div.querySelectorAll('.quick-btn').forEach(btn => {
+    btn.onclick = () => {
+      slider.value = btn.dataset.v;
+      slider.oninput();
+    };
+  });
+
+  // Evidence/objection tabs
+  div.querySelectorAll('.ev-ob-tab').forEach(tab => {
+    tab.onclick = () => {
+      div.querySelectorAll('.ev-ob-tab').forEach(t => t.classList.remove('active'));
+      div.querySelectorAll('.ev-ob-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      div.querySelectorAll('.ev-ob-content')[tab.dataset.type === 'ev' ? 0 : 1].classList.add('active');
+    };
+  });
+
+  UI[arg.id].coreSliders.push(entry);
+  return div;
+}
+
+function buildPostPremiseCard(postPremise, arg) {
+  const div = document.createElement('div');
+  div.className = 'post-premise-card';
+
+  const entailments = ENTAILMENT_MAP[postPremise.propKey] || [];
+
+  div.innerHTML = `
+    <div class="premise-top">
+      <div class="premise-text">
+        ${postPremise.text}
+        <span class="prop-tag">${PROP_META[postPremise.propKey]?.label || postPremise.propKey}</span>
+        ${entailments.length ? `<span class="entailment-tag">⚡${entailments.length}</span>` : ''}
+      </div>
+    </div>
+    <div class="confidence-row">
+      <div class="slider-wrap">
+        <input type="range" class="slider" min="0" max="100" value="50">
+      </div>
+      <div class="conf-display empty">—</div>
+    </div>
+    <div class="quick-btns">
+      <button class="quick-btn" data-v="0">0%</button>
+      <button class="quick-btn" data-v="25">25%</button>
+      <button class="quick-btn" data-v="50">50%</button>
+      <button class="quick-btn" data-v="75">75%</button>
+      <button class="quick-btn" data-v="100">100%</button>
+    </div>
+    <div class="contribution-line" id="contrib-${arg.id}-${postPremise.id}">→ —</div>
+  `;
+
+  const slider = div.querySelector('.slider');
+  const display = div.querySelector('.conf-display');
+  const entry = {
+    pp: postPremise,
+    slider,
+    display,
+    activated: false,
+    card: div
+  };
+
+  slider.oninput = () => {
+    entry.activated = true;
+    display.textContent = slider.value + '%';
+    display.classList.remove('empty');
+    div.classList.add('rated');
+    updateTrack(slider);
+    pushUndo();
+    recalcAll();
+  };
+
+  div.querySelectorAll('.quick-btn').forEach(btn => {
+    btn.onclick = () => {
+      slider.value = btn.dataset.v;
+      slider.oninput();
+    };
+  });
+
+  UI[arg.id].postSliders = UI[arg.id].postSliders || [];
+  UI[arg.id].postSliders.push(entry);
+  return div;
+}
+
+function updateTrack(slider) {
+  const percent = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+  slider.style.background = `linear-gradient(90deg, var(--accent) ${percent}%, var(--surface3) ${percent}%)`;
+}
+
+function buildUI() {
+  // Build theistic arguments
+  THEISTIC_ARGUMENTS.forEach(arg => buildArgumentCard(arg, false));
+
+  // Build atheistic arguments
+  ATHEISTIC_ARGUMENTS.forEach(arg => buildArgumentCard(arg, true));
+
+  // Build property cards
+  const propContainer = document.getElementById('propContainer');
+  if (propContainer) {
+    Object.keys(PROP_META).forEach(propKey => {
+      const meta = PROP_META[propKey];
+      const div = document.createElement('div');
+      div.className = 'property-card';
+      div.innerHTML = `
+        <div class="prop-header">
+          <div class="prop-name">
+            <span class="icon">${meta.icon}</span>
+            ${meta.label}
+            <span style="color:var(--text-faint);font-weight:400;font-size:12px;margin-left:8px">${meta.desc}</span>
+          </div>
+          <div class="prop-combined" id="propcomb-${propKey}">—</div>
+        </div>
+        <div class="contributors-list" id="propcontrib-${propKey}"></div>
+      `;
+      propContainer.appendChild(div);
+    });
+  }
+
+  // Build combinator
+  const comboContainer = document.getElementById('comboChecks');
+  if (comboContainer) {
+    Object.keys(PROP_META).forEach(propKey => {
+      const meta = PROP_META[propKey];
+      const label = document.createElement('label');
+      label.className = 'combo-check';
+      label.innerHTML = `
+        <input type="checkbox" id="combo-${propKey}">
+        <div class="check-box">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="combo-check-label">${meta.icon} ${meta.label}</div>
+          <div class="combo-check-sub">${meta.desc}</div>
+        </div>
+      `;
+
+      const checkbox = label.querySelector('input');
+      checkbox.onchange = (e) => {
+        label.classList.toggle('checked', e.target.checked);
+        recalcAll();
+      };
+
+      comboContainer.appendChild(label);
+    });
+  }
+
+  // Build base select
+  const baseSelect = document.getElementById('baseSelect');
+  if (baseSelect) {
+    THEISTIC_ARGUMENTS.forEach(arg => {
+      const option = document.createElement('option');
+      option.value = arg.id;
+      option.textContent = `${arg.icon} ${arg.title}`;
+      baseSelect.appendChild(option);
+    });
+    baseSelect.onchange = () => recalcAll();
+  }
+
+  // Build philosopher presets
+  const philGrid = document.getElementById('philosopherGrid');
+  if (philGrid) {
+    PHILOSOPHERS.forEach(phil => {
+      const div = document.createElement('div');
+      div.className = 'philosopher-card';
+      div.innerHTML = `
+        <div class="philosopher-name">${phil.name}</div>
+        <div class="philosopher-stance">${phil.stance}</div>
+        <div class="philosopher-desc">${phil.desc}</div>
+      `;
+
+      div.onclick = () => {
+        if (!confirm(`Load ${phil.name}'s worldview?`)) return;
+
+        pushUndo();
+
+        // Apply preset values
+        if (phil.preset.theismPrior) {
+          BAYESIAN_STATE.theismPrior = phil.preset.theismPrior / 100;
+        }
+
+        [...THEISTIC_ARGUMENTS, ...ATHEISTIC_ARGUMENTS].forEach(arg => {
+          const ui = UI[arg.id];
+          if (!ui) return;
+
+          [...(ui.coreSliders || []), ...(ui.postSliders || [])].forEach(slider => {
+            const premiseId = slider.p?.id || slider.pp?.id;
+            if (premiseId && phil.preset[premiseId] !== undefined) {
+              const value = phil.preset[premiseId];
+              slider.slider.value = value;
+              slider.display.textContent = value + '%';
+              slider.display.classList.remove('empty');
+              slider.activated = true;
+              slider.card.classList.add('rated');
+              updateTrack(slider.slider);
+            }
+          });
+        });
+
+        recalcAll();
+        showToast(`Loaded ${phil.name}'s worldview`, 'success');
+      };
+
+      philGrid.appendChild(div);
+    });
+  }
+}
+
+// ─── SEARCH & FILTERING ─────────────────────────────────────────────────────
+function filterArguments(query) {
+  const cards = document.querySelectorAll('#theisticContainer .arg-card');
+  cards.forEach(card => {
+    const visible = card.textContent.toLowerCase().includes(query.toLowerCase());
+    card.style.display = visible ? '' : 'none';
+  });
+}
+
+function filterAtheisticArguments(query) {
+  const cards = document.querySelectorAll('#atheisticContainer .arg-card');
+  cards.forEach(card => {
+    const visible = card.textContent.toLowerCase().includes(query.toLowerCase());
+    card.style.display = visible ? '' : 'none';
+  });
+}
+
+// ─── UNDO/REDO SYSTEM ───────────────────────────────────────────────────────
+function pushUndo() {
+  undoStack.push(JSON.stringify(collectState()));
+  if (undoStack.length > 50) undoStack.shift();
+  redoStack = [];
+  updateUndoButtons();
+}
+
+function undo() {
+  if (!undoStack.length) return;
+  redoStack.push(JSON.stringify(collectState()));
+  applyState(JSON.parse(undoStack.pop()), true);
+  updateUndoButtons();
+  showToast('Undone', 'success');
+}
+
+function redo() {
+  if (!redoStack.length) return;
+  undoStack.push(JSON.stringify(collectState()));
+  applyState(JSON.parse(redoStack.pop()), true);
+  updateUndoButtons();
+  showToast('Redone', 'success');
+}
+
+function updateUndoButtons() {
+  const undoBtn = document.getElementById('undoBtn');
+  const redoBtn = document.getElementById('redoBtn');
+  if (undoBtn) undoBtn.disabled = !undoStack.length;
+  if (redoBtn) redoBtn.disabled = !redoStack.length;
+}
+
+function applyState(state, skipUndo) {
+  if (!skipUndo) pushUndo();
+  if (!state) return;
+
+  // Apply Bayesian state
+  if (state.bayesian) {
+    BAYESIAN_STATE.theismPrior = state.bayesian.theismPrior || 0.5;
+    BAYESIAN_STATE.evidenceWeight = state.bayesian.evidenceWeight || 1.0;
+  }
+
+  // Apply slider values
+  if (state.sliders) {
+    [...THEISTIC_ARGUMENTS, ...ATHEISTIC_ARGUMENTS].forEach(arg => {
+      const ui = UI[arg.id];
+      if (!ui) return;
+
+      [...(ui.coreSliders || []), ...(ui.postSliders || [])].forEach(slider => {
+        const premiseId = slider.p?.id || slider.pp?.id;
+        if (premiseId && state.sliders[premiseId]) {
+          const data = state.sliders[premiseId];
+          if (data.a) {
+            slider.slider.value = data.v;
+            slider.display.textContent = data.v + '%';
+            slider.display.classList.remove('empty');
+            slider.activated = true;
+            slider.card.classList.add('rated');
+            updateTrack(slider.slider);
+          } else {
+            slider.slider.value = 50;
+            slider.display.textContent = '—';
+            slider.display.classList.add('empty');
+            slider.activated = false;
+            slider.card.classList.remove('rated');
+            slider.slider.style.background = '';
+          }
+        }
+      });
+    });
+  }
+
+  // Apply combo selections
+  if (state.combos) {
+    Object.keys(state.combos).forEach(propKey => {
+      const checkbox = document.getElementById('combo-' + propKey);
+      if (checkbox) {
+        checkbox.checked = state.combos[propKey];
+        const label = checkbox.closest('.combo-check');
+        if (label) label.classList.toggle('checked', state.combos[propKey]);
+      }
+    });
+  }
+
+  // Apply base selection
+  if (state.base) {
+    const baseSelect = document.getElementById('baseSelect');
+    if (baseSelect) baseSelect.value = state.base;
+  }
+
+  recalcAll();
+}
+
+// ─── WORLDVIEW MANAGEMENT ───────────────────────────────────────────────────
+function saveWorldview() {
+  const name = prompt('Name this worldview:');
+  if (!name?.trim()) return;
+
+  worldviews[name.trim()] = {
+    state: collectState(),
+    date: new Date().toISOString()
+  };
+
+  refreshWvList();
+  showToast('Saved!', 'success');
+  showAchievement('Worldview Saved', 'Configuration preserved');
+}
+
+function refreshWvList() {
+  const container = document.getElementById('wvList');
+  if (!container) return;
+
+  const keys = Object.keys(worldviews);
+  if (!keys.length) {
+    container.innerHTML = '<p style="color:var(--text-faint);text-align:center;padding:20px">No saved worldviews this session</p>';
+    return;
+  }
+
+  container.innerHTML = keys.map(name => `
+    <div class="wv-item">
+      <div class="wv-item-info">
+        <div class="wv-item-name">${name}</div>
+        <div class="wv-item-date">${worldviews[name].date ? new Date(worldviews[name].date).toLocaleString() : '—'}</div>
+      </div>
+      <div class="wv-item-actions">
+        <button class="wv-btn primary" onclick="loadWv('${name.replace(/'/g, "\\'")}')">Load</button>
+        <button class="wv-btn" onclick="exportWv('${name.replace(/'/g, "\\'")}')">Export</button>
+        <button class="wv-btn danger" onclick="deleteWv('${name.replace(/'/g, "\\'")}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadWv(name) {
+  const worldview = worldviews[name];
+  if (worldview) {
+    applyState(worldview.state);
+    hideModal('worldviewModal');
+    showToast(`Loaded "${name}"`, 'success');
+  }
+}
+
+function deleteWv(name) {
+  if (!confirm(`Delete "${name}"?`)) return;
+  delete worldviews[name];
+  refreshWvList();
+  showToast('Deleted');
+}
+
+function exportWv(name) {
+  const worldview = worldviews[name];
+  if (!worldview) return;
+
+  const blob = new Blob([JSON.stringify({[name]: worldview}, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportCurrent() {
+  const blob = new Blob([JSON.stringify({
+    _current: {
+      state: collectState(),
+      date: new Date().toISOString()
+    }
+  }, null, 2)], {type: 'application/json'});
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'bayesian-worldview-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Exported!', 'success');
+}
+
+function importWorldview(files) {
+  if (!files.length) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      let count = 0;
+
+      Object.keys(data).forEach(name => {
+        if (data[name]?.state) {
+          const finalName = name === '_current' ? 'Imported ' + new Date().toLocaleString() : name;
+          worldviews[finalName] = data[name];
+          count++;
+        }
+      });
+
+      refreshWvList();
+      showToast(`Imported ${count}`, 'success');
+    } catch (e) {
+      showToast('Invalid file', 'error');
+    }
+  };
+
+  reader.readAsText(files[0]);
+  document.getElementById('importFile').value = '';
+}
+
+// ─── SHARING ─────────────────────────────────────────────────────────────────
+function generateShareUrl() {
+  try {
+    const state = JSON.stringify(collectState());
+    const encoded = btoa(unescape(encodeURIComponent(state)));
+    document.getElementById('shareUrl').value = location.origin + location.pathname + '?s=' + encoded;
+  } catch (e) {
+    document.getElementById('shareUrl').value = '(Could not encode)';
+  }
+}
+
+function copyShareUrl() {
+  const urlField = document.getElementById('shareUrl');
+  urlField.select();
+  try {
+    document.execCommand('copy');
+    showToast('Copied!', 'success');
+  } catch (e) {
+    showToast('Select text and copy manually', 'error');
+  }
+}
+
+// ─── RESET & UTILITY ─────────────────────────────────────────────────────────
+function confirmReset() {
+  if (!confirm('Reset all ratings and return to default priors?')) return;
+
+  pushUndo();
+
+  // Reset Bayesian state
+  BAYESIAN_STATE.theismPrior = 0.5;
+  BAYESIAN_STATE.evidenceWeight = 1.0;
+
+  // Reset all sliders
+  [...THEISTIC_ARGUMENTS, ...ATHEISTIC_ARGUMENTS].forEach(arg => {
+    const ui = UI[arg.id];
+    if (!ui) return;
+
+    [...(ui.coreSliders || []), ...(ui.postSliders || [])].forEach(slider => {
+      slider.slider.value = 50;
+      slider.display.textContent = '—';
+      slider.display.classList.add('empty');
+      slider.activated = false;
+      slider.card.classList.remove('rated');
+      slider.slider.style.background = '';
+    });
+  });
+
+  // Reset combos
+  Object.keys(PROP_META).forEach(propKey => {
+    const checkbox = document.getElementById('combo-' + propKey);
+    if (checkbox) {
+      checkbox.checked = false;
+      const label = checkbox.closest('.combo-check');
+      if (label) label.classList.remove('checked');
+    }
+  });
+
+  const baseSelect = document.getElementById('baseSelect');
+  if (baseSelect) baseSelect.value = 'none';
+
+  recalcAll();
+  showToast('Reset complete', 'success');
+}
+
+function startGuidedTour() {
+  const theisticTab = document.querySelector('[data-tab="theistic"]');
+  if (theisticTab) theisticTab.click();
+
+  setTimeout(() => {
+    const firstCard = document.querySelector('#theisticContainer .arg-card');
+    if (firstCard) {
+      firstCard.classList.add('open');
+      firstCard.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }
+    showToast('Rate premises based on evidence, then explore atheistic arguments!');
+  }, 300);
+}
+
+// ─── TAB MANAGEMENT ─────────────────────────────────────────────────────────
+function initializeTabs() {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.onclick = () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+
+      tab.classList.add('active');
+      const panelId = 'panel-' + tab.dataset.tab;
+      const panel = document.getElementById(panelId);
+      if (panel) panel.classList.add('active');
+    };
+  });
+}
+
+// ─── KEYBOARD SHORTCUTS ─────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key === 'z') {
+    e.preventDefault();
+    undo();
+  }
+  if (e.ctrlKey && e.key === 'y') {
+    e.preventDefault();
+    redo();
+  }
+  if (e.ctrlKey && e.key === 's') {
+    e.preventDefault();
+    saveWorldview();
+  }
+  if (e.key >= '1' && e.key <= '6') {
+    const tabs = document.querySelectorAll('.tab');
+    const index = parseInt(e.key) - 1;
+    if (tabs[index]) tabs[index].click();
+  }
+});
+
+// ─── INITIALIZATION ─────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.documentElement.setAttribute('data-theme', 'dark');
+  initializeTabs();
+  buildUI();
+  updateUndoButtons();
+  recalcAll();
+
+  // Check for shared state in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const sharedState = urlParams.get('s');
+  if (sharedState) {
+    try {
+      const decoded = decodeURIComponent(escape(atob(sharedState)));
+      const state = JSON.parse(decoded);
+      applyState(state, true);
+      showToast('Loaded shared worldview', 'success');
+    } catch (e) {
+      showToast('Invalid shared URL', 'error');
+    }
+  }
+});
+</script>
+</body>
+</html>
