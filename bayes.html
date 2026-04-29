@@ -312,6 +312,16 @@ background-image:radial-gradient(ellipse 80% 50% at 50% -20%,#22d3ee08,transpare
 .lr-contrib-name{color:var(--text-dim);flex:1}
 .lr-contrib-val{font-family:var(--mono);font-weight:700}
 .lr-contrib-val.positive{color:var(--emerald)}.lr-contrib-val.negative{color:var(--rose)}.lr-contrib-val.neutral{color:var(--text-faint)}
+/* ─── Against-property post-premise cards ────────────────────────────────── */
+.post-premise-card.against-prop{border-left-color:var(--rose)!important;background:linear-gradient(135deg,var(--surface2),#f43f5e04)}
+.prop-tag.negated{background:#f43f5e18!important;color:var(--rose)!important}
+/* ─── Property card with against evidence ───────────────────────────────── */
+.property-card.has-against{border-color:#f43f5e22}
+.property-card.has-against .prop-combined{color:var(--gold)}
+.contributor-row.against-row{background:#f43f5e06;border-radius:4px;padding:4px 8px}
+/* ─── Against-args section header ───────────────────────────────────────── */
+.against-section-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--rose);margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.against-section-label::after{content:'';flex:1;height:1px;background:#f43f5e33}
 </style>
 </head>
 <body>
@@ -405,7 +415,10 @@ background-image:radial-gradient(ellipse 80% 50% at 50% -20%,#22d3ee08,transpare
 <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
 <input type="text" class="search-input" id="atheistSearch" placeholder="Search arguments against God's existence..." oninput="filterAtheistArgs(this.value)">
 </div>
-<p style="font-size:13px;color:var(--text-dim);margin-bottom:16px;padding:0 4px">Each argument is presented as a <strong>formally valid syllogism</strong> — if you accept the premises, the conclusion follows necessarily. Rate how confident you are in each premise; the argument then computes a <strong>Likelihood Ratio</strong> (LR) that updates your posterior via Bayes' theorem. An LR &lt; 1 is evidence <em>against</em> God.</p>
+<div style="background:linear-gradient(135deg,#f43f5e08,#fb923c06);border:1px solid #f43f5e22;border-radius:12px;padding:16px 18px;margin-bottom:16px">
+<p style="font-size:13px;color:var(--text-dim);margin-bottom:8px;line-height:1.7">Each argument is presented as a <strong>formally valid syllogism</strong>. Rate premise confidence; the argument computes a <strong>Likelihood Ratio &lt; 1</strong> that pushes your Bayesian posterior down.</p>
+<p style="font-size:13px;color:var(--text-dim);margin:0;line-height:1.7">Each argument also includes <strong style="color:var(--rose)">Post-Argument Property Conclusions</strong> — just like the FOR arguments. Where arguments for God conclude "therefore the cause is <em>transcendent, personal</em>" etc., arguments against God conclude "therefore a being with property X does <em>not</em> exist." Rate these to see the impact on your <strong>Properties tab</strong> — the two sides are fully integrated.</p>
+</div>
 <div id="atheistArgContainer"></div>
 </div>
 
@@ -459,7 +472,7 @@ background-image:radial-gradient(ellipse 80% 50% at 50% -20%,#22d3ee08,transpare
 <div class="how-step"><h3>2. Rate Premises for Each Argument</h3><p>Each argument has premises. Your slider value (0–100%) is your credence that the premise is true. Read the evidence and objections carefully before rating. Unrated premises are excluded from the calculation.</p></div>
 <div class="how-step"><h3>3. Premises Combine Into a Likelihood Ratio</h3><p>Each argument produces a <strong>Likelihood Ratio (LR)</strong> — how much more likely is the argument's evidence given God versus given no God. Arguments FOR God produce LR &gt; 1 (raise probability). Arguments AGAINST God produce LR &lt; 1 (lower probability). The LR for each argument is computed from your premise ratings and a built-in base LR for that argument.</p></div>
 <div class="how-step"><h3>4. Bayes' Theorem Updates Your Posterior</h3><p>Posterior odds = Prior odds × LR₁ × LR₂ × … × LRₙ<br>Posterior P = Posterior odds / (1 + Posterior odds)<br>This chains across all activated arguments simultaneously.</p></div>
-<div class="how-step"><h3>5. "Against God" Arguments Work the Same Way</h3><p>The Problem of Evil, Divine Hiddenness, etc. each produce LR &lt; 1 when you accept their premises — pushing your posterior down. The final posterior integrates evidence from both sides automatically.</p></div>
+<div class="how-step"><h3>5. "Against God" Arguments Work the Same Way — Including Property Conclusions</h3><p>Arguments against God (Problem of Evil, Divine Hiddenness, etc.) produce LR &lt; 1 when accepted — pushing your posterior down. But crucially, just like theistic arguments produce post-argument conclusions like "therefore the cause is <em>transcendent</em> and <em>personal</em>," atheistic arguments produce targeted property denials — e.g., the Problem of Evil concludes "therefore a <em>perfectly good</em> and <em>omnipotent</em> being does not exist." Rate these post-argument property sliders to see them feed directly into the Properties tab, competing with and against the FOR-God property evidence. The Bayesian posterior and the property probabilities are now a single unified system.</p></div>
 </div>
 <div class="math-note">
 <strong>Bayesian Formula:</strong><br>
@@ -964,16 +977,22 @@ preset:{k_p1:68,k_p2:58,k_pp1:62,k_pp2:65,k_pp3:48,k_pp4:55,f_p1:92,f_p2:45,f_pp
 // ─── PROPERTY REGISTRY ───────────────────────────────────────────────────────
 const PROPERTY_REGISTRY={};
 ARGUMENTS.forEach(arg=>{arg.postPremises.forEach(pp=>{
-  if(!PROPERTY_REGISTRY[pp.propKey])PROPERTY_REGISTRY[pp.propKey]={key:pp.propKey,contributors:[],entailedContributors:[]};
-  PROPERTY_REGISTRY[pp.propKey].contributors.push({argId:arg.id,postId:pp.id});
+  if(!PROPERTY_REGISTRY[pp.propKey])PROPERTY_REGISTRY[pp.propKey]={key:pp.propKey,contributors:[],entailedContributors:[],againstContributors:[]};
+  PROPERTY_REGISTRY[pp.propKey].contributors.push({argId:arg.id,postId:pp.id,isAtheist:false});
+})});
+// Register atheist postPremises as "against" contributors
+ATHEIST_ARGUMENTS.forEach(arg=>{if(!arg.postPremises)return;arg.postPremises.forEach(pp=>{
+  if(!PROPERTY_REGISTRY[pp.propKey])PROPERTY_REGISTRY[pp.propKey]={key:pp.propKey,contributors:[],entailedContributors:[],againstContributors:[]};
+  if(!PROPERTY_REGISTRY[pp.propKey].againstContributors)PROPERTY_REGISTRY[pp.propKey].againstContributors=[];
+  PROPERTY_REGISTRY[pp.propKey].againstContributors.push({argId:arg.id,postId:pp.id,isAtheist:true});
 })});
 Object.keys(ENTAILMENT_MAP).forEach(sp=>{ENTAILMENT_MAP[sp].forEach(tp=>{
-  if(!PROPERTY_REGISTRY[tp])PROPERTY_REGISTRY[tp]={key:tp,contributors:[],entailedContributors:[]};
+  if(!PROPERTY_REGISTRY[tp])PROPERTY_REGISTRY[tp]={key:tp,contributors:[],entailedContributors:[],againstContributors:[]};
 })});
 ARGUMENTS.forEach(arg=>{arg.postPremises.forEach(pp=>{
   const ent=ENTAILMENT_MAP[pp.propKey];if(!ent)return;
   ent.forEach(tp=>{
-    if(!PROPERTY_REGISTRY[tp])PROPERTY_REGISTRY[tp]={key:tp,contributors:[],entailedContributors:[]};
+    if(!PROPERTY_REGISTRY[tp])PROPERTY_REGISTRY[tp]={key:tp,contributors:[],entailedContributors:[],againstContributors:[]};
     if(!PROPERTY_REGISTRY[tp].contributors.some(c=>c.argId===arg.id&&c.postId===pp.id))
       PROPERTY_REGISTRY[tp].entailedContributors.push({argId:arg.id,postId:pp.id,sourceProp:pp.propKey});
   });
@@ -995,8 +1014,9 @@ function hideModal(id){document.getElementById(id).classList.remove('visible')}
 
 // ─── STATE ────────────────────────────────────────────────────────────────────
 function collectState(){
-  const s={sliders:{},combos:{},base:'none'};
+  const s={sliders:{},combos:{},base:'none',athPostSliders:{}};
   ARGUMENTS.forEach(arg=>{const u=UI[arg.id];if(!u)return;u.coreSliders.forEach(x=>{s.sliders[x.p.id]={v:+x.slider.value,a:x.activated}});u.postSliders.forEach(x=>{s.sliders[x.pp.id]={v:+x.slider.value,a:x.activated}})});
+  ATHEIST_ARGUMENTS.forEach(arg=>{const u=ATHEIST_UI[arg.id];if(!u)return;(u.postSliders||[]).forEach(x=>{s.athPostSliders[x.pp.id]={v:+x.slider.value,a:x.activated}})});
   Object.keys(PROP_META).forEach(k=>{const c=document.getElementById('combo-'+k);if(c)s.combos[k]=c.checked});
   s.base=document.getElementById('baseSelect').value;return s;
 }
@@ -1028,7 +1048,7 @@ function generateShareUrl(){try{const s=btoa(unescape(encodeURIComponent(JSON.st
 function copyShareUrl(){const el=document.getElementById('shareUrl');el.select();try{document.execCommand('copy');showToast('Copied!','success')}catch(e){showToast('Select text and copy manually','error')}}
 
 // ─── RESET ────────────────────────────────────────────────────────────────────
-function confirmReset(){if(!confirm('Reset all ratings?'))return;pushUndo();ARGUMENTS.forEach(arg=>{const u=UI[arg.id];u.coreSliders.forEach(x=>{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''});u.postSliders.forEach(x=>{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''})});Object.keys(PROP_META).forEach(k=>{const c=document.getElementById('combo-'+k);if(c){c.checked=false;c.closest('.combo-check')?.classList.remove('checked')}});document.getElementById('baseSelect').value='none';recalcAll();showToast('Reset complete','success')}
+function confirmReset(){if(!confirm('Reset all ratings?'))return;pushUndo();ARGUMENTS.forEach(arg=>{const u=UI[arg.id];u.coreSliders.forEach(x=>{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''});u.postSliders.forEach(x=>{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''})});ATHEIST_ARGUMENTS.forEach(arg=>{const u=ATHEIST_UI[arg.id];if(!u)return;(u.sliders||[]).forEach(x=>{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''});(u.postSliders||[]).forEach(x=>{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''})});Object.keys(PROP_META).forEach(k=>{const c=document.getElementById('combo-'+k);if(c){c.checked=false;c.closest('.combo-check')?.classList.remove('checked')}});document.getElementById('baseSelect').value='none';recalcAll();showToast('Reset complete','success')}
 
 // ─── TRACK & PROBABILITY ─────────────────────────────────────────────────────
 function updateTrack(s){const p=((s.value-s.min)/(s.max-s.min))*100;s.style.background=`linear-gradient(90deg,var(--accent) ${p}%,var(--surface3) ${p}%)`}
@@ -1037,10 +1057,33 @@ function getContrib(argId,postId){const c=getCoreProb(argId);if(c===null)return 
 function getCombinedProp(pk){
   const r=PROPERTY_REGISTRY[pk];if(!r)return null;
   const contribs=[];
-  r.contributors.forEach(c=>{const v=getContrib(c.argId,c.postId);if(v!==null)contribs.push({argId:c.argId,postId:c.postId,val:v,ent:false})});
-  (r.entailedContributors||[]).forEach(c=>{const v=getContrib(c.argId,c.postId);if(v!==null&&!contribs.some(x=>x.argId===c.argId&&x.postId===c.postId))contribs.push({argId:c.argId,postId:c.postId,val:v,ent:true,src:c.sourceProp})});
+  r.contributors.forEach(c=>{const v=getContrib(c.argId,c.postId);if(v!==null)contribs.push({argId:c.argId,postId:c.postId,val:v,ent:false,against:false})});
+  (r.entailedContributors||[]).forEach(c=>{const v=getContrib(c.argId,c.postId);if(v!==null&&!contribs.some(x=>x.argId===c.argId&&x.postId===c.postId))contribs.push({argId:c.argId,postId:c.postId,val:v,ent:true,src:c.sourceProp,against:false})});
+  (r.againstContributors||[]).forEach(c=>{const v=getContribAtheist(c.argId,c.postId);if(v!==null)contribs.push({argId:c.argId,postId:c.postId,val:v,ent:false,against:true})});
   if(!contribs.length)return null;
-  return{combined:1-contribs.reduce((a,c)=>a*(1-c.val),1),contribs};
+  // Noisy-OR for FOR contributors: P(property) = 1 - prod(1 - val_i)
+  const forContribs=contribs.filter(c=>!c.against);
+  const againstContribs=contribs.filter(c=>c.against);
+  const hasFor=forContribs.length>0;
+  const hasAgainst=againstContribs.length>0;
+  // If no FOR evidence, start from prior-neutral (0.5) then apply against penalty
+  let noisyOR=hasFor?1-forContribs.reduce((a,c)=>a*(1-c.val),1):null;
+  // Against contributors act as penalty: each against-premise with confidence c multiplies probability by (1-c)
+  // This means: if you're 100% confident in the against-premise, it zeroes out the property for that source
+  let againstPenalty=hasAgainst?againstContribs.reduce((a,c)=>a*(1-c.val),1):1;
+  if(noisyOR===null&&!hasAgainst)return null;
+  // If only against contribs (no FOR), we need at least one side rated
+  if(noisyOR===null&&hasAgainst){return{combined:againstPenalty*0.5,contribs}}
+  if(!hasAgainst)return{combined:noisyOR,contribs};
+  return{combined:noisyOR*againstPenalty,contribs};
+}
+
+// Get a post-premise confidence from an ATHEIST argument
+function getContribAtheist(argId,postId){
+  const u=ATHEIST_UI[argId];if(!u||!u.postSliders)return null;
+  const x=u.postSliders.find(s=>s.pp.id===postId);
+  if(!x||!x.activated)return null;
+  return +x.slider.value/100;
 }
 
 // ─── ATHEIST ARGUMENTS ───────────────────────────────────────────────────────
@@ -1079,7 +1122,25 @@ objections:[
 {text:"<strong>Soul-making theodicy (Hick):</strong> Suffering is necessary for moral and spiritual development.",rebuttal:"Even granting this, it doesn't obviously justify the scale and distribution of suffering, especially suffering experienced by animals, infants, and those with no capacity for soul-making. Furthermore, an omnipotent God could presumably achieve the same soul-making goals with far less suffering than actually exists. The argument requires not that no suffering exist, but that no <em>gratuitous</em> suffering exist — and theodicies typically justify some suffering, not the full quantity we observe."}
 ]}
 ],
-conclusionText:"Therefore, given that gratuitous suffering exists, an omnipotent, omniscient, perfectly good God does not exist."},
+conclusionText:"Therefore, given that gratuitous suffering exists, an omnipotent, omniscient, perfectly good God does not exist.",
+postPremises:[
+{id:"poe_pp1",text:"Therefore, a being with the property of <strong>Perfect Goodness / Omnibenevolence</strong> does not exist — for no perfectly good being would permit gratuitous suffering.",propKey:"moral_source",direction:"against",
+evidence:[
+"<strong>Gratuitous suffering directly contradicts omnibenevolence.</strong> The conclusion of this argument is not merely that 'God causes evil' — it is the more precise claim that an omnipotent, omniscient, <em>perfectly good</em> being would eliminate suffering with no justifying good. If the premises are true, this property is what must be denied.",
+"<strong>The specificity of the attack:</strong> This is not a claim about whether God is powerful or transcendent — it is a targeted attack on the specific property of perfect goodness. A deistic God who is indifferent to suffering, or a finite God lacking the power to prevent it, would not be refuted by this argument. Only a being who is simultaneously powerful, knowing, and perfectly good is targeted."
+],
+objections:[
+{text:"<strong>Perhaps God is perfectly good but permits suffering for reasons we cannot comprehend.</strong>",rebuttal:"This is sceptical theism — addressed in the core premises above. If this response succeeds, it undermines not just the atheist argument but also our positive inferences about God's goodness from cases where God appears to act well. It is a high price to pay."}
+]},
+{id:"poe_pp2",text:"Therefore, the <strong>Powerful</strong> property (omnipotence) is called into question — either God lacks the power to prevent suffering, or God lacks the will (contradicting perfect goodness).",propKey:"powerful",direction:"against",
+evidence:[
+"<strong>The dilemma structure:</strong> Either God cannot prevent gratuitous suffering (impotence) or God will not (malevolence or indifference). The argument forces a choice: if suffering is genuinely gratuitous, then no being is simultaneously omnipotent, omniscient, and perfectly good. Denying power is one of the two ways to escape — but this comes at the cost of classical theism.",
+"<strong>This targets the classical triad.</strong> The argument is specifically deadly for classical theism, which requires all three properties at once. Rejecting omnipotence to save perfect goodness, or rejecting perfect goodness to save omnipotence, each dissolves the classical theistic concept of God."
+],
+objections:[
+{text:"<strong>God's omnipotence does not extend to logically impossible things, including perhaps the elimination of all suffering.</strong>",rebuttal:"But gratuitous suffering — by definition — is suffering God <em>could</em> prevent without sacrificing any greater good. If there is a greater good that justifies the suffering, it is not gratuitous. The argument therefore is not defeated by pointing to limits on omnipotence in general; it is defeated only by denying that any suffering is truly gratuitous."}
+]}
+]},
 
 {id:"hiddenness",title:"Argument from Divine Hiddenness",icon:"👁️",color:"#8b5cf6",
 baseLR:0.08,
@@ -1111,7 +1172,17 @@ objections:[
 {text:"<strong>Belief is available through natural theology — if they truly sought, they would find.",rebuttal:"This assumes natural theology is compelling enough to produce belief in all sincere seekers — but we have an entire tool (this tool!) dedicated to exploring how contestable these arguments are. Many philosophically sophisticated, morally serious people find the arguments for God unconvincing not because they resist belief but because the arguments genuinely appear to them insufficient. Their non-belief is an honest epistemic verdict, not a moral failure."}
 ]}
 ],
-conclusionText:"Therefore, the existence of sincere, non-resistant non-belief is evidence against the existence of a perfectly loving God."},
+conclusionText:"Therefore, the existence of sincere, non-resistant non-belief is evidence against the existence of a perfectly loving God.",
+postPremises:[
+{id:"hid_pp1",text:"Therefore, the <strong>Personal</strong> property — specifically the attribute of <em>perfect love</em> — is undermined. A perfectly loving personal God would not remain hidden from sincere seekers.",propKey:"personal",direction:"against",
+evidence:[
+"<strong>Perfect love entails availability.</strong> The divine hiddenness argument's force derives entirely from what perfect love requires. If God is personal and loving — not merely powerful or intelligent — He desires relationship. The argument is precisely targeted at this personal-relational aspect of the theistic God, not at transcendence or power.",
+"<strong>This is not an attack on theism in general.</strong> A God who is powerful and transcendent but impersonal (like the God of deism) would not be touched by this argument. It is specifically the claim that God is a loving personal being who seeks relationship with persons that generates the expectation of availability to sincere seekers."
+],
+objections:[
+{text:"<strong>Perhaps God's hiddenness is itself an expression of love — allowing epistemic space for free relationship.",rebuttal:"Addressed in the core premises. Even if some hiddenness could be loving, the full scale of non-resistant non-belief across cultures and history seems disproportionate to any loving purpose. A perfectly loving parent does not remain indefinitely hidden from a child who sincerely reaches out."}
+]}
+]},
 
 {id:"physical_minds",title:"Argument from Physical Minds",icon:"🧠",color:"#f59e0b",
 baseLR:0.15,
@@ -1145,7 +1216,17 @@ objections:[
 {text:"<strong>The conceivability of a non-physical mind shows it is possible.",rebuttal:"Conceivability arguments for possibilities are notoriously weak against inductive evidence. Perhaps a non-physical mind is conceivable, but conceivability does not establish probability. Our empirical evidence from a vast sample of minds favours the physical-dependence hypothesis, and this evidence outweighs a bare conceivability claim."}
 ]}
 ],
-conclusionText:"Therefore, the universal physical dependence of observed minds is probabilistic evidence against the existence of a necessarily existing non-physical mind (God)."},
+conclusionText:"Therefore, the universal physical dependence of observed minds is probabilistic evidence against the existence of a necessarily existing non-physical mind (God).",
+postPremises:[
+{id:"pm_pp1",text:"Therefore, the <strong>Transcendent</strong> property — specifically immateriality and independence from physical processes — is in tension with our best evidence about the nature of minds.",propKey:"transcendent",direction:"against",
+evidence:[
+"<strong>The argument targets immateriality directly.</strong> The conclusion is not that God lacks power or goodness — it is that the positing of a non-physical mind runs against our uniform empirical evidence that all minds are physically constituted. The specifically <em>immaterial</em> aspect of God's transcendence is what this argument challenges.",
+"<strong>Transcendence as a property requires a non-physical mind.</strong> Classical theism holds that God is timeless, spaceless, and immaterial — the sort of thing that cannot be a physical brain. But everything we know about minds suggests they are constituted by physical processes. The physical-minds argument makes the transcendent mind hypothesis antecedently improbable."
+],
+objections:[
+{text:"<strong>Perhaps our sample of minds is biased — we only observe physically-embodied minds because we are physical beings.",rebuttal:"This is possible, but it is an argument from ignorance. We must reason from our evidence base, and that evidence base uniformly confirms neural dependence. The absence of any confirmed case of a non-physical mind is significant evidence, not just a sampling artefact."}
+]}
+]},
 
 {id:"religious_disagreement",title:"Argument from Religious Disagreement",icon:"⚖️",color:"#10b981",
 baseLR:0.2,
@@ -1177,7 +1258,27 @@ objections:[
 {text:"<strong>Most of humanity has historically been religious — isn't that convergence on theism?",rebuttal:"Convergence on 'some religion' is not convergence on any particular revelation-claim — and most religions are mutually incompatible in their specific doctrines. Moreover, convergence under conditions of limited information, social pressure, and homogeneous culture is not epistemically significant. The relevant test is convergence among informed, sincere enquirers who have access to the full space of options — and there, convergence does not occur."}
 ]}
 ],
-conclusionText:"Therefore, the pattern of persistent religious disagreement among sincere enquirers is evidence against classical theism's claims about divine revelation and communication."}
+conclusionText:"Therefore, the pattern of persistent religious disagreement among sincere enquirers is evidence against classical theism's claims about divine revelation and communication.",
+postPremises:[
+{id:"rd_pp1",text:"Therefore, the <strong>Personal</strong> property — specifically the claim that God communicates Himself to humanity through revelation — is undermined. A God who desires relationship and has the power to communicate clearly would produce recognisable evidential convergence.",propKey:"personal",direction:"against",
+evidence:[
+"<strong>This targets the communicating, relational aspect of personhood.</strong> The argument does not challenge whether a first cause exists, or whether the universe had a transcendent origin. It challenges the further claim that this cause is a personal being who communicates, reveals, and desires relationship — because such a being would not remain unrecognised by billions of sincere enquirers across millennia.",
+"<strong>The pattern of disagreement is informative.</strong> In domains where a real truth exists and evidence is available — science, mathematics, history — sincere enquirers converge. Religious disagreement follows the pattern of genuinely contested, evidence-poor domains. This pattern is more expected on the hypothesis that God has not clearly communicated than on the hypothesis that He has."
+],
+objections:[
+{text:"<strong>Perhaps God's revelation is clear but human freedom and sin create divergence despite it.",rebuttal:"This assumes theism to explain away disconfirming evidence, and it attributes culpable resistance to billions of sincere seekers without independent grounds. It also fails to explain the divergence among those who are deeply religious but belong to different traditions."}
+]}
+]},
+{id:"rd_pp2",text:"Therefore, the specific theistic property of <strong>Intelligent</strong> communication — the claim that God has intelligibly revealed His nature and will — is called into question by the pattern of persistent disagreement.",propKey:"intelligent",direction:"against",
+evidence:[
+"<strong>An infinitely intelligent communicator would communicate intelligibly.</strong> The argument from disagreement indirectly challenges not just personal love but divine intelligence as applied to revelation. An omniscient being, perfectly understanding human minds and what would constitute compelling evidence, would presumably communicate in a way that is far more effective than has apparently occurred.",
+"<strong>The failure of convergence suggests either non-communication or ineffective communication.</strong> Either God has not communicated (challenging personhood) or has communicated ineffectively (challenging the application of intelligence to revelation). Neither sits comfortably with classical theism."
+],
+objections:[
+{text:"<strong>God communicates effectively, but humans suppress and distort the message.",rebuttal:"This again assumes culpable suppression across all divergent sincere enquirers. The assumption is not independently supported and makes the hypothesis unfalsifiable."}
+]}
+]},
+]
 ];
 
 // ─── ATHEIST ARGUMENT UI ─────────────────────────────────────────────────────
@@ -1244,27 +1345,62 @@ function recalcAll(){
     document.getElementById('badge-post-'+arg.id).textContent='Post:'+fmt(postVal);
   });
 
-  // ── Atheist args: display LR ──
+  // ── Atheist args: display LR + post-premise contributions ──
   ATHEIST_ARGUMENTS.forEach(arg=>{
     const u=ATHEIST_UI[arg.id];if(!u)return;
     const lr=getArgLR_against(arg);
-    const ap=arg.premises.length,ar=u.sliders.filter(x=>x.activated).length;
+    const ap=(arg.premises||[]).length+(arg.postPremises||[]).length;
+    const ar=(u.sliders||[]).filter(x=>x.activated).length+(u.postSliders||[]).filter(x=>x.activated).length;
     totalP+=ap;ratedP+=ar;
-    const pd=document.getElementById('prog-ath-'+arg.id);if(pd)pd.style.width=(ar/ap*100)+'%';
+    const pd=document.getElementById('prog-ath-'+arg.id);if(pd)pd.style.width=(ap>0?ar/ap*100:0)+'%';
     const pt=document.getElementById('progtxt-ath-'+arg.id);if(pt)pt.textContent=ar+'/'+ap;
     const lrd=document.getElementById('lr-ath-'+arg.id);
     if(lrd){lrd.textContent='LR: '+(lr===null?'—':fmtLR(lr));lrd.className='badge badge-core '+(lr===null?'':lr<1?'against':'neutral')}
     if(ar>0)ratedArgs++;
+    // Update post-premise contribution lines
+    (u.postSliders||[]).forEach(x=>{
+      const el=document.getElementById('contrib-ath-'+arg.id+'-'+x.pp.id);
+      if(el){
+        const propKey=x.pp.propKey;const propMeta=PROP_META[propKey]||{label:propKey};
+        if(x.activated){const conf=+x.slider.value/100;el.textContent='→ Reduces '+propMeta.label+' by ×'+(1-conf).toFixed(2)+(conf===1?' (fully negated)':conf===0?' (no effect)':'')}
+        else{el.textContent='→ —'}
+      }
+    });
+    // Update post-conclusion display
+    const postConcEl=document.getElementById('post-ath-'+arg.id);
+    if(postConcEl){
+      const rated=(u.postSliders||[]).filter(x=>x.activated);
+      if(!rated.length){postConcEl.textContent='—'}
+      else{const avgPenalty=rated.reduce((a,x)=>a*(1-x.slider.value/100),1);postConcEl.textContent='×'+avgPenalty.toFixed(3)+' to affected props'}
+    }
   });
 
   // ── Properties ──
   let propsOk=0;
   Object.keys(PROPERTY_REGISTRY).forEach(pk=>{
     const r=getCombinedProp(pk);
-    document.getElementById('propcomb-'+pk).textContent=r?fmt(r.combined):'—';
+    const dispEl=document.getElementById('propcomb-'+pk);
+    if(dispEl){
+      dispEl.textContent=r?fmt(r.combined):'—';
+      const hasAgainstRated=(PROPERTY_REGISTRY[pk].againstContributors||[]).some(c=>{const u=ATHEIST_UI[c.argId];return u&&(u.postSliders||[]).some(x=>x.pp.id===c.postId&&x.activated)});
+      dispEl.style.color=hasAgainstRated?(r&&r.combined>=0.5?'var(--gold)':'var(--rose)'):'';
+    }
     if(r)propsOk++;
     const el=document.getElementById('propcontrib-'+pk);el.innerHTML='';
-    if(r)r.contribs.forEach(c=>{const a=ARGUMENTS.find(x=>x.id===c.argId);const row=document.createElement('div');row.className='contributor-row';row.innerHTML=c.ent?`<span class="contributor-arg contributor-entailed">${a.icon} ${a.title} <span class="entailment-tag">via ${PROP_META[c.src]?.label||c.src}</span></span><span class="contributor-val" style="color:var(--accent3)">${fmt(c.val)}</span>`:`<span class="contributor-arg">${a.icon} ${a.title}</span><span class="contributor-val">${fmt(c.val)}</span>`;el.appendChild(row)});
+    if(r)r.contribs.forEach(c=>{
+      const isAth=c.against;
+      const a=isAth?ATHEIST_ARGUMENTS.find(x=>x.id===c.argId):ARGUMENTS.find(x=>x.id===c.argId);
+      if(!a)return;
+      const row=document.createElement('div');row.className='contributor-row';
+      if(isAth){
+        row.innerHTML=`<span class="contributor-arg" style="color:var(--rose)">${a.icon} ${a.title} <span class="entailment-tag" style="background:#f43f5e18;color:var(--rose)">AGAINST</span></span><span class="contributor-val" style="color:var(--rose)">×${(1-c.val).toFixed(3)}</span>`;
+      } else if(c.ent){
+        row.innerHTML=`<span class="contributor-arg contributor-entailed">${a.icon} ${a.title} <span class="entailment-tag">via ${PROP_META[c.src]?.label||c.src}</span></span><span class="contributor-val" style="color:var(--accent3)">${fmt(c.val)}</span>`;
+      } else {
+        row.innerHTML=`<span class="contributor-arg">${a.icon} ${a.title}</span><span class="contributor-val">${fmt(c.val)}</span>`;
+      }
+      el.appendChild(row);
+    });
   });
 
   // ── Bayesian posterior computation ──
@@ -1389,6 +1525,14 @@ function updateSensitivity(){
     x.slider.value=orig;
     if(baseComp!==null&&newComp!==null){const impact=(newComp-baseComp)*100;items.push({name:x.p?.text||x.pp?.text||'?',arg:arg.title,icon:arg.icon,impact})}
   })});
+  ATHEIST_ARGUMENTS.forEach(arg=>{const u=ATHEIST_UI[arg.id];if(!u)return;[...(u.sliders||[]),...(u.postSliders||[])].forEach(x=>{
+    if(!x.activated)return;
+    const orig=+x.slider.value;
+    x.slider.value=Math.max(0,orig-10);// for against args: lowering confidence reduces the penalty
+    const newComp=computeComposite();
+    x.slider.value=orig;
+    if(baseComp!==null&&newComp!==null){const impact=(newComp-baseComp)*100;items.push({name:x.p?.text||x.pp?.text||'?',arg:arg.title,icon:arg.icon,impact})}
+  })});
   items.sort((a,b)=>Math.abs(b.impact)-Math.abs(a.impact));
   if(!items.length){el.innerHTML='<p style="color:var(--text-faint);text-align:center;padding:20px">Rate more premises to see sensitivity analysis</p>';return}
   el.innerHTML=items.slice(0,15).map(x=>{const cls=Math.abs(x.impact)>=2?'very-high':Math.abs(x.impact)>=1?'high':'';return`<div class="sensitivity-item ${cls}"><div class="sensitivity-premise"><div class="sensitivity-premise-name">${x.name.slice(0,60)}${x.name.length>60?'...':''}</div><div class="sensitivity-premise-arg">${x.icon} ${x.arg}</div></div><div class="sensitivity-impact">${x.impact>=0?'+':''}${x.impact.toFixed(2)}%</div></div>`}).join('');
@@ -1465,10 +1609,11 @@ function buildUI(){
   // ── Atheist arguments UI ──
   const atheistC=document.getElementById('atheistArgContainer');
   ATHEIST_ARGUMENTS.forEach(arg=>{
-    ATHEIST_UI[arg.id]={sliders:[]};
+    const totalPremCount=(arg.premises||[]).length+(arg.postPremises||[]).length;
+    ATHEIST_UI[arg.id]={sliders:[],postSliders:[]};
     const card=document.createElement('div');card.className='arg-card atheist-arg';card.id='card-ath-'+arg.id;
     const baseLRpct=arg.baseLR<1?(1/arg.baseLR).toFixed(1)+'× against':'neutral';
-    card.innerHTML=`<div class="arg-header"><div class="arg-title-group"><div class="arg-icon" style="background:${arg.color}18">${arg.icon}</div><div><div class="arg-title">${arg.title}</div><div class="arg-subtitle">LR=${arg.baseLR} at full acceptance (${baseLRpct})</div></div></div><div class="arg-badge"><span class="badge badge-core" id="lr-ath-${arg.id}" style="background:#f43f5e18;color:var(--rose)">LR: —</span></div><svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="arg-progress"><div class="arg-progress-text" id="progtxt-ath-${arg.id}">0/${arg.premises.length} rated</div><div class="arg-progress-bar"><div class="arg-progress-fill" id="prog-ath-${arg.id}" style="width:0%;background:linear-gradient(90deg,var(--rose),var(--orange))"></div></div></div><div class="arg-body"><div class="arg-content" id="content-ath-${arg.id}"></div></div>`;
+    card.innerHTML=`<div class="arg-header"><div class="arg-title-group"><div class="arg-icon" style="background:${arg.color}18">${arg.icon}</div><div><div class="arg-title">${arg.title}</div><div class="arg-subtitle">LR=${arg.baseLR} at full acceptance (${baseLRpct})</div></div></div><div class="arg-badge"><span class="badge badge-core" id="lr-ath-${arg.id}" style="background:#f43f5e18;color:var(--rose)">LR: —</span></div><svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="arg-progress"><div class="arg-progress-text" id="progtxt-ath-${arg.id}">0/${totalPremCount} rated</div><div class="arg-progress-bar"><div class="arg-progress-fill" id="prog-ath-${arg.id}" style="width:0%;background:linear-gradient(90deg,var(--rose),var(--orange))"></div></div></div><div class="arg-body"><div class="arg-content" id="content-ath-${arg.id}"></div></div>`;
     atheistC.appendChild(card);
     card.querySelector('.arg-header').onclick=()=>card.classList.toggle('open');
     const content=document.getElementById('content-ath-'+arg.id);
@@ -1478,7 +1623,7 @@ function buildUI(){
     sylDiv.innerHTML=`<div class="section-label">Formal Syllogism</div><div class="syllogism-box">${arg.syllogism.map(s=>`<div class="syllogism-line"><span class="syllogism-num ${s.isConclusion?'conclusion':''}">${s.num}</span><span>${s.text}</span></div>`).join('')}</div><div class="postulate-note"><strong>Properties at stake:</strong> ${arg.postulates}</div><div class="lr-explain"><strong>How the LR works:</strong> If you rate all premises at 100%, this argument produces a Likelihood Ratio of <strong>${arg.baseLR}×</strong> — meaning the evidence described is ${(1/arg.baseLR).toFixed(1)}× more probable without God than with God. Your average premise confidence scales the LR: at 50% confidence, LR ≈ ${Math.pow(arg.baseLR,0.5).toFixed(3)}×. At 0% confidence, LR = 1× (no update).</div>`;
     content.appendChild(sylDiv);
 
-    // Premises
+    // Core Premises
     const premLabel=document.createElement('div');premLabel.className='section-label';premLabel.textContent='Premise Confidence';content.appendChild(premLabel);
     arg.premises.forEach((p,i)=>{
       const div=document.createElement('div');div.className='premise-card';
@@ -1491,12 +1636,40 @@ function buildUI(){
       div.querySelectorAll('.ev-ob-tab').forEach(tab=>tab.onclick=()=>{div.querySelectorAll('.ev-ob-tab').forEach(t=>t.classList.remove('active'));div.querySelectorAll('.ev-ob-content').forEach(c=>c.classList.remove('active'));tab.classList.add('active');div.querySelectorAll('.ev-ob-content')[tab.dataset.type==='ev'?0:1].classList.add('active')});
       ATHEIST_UI[arg.id].sliders.push(entry);
     });
+
+    // Core conclusion
     const concDiv=document.createElement('div');concDiv.className='conclusion-box';concDiv.style.borderColor='#f43f5e22';concDiv.innerHTML=`<div class="conclusion-text" style="color:var(--rose)">${arg.conclusionText}</div><div class="conclusion-value" id="lr-concl-ath-${arg.id}" style="color:var(--rose)">LR: —</div>`;content.appendChild(concDiv);
+
+    // Post-Argument Property Conclusions (mirrors theist structure but negates properties)
+    if(arg.postPremises&&arg.postPremises.length){
+      const postLabel=document.createElement('div');postLabel.className='section-label';postLabel.style.color='var(--rose)';postLabel.textContent='Post-Argument Property Conclusions';content.appendChild(postLabel);
+      const postIntro=document.createElement('p');postIntro.style.cssText='font-size:12px;color:var(--text-faint);margin-bottom:12px;line-height:1.6';postIntro.innerHTML='The argument above, if its premises are true, specifically attacks the following divine properties. Rate your confidence that the post-argument conclusion about each property holds — this feeds directly into the Properties tab.';content.appendChild(postIntro);
+      arg.postPremises.forEach(pp=>{
+        const div=document.createElement('div');div.className='post-premise-card';div.style.borderLeft='3px solid var(--rose)';
+        const objHtml2=(pp.objections||[]).map(o=>{const objText=typeof o==='string'?o:o.text;const rebuttal=typeof o==='object'&&o.rebuttal?`<div class="rebuttal">↩ <strong>Rebuttal:</strong> ${o.rebuttal}</div>`:'';return`<li>${objText}${rebuttal}</li>`}).join('');
+        const propMeta=PROP_META[pp.propKey]||{label:pp.propKey,icon:'•'};
+        div.innerHTML=`<div class="premise-top"><div class="premise-text">${pp.text}<span class="prop-tag" style="background:#f43f5e18;color:var(--rose)">${propMeta.icon} ${propMeta.label} — NEGATED</span></div></div><div class="confidence-row"><div class="slider-wrap"><input type="range" class="slider" min="0" max="100" value="50" style="accent-color:var(--rose)"></div><div class="conf-display empty" style="color:var(--rose)">—</div></div><div class="quick-btns"><button class="quick-btn" data-v="0">0%</button><button class="quick-btn" data-v="25">25%</button><button class="quick-btn" data-v="50">50%</button><button class="quick-btn" data-v="75">75%</button><button class="quick-btn" data-v="100">100%</button></div><div class="contribution-line" id="contrib-ath-${arg.id}-${pp.id}" style="color:var(--rose)">→ —</div><div class="evidence-objection-wrap"><div class="ev-ob-tabs"><button class="ev-ob-tab active" data-type="ev">✅ Evidence (${(pp.evidence||[]).length})</button><button class="ev-ob-tab objection" data-type="obj">⚠️ Objections (${(pp.objections||[]).length})</button></div><div class="ev-ob-content active"><ul>${(pp.evidence||[]).map(e=>'<li>'+e+'</li>').join('')}</ul></div><div class="ev-ob-content objection-content"><ul>${objHtml2}</ul></div></div>`;
+        content.appendChild(div);
+        const slider=div.querySelector('.slider'),display=div.querySelector('.conf-display');const entry={pp,slider,display,activated:false,card:div};
+        slider.oninput=()=>{entry.activated=true;display.textContent=slider.value+'%';display.classList.remove('empty');div.classList.add('rated');updateTrack(slider);pushUndo();recalcAll()};
+        div.querySelectorAll('.quick-btn').forEach(b=>b.onclick=()=>{slider.value=b.dataset.v;slider.oninput()});
+        div.querySelectorAll('.ev-ob-tab').forEach(tab=>tab.onclick=()=>{div.querySelectorAll('.ev-ob-tab').forEach(t=>t.classList.remove('active'));div.querySelectorAll('.ev-ob-content').forEach(c=>c.classList.remove('active'));tab.classList.add('active');div.querySelectorAll('.ev-ob-content')[tab.dataset.type==='ev'?0:1].classList.add('active')});
+        ATHEIST_UI[arg.id].postSliders.push(entry);
+      });
+      const postConcDiv=document.createElement('div');postConcDiv.className='conclusion-box';postConcDiv.style.cssText='border-color:#f43f5e22;background:linear-gradient(135deg,#f43f5e08,#fb923c08)';postConcDiv.innerHTML=`<div class="conclusion-text" style="color:var(--rose)">Property impact from ${arg.title}</div><div class="conclusion-value" id="post-ath-${arg.id}" style="color:var(--rose)">—</div>`;content.appendChild(postConcDiv);
+    }
   });
 
   // Properties panel
   const propC=document.getElementById('propContainer');
-  Object.keys(PROPERTY_REGISTRY).forEach(k=>{const m=PROP_META[k]||{label:k,icon:'•',desc:''};const div=document.createElement('div');div.className='property-card';div.innerHTML=`<div class="prop-header"><div class="prop-name"><span class="icon">${m.icon}</span>${m.label}<span style="color:var(--text-faint);font-weight:400;font-size:12px;margin-left:8px">${m.desc}</span></div><div class="prop-combined" id="propcomb-${k}">—</div></div><div class="contributors-list" id="propcontrib-${k}"></div>`;propC.appendChild(div)});
+  Object.keys(PROPERTY_REGISTRY).forEach(k=>{
+    const m=PROP_META[k]||{label:k,icon:'•',desc:''};
+    const hasAgainst=(PROPERTY_REGISTRY[k].againstContributors||[]).length>0;
+    const div=document.createElement('div');div.className='property-card'+(hasAgainst?' has-against':'');div.id='propcard-'+k;
+    const againstNote=hasAgainst?`<span style="font-size:10px;color:var(--rose);margin-left:8px;background:#f43f5e12;padding:2px 7px;border-radius:4px">⚔ contested</span>`:'';
+    div.innerHTML=`<div class="prop-header"><div class="prop-name"><span class="icon">${m.icon}</span>${m.label}${againstNote}<span style="color:var(--text-faint);font-weight:400;font-size:12px;margin-left:8px">${m.desc}</span></div><div class="prop-combined" id="propcomb-${k}">—</div></div><div class="contributors-list" id="propcontrib-${k}"></div>`;
+    propC.appendChild(div);
+  });
 
   // Combinator
   const comboC=document.getElementById('comboChecks');
