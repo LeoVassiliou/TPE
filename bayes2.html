@@ -961,118 +961,6 @@ preset:{k_p1:60,k_p2:48,k_pp1:45,k_pp2:55,k_pp3:22,k_pp4:38,f_p1:90,f_p2:18,f_pp
 preset:{k_p1:68,k_p2:58,k_pp1:62,k_pp2:65,k_pp3:48,k_pp4:55,f_p1:92,f_p2:45,f_pp1:58,f_pp2:52,f_pp3:55,f_pp4:42,m_p1:48,m_p2:62,m_pp1:55,m_pp2:50,m_pp3:52,c_p1:72,c_p2:62,c_pp1:60,c_pp2:58,c_pp3:45,o_p1:45,o_p2:88,o_pp1:60,r_p1:55,r_p2:42,r_pp1:45,pb_p1:88,pb_p2:58,pb_p3:52,pb_pp1:55,pb_pp2:58,pb_pp3:52,lll_p1:72,lll_p2:68,lll_p3:58,lll_pp1:62,sh_p1:55,sh_p2:48,sh_pp1:55}}
 ];
 
-// ─── PROPERTY REGISTRY ───────────────────────────────────────────────────────
-// Each property has: positive contributors (FOR args, raise P via noisy-OR)
-//                    negative contributors (AGAINST args, each has a baseLR<1 applied via Bayes)
-//                    entailed contributors (entailment chain from FOR args)
-const PROPERTY_REGISTRY={};
-
-// Register FOR argument post-premises as positive contributors
-ARGUMENTS.forEach(arg=>{arg.postPremises.forEach(pp=>{
-  if(!PROPERTY_REGISTRY[pp.propKey])PROPERTY_REGISTRY[pp.propKey]={key:pp.propKey,contributors:[],negContributors:[],entailedContributors:[]};
-  PROPERTY_REGISTRY[pp.propKey].contributors.push({argId:arg.id,postId:pp.id});
-})});
-
-// Ensure all entailed properties exist in registry
-Object.keys(ENTAILMENT_MAP).forEach(sp=>{ENTAILMENT_MAP[sp].forEach(tp=>{
-  if(!PROPERTY_REGISTRY[tp])PROPERTY_REGISTRY[tp]={key:tp,contributors:[],negContributors:[],entailedContributors:[]};
-})});
-
-// Register entailment chains
-ARGUMENTS.forEach(arg=>{arg.postPremises.forEach(pp=>{
-  const ent=ENTAILMENT_MAP[pp.propKey];if(!ent)return;
-  ent.forEach(tp=>{
-    if(!PROPERTY_REGISTRY[tp])PROPERTY_REGISTRY[tp]={key:tp,contributors:[],negContributors:[],entailedContributors:[]};
-    if(!PROPERTY_REGISTRY[tp].contributors.some(c=>c.argId===arg.id&&c.postId===pp.id))
-      PROPERTY_REGISTRY[tp].entailedContributors.push({argId:arg.id,postId:pp.id,sourceProp:pp.propKey});
-  });
-})});
-
-// Register AGAINST argument post-premises as negative contributors
-// Each negative contributor has: argId, postId, baseLR (< 1 if fully accepted)
-// baseLR for a negative postPremise = how strongly it attacks that property when 100% accepted
-// We derive it from the argument's overall strength & number of post-premises
-ATHEIST_ARGUMENTS.forEach(arg=>{
-  (arg.postPremises||[]).forEach(pp=>{
-    if(!PROPERTY_REGISTRY[pp.propKey])PROPERTY_REGISTRY[pp.propKey]={key:pp.propKey,contributors:[],negContributors:[],entailedContributors:[]};
-    // baseLR for this negative post-premise: given in pp.baseLR, or defaults to 0.2
-    PROPERTY_REGISTRY[pp.propKey].negContributors.push({argId:arg.id,postId:pp.id,baseLR:pp.baseLR||0.2});
-  });
-});
-
-// ─── IN-MEMORY STATE ─────────────────────────────────────────────────────────
-const UI={};
-let undoStack=[],redoStack=[];
-const worldviews={};
-let themeState='dark';
-
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-function fmt(v){return v===null?'—':(v*100).toFixed(1)+'%'}
-function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast visible'+(type?' '+type:'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('visible'),3000)}
-function showAchievement(title,text){const c=document.getElementById('achievementContainer');const d=document.createElement('div');d.className='achievement';d.innerHTML=`<div class="achievement-icon">🏆</div><div class="achievement-text"><div class="achievement-title">${title}</div>${text}</div>`;c.appendChild(d);setTimeout(()=>d.remove(),5000)}
-function toggleTheme(){themeState=themeState==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',themeState)}
-function showModal(id){document.getElementById(id).classList.add('visible');if(id==='worldviewModal')refreshWvList();if(id==='shareModal')generateShareUrl()}
-function hideModal(id){document.getElementById(id).classList.remove('visible')}
-function updateTrack(s){const p=((s.value-s.min)/(s.max-s.min))*100;s.style.background=`linear-gradient(90deg,var(--accent) ${p}%,var(--surface3) ${p}%)`}
-
-// ─── STATE ────────────────────────────────────────────────────────────────────
-function collectState(){
-  const s={sliders:{},combos:{},base:'none'};
-  ARGUMENTS.forEach(arg=>{const u=UI[arg.id];if(!u)return;u.coreSliders.forEach(x=>{s.sliders[x.p.id]={v:+x.slider.value,a:x.activated}});u.postSliders.forEach(x=>{s.sliders[x.pp.id]={v:+x.slider.value,a:x.activated}})});
-  Object.keys(PROP_META).forEach(k=>{const c=document.getElementById('combo-'+k);if(c)s.combos[k]=c.checked});
-  s.base=document.getElementById('baseSelect').value;return s;
-}
-function applyState(s,skipUndo){
-  if(!skipUndo)pushUndo();if(!s||!s.sliders)return;
-  ARGUMENTS.forEach(arg=>{const u=UI[arg.id];if(!u)return;
-    u.coreSliders.forEach(x=>{const d=s.sliders[x.p.id];if(d&&d.a){x.slider.value=d.v;x.display.textContent=d.v+'%';x.display.classList.remove('empty');x.activated=true;x.card.classList.add('rated');updateTrack(x.slider)}else{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''}});
-    u.postSliders.forEach(x=>{const d=s.sliders[x.pp.id];if(d&&d.a){x.slider.value=d.v;x.display.textContent=d.v+'%';x.display.classList.remove('empty');x.activated=true;x.card.classList.add('rated');updateTrack(x.slider)}else{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''}});
-  });
-  if(s.combos)Object.keys(s.combos).forEach(k=>{const c=document.getElementById('combo-'+k);if(c){c.checked=s.combos[k];c.closest('.combo-check')?.classList.toggle('checked',s.combos[k])}});
-  document.getElementById('baseSelect').value=s.base||'none';recalcAll();
-}
-function pushUndo(){undoStack.push(JSON.stringify(collectState()));if(undoStack.length>50)undoStack.shift();redoStack=[];updateUndoBtn()}
-function undo(){if(!undoStack.length)return;redoStack.push(JSON.stringify(collectState()));applyState(JSON.parse(undoStack.pop()),true);updateUndoBtn();showToast('Undone','success')}
-function redo(){if(!redoStack.length)return;undoStack.push(JSON.stringify(collectState()));applyState(JSON.parse(redoStack.pop()),true);updateUndoBtn();showToast('Redone','success')}
-function updateUndoBtn(){document.getElementById('undoBtn').disabled=!undoStack.length;document.getElementById('redoBtn').disabled=!redoStack.length}
-
-// ─── WORLDVIEWS ───────────────────────────────────────────────────────────────
-function saveWorldview(){const n=prompt('Name this worldview:');if(!n?.trim())return;worldviews[n.trim()]={state:collectState(),date:new Date().toISOString()};refreshWvList();showToast('Saved!','success');showAchievement('Worldview Saved','Configuration preserved')}
-function loadWv(n){const w=worldviews[n];if(w)applyState(w.state);hideModal('worldviewModal');showToast('Loaded "'+n+'"','success')}
-function deleteWv(n){if(!confirm('Delete "'+n+'"?'))return;delete worldviews[n];refreshWvList();showToast('Deleted')}
-function exportWv(n){const w=worldviews[n];if(!w)return;const b=new Blob([JSON.stringify({[n]:w},null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n+'.json';a.click();URL.revokeObjectURL(u)}
-function exportCurrent(){const b=new Blob([JSON.stringify({_current:{state:collectState(),date:new Date().toISOString()}},null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='worldview-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u);showToast('Exported!','success')}
-function importWorldview(files){if(!files.length)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);let c=0;Object.keys(d).forEach(n=>{if(d[n]?.state){worldviews[n==='_current'?'Imported '+new Date().toLocaleString():n]=d[n];c++}});refreshWvList();showToast('Imported '+c,'success')}catch(e){showToast('Invalid file','error')}};r.readAsText(files[0]);document.getElementById('importFile').value=''}
-function refreshWvList(){const c=document.getElementById('wvList');const k=Object.keys(worldviews);if(!k.length){c.innerHTML='<p style="color:var(--text-faint);text-align:center;padding:20px">No saved worldviews this session</p>';return}c.innerHTML=k.map(n=>`<div class="wv-item"><div class="wv-item-info"><div class="wv-item-name">${n}</div><div class="wv-item-date">${worldviews[n].date?new Date(worldviews[n].date).toLocaleString():'—'}</div></div><div class="wv-item-actions"><button class="wv-btn primary" onclick="loadWv('${n.replace(/'/g,"\\'")}')">Load</button><button class="wv-btn" onclick="exportWv('${n.replace(/'/g,"\\'")}')">Export</button><button class="wv-btn danger" onclick="deleteWv('${n.replace(/'/g,"\\'")}')">Delete</button></div></div>`).join('')}
-
-// ─── SHARE ────────────────────────────────────────────────────────────────────
-function generateShareUrl(){try{const s=btoa(unescape(encodeURIComponent(JSON.stringify(collectState()))));document.getElementById('shareUrl').value=location.origin+location.pathname+'?s='+s}catch(e){document.getElementById('shareUrl').value='(Could not encode)'}}
-function copyShareUrl(){const el=document.getElementById('shareUrl');el.select();try{document.execCommand('copy');showToast('Copied!','success')}catch(e){showToast('Select text and copy manually','error')}}
-
-// ─── RESET ────────────────────────────────────────────────────────────────────
-function confirmReset(){if(!confirm('Reset all ratings?'))return;pushUndo();ARGUMENTS.forEach(arg=>{const u=UI[arg.id];u.coreSliders.forEach(x=>{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''});u.postSliders.forEach(x=>{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''})});Object.keys(PROP_META).forEach(k=>{const c=document.getElementById('combo-'+k);if(c){c.checked=false;c.closest('.combo-check')?.classList.remove('checked')}});document.getElementById('baseSelect').value='none';recalcAll();showToast('Reset complete','success')}
-
-
-// ─── CORE PROBABILITY & CONTRIBUTION (handles both FOR and AGAINST args) ─────
-function getCoreProb(id){
-  const u=UI[id];
-  if(u){const v=u.coreSliders.map(x=>x.activated?+x.slider.value/100:null);return v.some(x=>x===null)?null:v.reduce((a,b)=>a*b,1)}
-  const ua=ATHEIST_UI[id];
-  if(ua){const v=ua.coreSliders.map(x=>x.activated?+x.slider.value/100:null);return v.some(x=>x===null)?null:v.reduce((a,b)=>a*b,1)}
-  return null;
-}
-function getContrib(argId,postId){
-  const c=getCoreProb(argId);if(c===null)return null;
-  const u=UI[argId];
-  if(u){const s=u.postSliders.find(x=>x.pp.id===postId);return(!s||!s.activated)?null:c*(+s.slider.value/100)}
-  const ua=ATHEIST_UI[argId];
-  if(ua){const s=ua.postSliders.find(x=>x.pp.id===postId);return(!s||!s.activated)?null:c*(+s.slider.value/100)}
-  return null;
-}
-
-// getCombinedProp is defined later after PROPERTY_REGISTRY is built (it uses ATHEIST_UI)
-// This forward-declaration slot is intentionally empty — see Bayesian section below.
-
 
 
 // ─── ATHEIST ARGUMENTS ───────────────────────────────────────────────────────
@@ -1200,6 +1088,120 @@ objections:[{text:"<strong>Physical processes still require a first cause of the
 
 // ─── ATHEIST UI STATE ────────────────────────────────────────────────────────
 const ATHEIST_UI={};  // {argId: {coreSliders:[], postSliders:[]}}
+
+
+// ─── PROPERTY REGISTRY ───────────────────────────────────────────────────────
+// Each property has: positive contributors (FOR args, raise P via noisy-OR)
+//                    negative contributors (AGAINST args, each has a baseLR<1 applied via Bayes)
+//                    entailed contributors (entailment chain from FOR args)
+const PROPERTY_REGISTRY={};
+
+// Register FOR argument post-premises as positive contributors
+ARGUMENTS.forEach(arg=>{arg.postPremises.forEach(pp=>{
+  if(!PROPERTY_REGISTRY[pp.propKey])PROPERTY_REGISTRY[pp.propKey]={key:pp.propKey,contributors:[],negContributors:[],entailedContributors:[]};
+  PROPERTY_REGISTRY[pp.propKey].contributors.push({argId:arg.id,postId:pp.id});
+})});
+
+// Ensure all entailed properties exist in registry
+Object.keys(ENTAILMENT_MAP).forEach(sp=>{ENTAILMENT_MAP[sp].forEach(tp=>{
+  if(!PROPERTY_REGISTRY[tp])PROPERTY_REGISTRY[tp]={key:tp,contributors:[],negContributors:[],entailedContributors:[]};
+})});
+
+// Register entailment chains
+ARGUMENTS.forEach(arg=>{arg.postPremises.forEach(pp=>{
+  const ent=ENTAILMENT_MAP[pp.propKey];if(!ent)return;
+  ent.forEach(tp=>{
+    if(!PROPERTY_REGISTRY[tp])PROPERTY_REGISTRY[tp]={key:tp,contributors:[],negContributors:[],entailedContributors:[]};
+    if(!PROPERTY_REGISTRY[tp].contributors.some(c=>c.argId===arg.id&&c.postId===pp.id))
+      PROPERTY_REGISTRY[tp].entailedContributors.push({argId:arg.id,postId:pp.id,sourceProp:pp.propKey});
+  });
+})});
+
+// Register AGAINST argument post-premises as negative contributors
+// Each negative contributor has: argId, postId, baseLR (< 1 if fully accepted)
+// baseLR for a negative postPremise = how strongly it attacks that property when 100% accepted
+// We derive it from the argument's overall strength & number of post-premises
+ATHEIST_ARGUMENTS.forEach(arg=>{
+  (arg.postPremises||[]).forEach(pp=>{
+    if(!PROPERTY_REGISTRY[pp.propKey])PROPERTY_REGISTRY[pp.propKey]={key:pp.propKey,contributors:[],negContributors:[],entailedContributors:[]};
+    // baseLR for this negative post-premise: given in pp.baseLR, or defaults to 0.2
+    PROPERTY_REGISTRY[pp.propKey].negContributors.push({argId:arg.id,postId:pp.id,baseLR:pp.baseLR||0.2});
+  });
+});
+
+// ─── IN-MEMORY STATE ─────────────────────────────────────────────────────────
+const UI={};
+let undoStack=[],redoStack=[];
+const worldviews={};
+let themeState='dark';
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function fmt(v){return v===null?'—':(v*100).toFixed(1)+'%'}
+function showToast(msg,type){const t=document.getElementById('toast');t.textContent=msg;t.className='toast visible'+(type?' '+type:'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('visible'),3000)}
+function showAchievement(title,text){const c=document.getElementById('achievementContainer');const d=document.createElement('div');d.className='achievement';d.innerHTML=`<div class="achievement-icon">🏆</div><div class="achievement-text"><div class="achievement-title">${title}</div>${text}</div>`;c.appendChild(d);setTimeout(()=>d.remove(),5000)}
+function toggleTheme(){themeState=themeState==='light'?'dark':'light';document.documentElement.setAttribute('data-theme',themeState)}
+function showModal(id){document.getElementById(id).classList.add('visible');if(id==='worldviewModal')refreshWvList();if(id==='shareModal')generateShareUrl()}
+function hideModal(id){document.getElementById(id).classList.remove('visible')}
+function updateTrack(s){const p=((s.value-s.min)/(s.max-s.min))*100;s.style.background=`linear-gradient(90deg,var(--accent) ${p}%,var(--surface3) ${p}%)`}
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+function collectState(){
+  const s={sliders:{},combos:{},base:'none'};
+  ARGUMENTS.forEach(arg=>{const u=UI[arg.id];if(!u)return;u.coreSliders.forEach(x=>{s.sliders[x.p.id]={v:+x.slider.value,a:x.activated}});u.postSliders.forEach(x=>{s.sliders[x.pp.id]={v:+x.slider.value,a:x.activated}})});
+  Object.keys(PROP_META).forEach(k=>{const c=document.getElementById('combo-'+k);if(c)s.combos[k]=c.checked});
+  s.base=document.getElementById('baseSelect').value;return s;
+}
+function applyState(s,skipUndo){
+  if(!skipUndo)pushUndo();if(!s||!s.sliders)return;
+  ARGUMENTS.forEach(arg=>{const u=UI[arg.id];if(!u)return;
+    u.coreSliders.forEach(x=>{const d=s.sliders[x.p.id];if(d&&d.a){x.slider.value=d.v;x.display.textContent=d.v+'%';x.display.classList.remove('empty');x.activated=true;x.card.classList.add('rated');updateTrack(x.slider)}else{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''}});
+    u.postSliders.forEach(x=>{const d=s.sliders[x.pp.id];if(d&&d.a){x.slider.value=d.v;x.display.textContent=d.v+'%';x.display.classList.remove('empty');x.activated=true;x.card.classList.add('rated');updateTrack(x.slider)}else{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''}});
+  });
+  if(s.combos)Object.keys(s.combos).forEach(k=>{const c=document.getElementById('combo-'+k);if(c){c.checked=s.combos[k];c.closest('.combo-check')?.classList.toggle('checked',s.combos[k])}});
+  document.getElementById('baseSelect').value=s.base||'none';recalcAll();
+}
+function pushUndo(){undoStack.push(JSON.stringify(collectState()));if(undoStack.length>50)undoStack.shift();redoStack=[];updateUndoBtn()}
+function undo(){if(!undoStack.length)return;redoStack.push(JSON.stringify(collectState()));applyState(JSON.parse(undoStack.pop()),true);updateUndoBtn();showToast('Undone','success')}
+function redo(){if(!redoStack.length)return;undoStack.push(JSON.stringify(collectState()));applyState(JSON.parse(redoStack.pop()),true);updateUndoBtn();showToast('Redone','success')}
+function updateUndoBtn(){document.getElementById('undoBtn').disabled=!undoStack.length;document.getElementById('redoBtn').disabled=!redoStack.length}
+
+// ─── WORLDVIEWS ───────────────────────────────────────────────────────────────
+function saveWorldview(){const n=prompt('Name this worldview:');if(!n?.trim())return;worldviews[n.trim()]={state:collectState(),date:new Date().toISOString()};refreshWvList();showToast('Saved!','success');showAchievement('Worldview Saved','Configuration preserved')}
+function loadWv(n){const w=worldviews[n];if(w)applyState(w.state);hideModal('worldviewModal');showToast('Loaded "'+n+'"','success')}
+function deleteWv(n){if(!confirm('Delete "'+n+'"?'))return;delete worldviews[n];refreshWvList();showToast('Deleted')}
+function exportWv(n){const w=worldviews[n];if(!w)return;const b=new Blob([JSON.stringify({[n]:w},null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=n+'.json';a.click();URL.revokeObjectURL(u)}
+function exportCurrent(){const b=new Blob([JSON.stringify({_current:{state:collectState(),date:new Date().toISOString()}},null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='worldview-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u);showToast('Exported!','success')}
+function importWorldview(files){if(!files.length)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);let c=0;Object.keys(d).forEach(n=>{if(d[n]?.state){worldviews[n==='_current'?'Imported '+new Date().toLocaleString():n]=d[n];c++}});refreshWvList();showToast('Imported '+c,'success')}catch(e){showToast('Invalid file','error')}};r.readAsText(files[0]);document.getElementById('importFile').value=''}
+function refreshWvList(){const c=document.getElementById('wvList');const k=Object.keys(worldviews);if(!k.length){c.innerHTML='<p style="color:var(--text-faint);text-align:center;padding:20px">No saved worldviews this session</p>';return}c.innerHTML=k.map(n=>`<div class="wv-item"><div class="wv-item-info"><div class="wv-item-name">${n}</div><div class="wv-item-date">${worldviews[n].date?new Date(worldviews[n].date).toLocaleString():'—'}</div></div><div class="wv-item-actions"><button class="wv-btn primary" onclick="loadWv('${n.replace(/'/g,"\\'")}')">Load</button><button class="wv-btn" onclick="exportWv('${n.replace(/'/g,"\\'")}')">Export</button><button class="wv-btn danger" onclick="deleteWv('${n.replace(/'/g,"\\'")}')">Delete</button></div></div>`).join('')}
+
+// ─── SHARE ────────────────────────────────────────────────────────────────────
+function generateShareUrl(){try{const s=btoa(unescape(encodeURIComponent(JSON.stringify(collectState()))));document.getElementById('shareUrl').value=location.origin+location.pathname+'?s='+s}catch(e){document.getElementById('shareUrl').value='(Could not encode)'}}
+function copyShareUrl(){const el=document.getElementById('shareUrl');el.select();try{document.execCommand('copy');showToast('Copied!','success')}catch(e){showToast('Select text and copy manually','error')}}
+
+// ─── RESET ────────────────────────────────────────────────────────────────────
+function confirmReset(){if(!confirm('Reset all ratings?'))return;pushUndo();ARGUMENTS.forEach(arg=>{const u=UI[arg.id];u.coreSliders.forEach(x=>{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''});u.postSliders.forEach(x=>{x.slider.value=50;x.display.textContent='—';x.display.classList.add('empty');x.activated=false;x.card.classList.remove('rated');x.slider.style.background=''})});Object.keys(PROP_META).forEach(k=>{const c=document.getElementById('combo-'+k);if(c){c.checked=false;c.closest('.combo-check')?.classList.remove('checked')}});document.getElementById('baseSelect').value='none';recalcAll();showToast('Reset complete','success')}
+
+
+// ─── CORE PROBABILITY & CONTRIBUTION (handles both FOR and AGAINST args) ─────
+function getCoreProb(id){
+  const u=UI[id];
+  if(u){const v=u.coreSliders.map(x=>x.activated?+x.slider.value/100:null);return v.some(x=>x===null)?null:v.reduce((a,b)=>a*b,1)}
+  const ua=ATHEIST_UI[id];
+  if(ua){const v=ua.coreSliders.map(x=>x.activated?+x.slider.value/100:null);return v.some(x=>x===null)?null:v.reduce((a,b)=>a*b,1)}
+  return null;
+}
+function getContrib(argId,postId){
+  const c=getCoreProb(argId);if(c===null)return null;
+  const u=UI[argId];
+  if(u){const s=u.postSliders.find(x=>x.pp.id===postId);return(!s||!s.activated)?null:c*(+s.slider.value/100)}
+  const ua=ATHEIST_UI[argId];
+  if(ua){const s=ua.postSliders.find(x=>x.pp.id===postId);return(!s||!s.activated)?null:c*(+s.slider.value/100)}
+  return null;
+}
+
+// getCombinedProp is defined later after PROPERTY_REGISTRY is built (it uses ATHEIST_UI)
+// This forward-declaration slot is intentionally empty — see Bayesian section below.
+
 
 // ─── PRIOR STATE ─────────────────────────────────────────────────────────────
 let priorP=0.5;
