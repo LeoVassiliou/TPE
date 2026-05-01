@@ -937,6 +937,95 @@ objections:[{text:"<strong>Perhaps a contingent personal being could still groun
 ]}
 ];
 
+// ─── ATHEIST ARGUMENTS ───────────────────────────────────────────────────────
+// Mirror structure of FOR arguments: corePremises → core conclusion → postPremises targeting properties (negative)
+// postPremises have propKey + baseLR (< 1): the LR applied to that property when core=1 and postSlider=100%
+// Math: LR(pp) = baseLR ^ (coreProb × postConf) — scales in log-odds space
+const ATHEIST_ARGUMENTS=[
+{id:"poe",title:"Evidential Problem of Evil",icon:"😢",color:"#f43f5e",
+syllogism:[
+  {num:"P1",text:"Gratuitous suffering — suffering serving no greater good and preventable by an omnipotent, omniscient, perfectly good being — exists in the world."},
+  {num:"P2",text:"If an omnipotent, omniscient, and perfectly good God exists, then gratuitous suffering does not exist."},
+  {num:"C",text:"Therefore, an omnipotent, omniscient, and perfectly good God does not exist.",isConclusion:true}
+],
+coreConclusionText:"Therefore, the evidence of gratuitous evil undermines the conjunction: omnipotent ∧ omniscient ∧ perfectly good.",
+corePremises:[
+{id:"poe_p1",text:"Gratuitous suffering — suffering with no greater-good justification — genuinely exists.",
+evidence:[
+"<strong>Rowe's fawn:</strong> A fawn dies slowly in a forest fire with no human witness, no soul-building purpose, and no free will involved. This appears paradigmatically gratuitous — its prevention would cost nothing morally significant.",
+"<strong>Animal suffering across deep time:</strong> Evolution produces mass death, predation, and disease over hundreds of millions of years before any conscious soul-making could occur. No standard theodicy adequately covers pre-human animal pain.",
+"<strong>The 'no good reason' inference:</strong> After thorough examination of the space of possible justifying goods, and finding none plausible, we are epistemically justified in inferring gratuitousness — just as we infer no mouse exists after a thorough room-search.",
+"<strong>Rowe (1979):</strong> The inference from 'we can see no good reason' to 'there is no good reason' is not a fallacy but a standard inductive pattern — used everywhere in science and ordinary life."
+],
+objections:[
+{text:"<strong>Sceptical Theism (Wykstra/Bergmann):</strong> We should expect God's justifying reasons to exceed our comprehension — as a parent's reasons exceed an infant's.",rebuttal:"Sceptical theism threatens to make ALL inductive reasoning about God unreliable, including positive evidential arguments for theism. If 'we can't see the reason' never licenses the inference 'there is no reason' in religious contexts, the strategy is unfalsifiable and must be applied symmetrically — eliminating much of natural theology too."},
+{text:"<strong>Greater Good / Soul-Making (Hick):</strong> Suffering is necessary for moral and spiritual growth.",rebuttal:"Soul-making cannot account for pre-conscious animal suffering across hundreds of millions of years. An omnipotent God could achieve any soul-making good with far less suffering than actually exists. The argument targets only gratuitous suffering — suffering that exceeds any plausible soul-making necessity."}
+]},
+{id:"poe_p2",text:"If God is omnipotent, omniscient, and perfectly good, gratuitous suffering cannot exist.",
+evidence:[
+"<strong>Analytic entailment:</strong> 'Omnipotent' = can prevent any contingent state of affairs. 'Omniscient' = knows all states of affairs. 'Perfectly good' = has maximal motivation to prevent needless suffering. A being with all three eliminates all suffering serving no greater good — i.e., all gratuitous suffering.",
+"<strong>The logical structure:</strong> (a) A perfectly good being prevents all suffering it can prevent without sacrificing a greater good. (b) An omnipotent being can prevent any suffering. (c) Therefore, a perfectly good omnipotent being eliminates all gratuitous suffering. QED."
+],
+objections:[
+{text:"<strong>Free will defence (Alvin Plantinga):</strong> God cannot actualise worlds with free creatures who always freely choose good.",rebuttal:"The free will defence applies only to moral evil caused by free human choices. Premise 1 is grounded primarily in natural evil and animal suffering — neither of which involves human free will."},
+{text:"<strong>Unknown greater goods:</strong> Perhaps every instance of apparent gratuitous evil secretly serves a greater good.",rebuttal:"This is not a theodicy but a blank cheque. The argument requires specifying the good. Merely asserting 'there must be one we cannot see' is unfalsifiable."}
+]}
+],
+postPremises:[
+{id:"poe_pp1",text:"The existence of gratuitous evil is strong evidence against God's moral perfection — a perfectly good being would not permit pointless suffering.",propKey:"moral_source",baseLR:0.08,
+evidence:["If P(gratuitous evil | perfectly good God) is very low, then observing gratuitous evil is strong evidence against perfect goodness. baseLR = 0.08: if fully accepted, the evidence is ~12.5× more likely given a God lacking moral perfection than given a morally perfect God."],
+objections:[{text:"<strong>God may have inscrutable reasons for permitting apparent gratuitous suffering.",rebuttal:"Sceptical theism applied here must be applied consistently — undermining the positive moral argument for God's goodness too."}]},
+{id:"poe_pp2",text:"The existence of gratuitous evil is evidence against God's omnipotence — an omnipotent being could prevent any contingent suffering it chose to.",propKey:"powerful",baseLR:0.15,
+evidence:["The Problem of Evil forces a dilemma: either God cannot prevent gratuitous suffering (lack of power) or will not (lack of goodness). If P1 holds, power is implicated. baseLR = 0.15: evidence is ~6.7× more likely given a non-omnipotent cause than an omnipotent one."],
+objections:[{text:"<strong>Omnipotence has logical limits — free will may constrain what God can do without contradiction.",rebuttal:"Agreed for moral evil from free agents, but natural evil and animal suffering are not so constrained. An omnipotent God retains full causal power over these."}]},
+{id:"poe_pp3",text:"The existence of gratuitous evil undermines the claim that a maximally great being — possessing all perfections in every possible world — exists.",propKey:"maximal_greatness",baseLR:0.10,
+evidence:["Maximal greatness requires omnipotence, omniscience, and moral perfection in every possible world. Gratuitous evil in this world is evidence against all three conjuncts simultaneously. baseLR = 0.10."],
+objections:[{text:"<strong>Modal theology may allow that an MGB exists in other possible worlds even if our world is difficult.",rebuttal:"The modal ontological argument holds that if an MGB is possible, it exists in ALL possible worlds including ours. If gratuitous evil here is incompatible with an MGB, it shows MGB is not actual — and potentially impossible."}]}
+]},
+
+{id:"hiddenness",title:"Argument from Divine Hiddenness",icon:"👁️",color:"#8b5cf6",
+syllogism:[
+  {num:"P1",text:"If a perfectly loving God exists, then every person capable of relationship with God who has not freely rejected God would be in a position to believe in God."},
+  {num:"P2",text:"Non-resistant non-belief exists — people who sincerely seek God and find no adequate grounds to believe, without any culpable resistance on their part."},
+  {num:"C",text:"Therefore, a perfectly loving God does not exist.",isConclusion:true}
+],
+coreConclusionText:"Therefore, the existence of sincere non-resistant non-belief is evidence against God's personal nature and perfect love.",
+corePremises:[
+{id:"hid_p1",text:"A perfectly loving God would ensure non-resistant seekers have access to belief — hiddenness toward sincere seekers is incompatible with perfect love.",
+evidence:[
+"<strong>The analogy of human love:</strong> No loving parent who has the power to be present to their child would hide when the child sincerely reaches out. Perfect love multiplies this obligation infinitely.",
+"<strong>Schellenberg's argument:</strong> The only adequate reason for God to permit non-resistant non-belief would be some good that outweighs relationship with God — but on theism, relationship with God is the supreme good for persons. No competing good could outweigh it.",
+"<strong>The asymmetry of cost:</strong> God loses nothing by being evident to sincere seekers. Only they lose — they lose the relationship. A perfectly loving God would not impose this loss without overwhelming reason."
+],
+objections:[
+{text:"<strong>Epistemic distance is required for genuine free faith — if God were obvious, belief would be coerced.",rebuttal:"Coercion of belief requires overwhelming psychological compulsion, not clear evidence. Many things are clearly evidenced without compelling assent. The argument specifically concerns non-resistant non-belief — people who would welcome belief."},
+{text:"<strong>Hiddenness permits spiritual growth through seeking.",rebuttal:"The degree of hiddenness vastly exceeds any plausible soul-shaping rationale. The quantity of sincere non-belief across all cultures and history is not explained by any plausible spiritual-growth story."}
+]},
+{id:"hid_p2",text:"Non-resistant non-belief genuinely exists — sincere, open, morally serious people who seek God but find no sufficient grounds to believe.",
+evidence:[
+"<strong>Empirical testimony:</strong> Many people report sincere extended seeking without finding adequate grounds for belief — not from moral convenience but from honest epistemic judgment.",
+"<strong>Former believers:</strong> Many people lose faith through honest examination, not moral failure. Sincere anguished deconversions are strong evidence for non-resistant non-belief.",
+"<strong>Cross-cultural breadth:</strong> Vast civilisations contain sincere moral seriousness coexisting with non-belief in a personal God."
+],
+objections:[
+{text:"<strong>All non-belief is ultimately resistant — even if unconsciously so.",rebuttal:"This is unfalsifiable: any sincere testimony of non-resistance is dismissed as self-deception. It also conflicts with orthodox theology, which holds God judges us on our sincere dispositions."},
+{text:"<strong>Natural theology gives everyone access to belief.",rebuttal:"This tool demonstrates exactly how contested natural theology is. Many philosophically sophisticated people find the arguments insufficient — this is an honest epistemic verdict, not culpable resistance."}
+]}
+],
+postPremises:[
+{id:"hid_pp1",text:"Non-resistant non-belief is strong evidence against God's perfect personal love — a perfectly loving God would not remain hidden from sincere seekers.",propKey:"personal",baseLR:0.10,
+evidence:["The Hiddenness argument primarily targets God's personal, relational nature. Hiddenness toward sincere seekers is incompatible with the perfectly loving God of classical theism. baseLR = 0.10: evidence is ~10× more likely if God is not personal than if He is a perfectly loving person."],
+objections:[{text:"<strong>God communicates through religious experience, Scripture, and community.",rebuttal:"The argument is specifically about those for whom these channels fail despite sincere engagement. If such people exist, that is unexplained by a perfectly loving communicating God."}]},
+{id:"hid_pp2",text:"Widespread non-resistant non-belief is evidence against the Christian God — whose self-revelation is supposed to be accessible to all.",propKey:"christian_god",baseLR:0.12,
+evidence:["Christianity holds God reveals himself adequately for all people. The existence of sincere non-resistant non-believers challenges the claim of adequate universal revelation. baseLR = 0.12."],
+objections:[{text:"<strong>God's revelation is adequate; non-belief reflects human limitation.",rebuttal:"If the limitation is non-culpable, then the revelation is by definition not adequate for that person — the responsibility falls on the revealer."}]}
+]},
+];
+
+// ─── ATHEIST UI STATE ────────────────────────────────────────────────────────
+const ATHEIST_UI={};  // {argId: {coreSliders:[], postSliders:[]}}
+
+
 // ─── ENTAILMENT MAP ──────────────────────────────────────────────────────────
 const ENTAILMENT_MAP={
 christian_god:['transcendent','firstcause','personal','maximal_greatness','powerful','intelligent','moral_source'],
@@ -1088,96 +1177,6 @@ function getContrib(argId,postId){
 
 // getCombinedProp is defined later after PROPERTY_REGISTRY is built (it uses ATHEIST_UI)
 // This forward-declaration slot is intentionally empty — see Bayesian section below.
-
-
-
-// ─── ATHEIST ARGUMENTS ───────────────────────────────────────────────────────
-// Mirror structure of FOR arguments: corePremises → core conclusion → postPremises targeting properties (negative)
-// postPremises have propKey + baseLR (< 1): the LR applied to that property when core=1 and postSlider=100%
-// Math: LR(pp) = baseLR ^ (coreProb × postConf) — scales in log-odds space
-const ATHEIST_ARGUMENTS=[
-{id:"poe",title:"Evidential Problem of Evil",icon:"😢",color:"#f43f5e",
-syllogism:[
-  {num:"P1",text:"Gratuitous suffering — suffering serving no greater good and preventable by an omnipotent, omniscient, perfectly good being — exists in the world."},
-  {num:"P2",text:"If an omnipotent, omniscient, and perfectly good God exists, then gratuitous suffering does not exist."},
-  {num:"C",text:"Therefore, an omnipotent, omniscient, and perfectly good God does not exist.",isConclusion:true}
-],
-coreConclusionText:"Therefore, the evidence of gratuitous evil undermines the conjunction: omnipotent ∧ omniscient ∧ perfectly good.",
-corePremises:[
-{id:"poe_p1",text:"Gratuitous suffering — suffering with no greater-good justification — genuinely exists.",
-evidence:[
-"<strong>Rowe's fawn:</strong> A fawn dies slowly in a forest fire with no human witness, no soul-building purpose, and no free will involved. This appears paradigmatically gratuitous — its prevention would cost nothing morally significant.",
-"<strong>Animal suffering across deep time:</strong> Evolution produces mass death, predation, and disease over hundreds of millions of years before any conscious soul-making could occur. No standard theodicy adequately covers pre-human animal pain.",
-"<strong>The 'no good reason' inference:</strong> After thorough examination of the space of possible justifying goods, and finding none plausible, we are epistemically justified in inferring gratuitousness — just as we infer no mouse exists after a thorough room-search.",
-"<strong>Rowe (1979):</strong> The inference from 'we can see no good reason' to 'there is no good reason' is not a fallacy but a standard inductive pattern — used everywhere in science and ordinary life."
-],
-objections:[
-{text:"<strong>Sceptical Theism (Wykstra/Bergmann):</strong> We should expect God's justifying reasons to exceed our comprehension — as a parent's reasons exceed an infant's.",rebuttal:"Sceptical theism threatens to make ALL inductive reasoning about God unreliable, including positive evidential arguments for theism. If 'we can't see the reason' never licenses the inference 'there is no reason' in religious contexts, the strategy is unfalsifiable and must be applied symmetrically — eliminating much of natural theology too."},
-{text:"<strong>Greater Good / Soul-Making (Hick):</strong> Suffering is necessary for moral and spiritual growth.",rebuttal:"Soul-making cannot account for pre-conscious animal suffering across hundreds of millions of years. An omnipotent God could achieve any soul-making good with far less suffering than actually exists. The argument targets only gratuitous suffering — suffering that exceeds any plausible soul-making necessity."}
-]},
-{id:"poe_p2",text:"If God is omnipotent, omniscient, and perfectly good, gratuitous suffering cannot exist.",
-evidence:[
-"<strong>Analytic entailment:</strong> 'Omnipotent' = can prevent any contingent state of affairs. 'Omniscient' = knows all states of affairs. 'Perfectly good' = has maximal motivation to prevent needless suffering. A being with all three eliminates all suffering serving no greater good — i.e., all gratuitous suffering.",
-"<strong>The logical structure:</strong> (a) A perfectly good being prevents all suffering it can prevent without sacrificing a greater good. (b) An omnipotent being can prevent any suffering. (c) Therefore, a perfectly good omnipotent being eliminates all gratuitous suffering. QED."
-],
-objections:[
-{text:"<strong>Free will defence (Alvin Plantinga):</strong> God cannot actualise worlds with free creatures who always freely choose good.",rebuttal:"The free will defence applies only to moral evil caused by free human choices. Premise 1 is grounded primarily in natural evil and animal suffering — neither of which involves human free will."},
-{text:"<strong>Unknown greater goods:</strong> Perhaps every instance of apparent gratuitous evil secretly serves a greater good.",rebuttal:"This is not a theodicy but a blank cheque. The argument requires specifying the good. Merely asserting 'there must be one we cannot see' is unfalsifiable."}
-]}
-],
-postPremises:[
-{id:"poe_pp1",text:"The existence of gratuitous evil is strong evidence against God's moral perfection — a perfectly good being would not permit pointless suffering.",propKey:"moral_source",baseLR:0.08,
-evidence:["If P(gratuitous evil | perfectly good God) is very low, then observing gratuitous evil is strong evidence against perfect goodness. baseLR = 0.08: if fully accepted, the evidence is ~12.5× more likely given a God lacking moral perfection than given a morally perfect God."],
-objections:[{text:"<strong>God may have inscrutable reasons for permitting apparent gratuitous suffering.",rebuttal:"Sceptical theism applied here must be applied consistently — undermining the positive moral argument for God's goodness too."}]},
-{id:"poe_pp2",text:"The existence of gratuitous evil is evidence against God's omnipotence — an omnipotent being could prevent any contingent suffering it chose to.",propKey:"powerful",baseLR:0.15,
-evidence:["The Problem of Evil forces a dilemma: either God cannot prevent gratuitous suffering (lack of power) or will not (lack of goodness). If P1 holds, power is implicated. baseLR = 0.15: evidence is ~6.7× more likely given a non-omnipotent cause than an omnipotent one."],
-objections:[{text:"<strong>Omnipotence has logical limits — free will may constrain what God can do without contradiction.",rebuttal:"Agreed for moral evil from free agents, but natural evil and animal suffering are not so constrained. An omnipotent God retains full causal power over these."}]},
-{id:"poe_pp3",text:"The existence of gratuitous evil undermines the claim that a maximally great being — possessing all perfections in every possible world — exists.",propKey:"maximal_greatness",baseLR:0.10,
-evidence:["Maximal greatness requires omnipotence, omniscience, and moral perfection in every possible world. Gratuitous evil in this world is evidence against all three conjuncts simultaneously. baseLR = 0.10."],
-objections:[{text:"<strong>Modal theology may allow that an MGB exists in other possible worlds even if our world is difficult.",rebuttal:"The modal ontological argument holds that if an MGB is possible, it exists in ALL possible worlds including ours. If gratuitous evil here is incompatible with an MGB, it shows MGB is not actual — and potentially impossible."}]}
-]},
-
-{id:"hiddenness",title:"Argument from Divine Hiddenness",icon:"👁️",color:"#8b5cf6",
-syllogism:[
-  {num:"P1",text:"If a perfectly loving God exists, then every person capable of relationship with God who has not freely rejected God would be in a position to believe in God."},
-  {num:"P2",text:"Non-resistant non-belief exists — people who sincerely seek God and find no adequate grounds to believe, without any culpable resistance on their part."},
-  {num:"C",text:"Therefore, a perfectly loving God does not exist.",isConclusion:true}
-],
-coreConclusionText:"Therefore, the existence of sincere non-resistant non-belief is evidence against God's personal nature and perfect love.",
-corePremises:[
-{id:"hid_p1",text:"A perfectly loving God would ensure non-resistant seekers have access to belief — hiddenness toward sincere seekers is incompatible with perfect love.",
-evidence:[
-"<strong>The analogy of human love:</strong> No loving parent who has the power to be present to their child would hide when the child sincerely reaches out. Perfect love multiplies this obligation infinitely.",
-"<strong>Schellenberg's argument:</strong> The only adequate reason for God to permit non-resistant non-belief would be some good that outweighs relationship with God — but on theism, relationship with God is the supreme good for persons. No competing good could outweigh it.",
-"<strong>The asymmetry of cost:</strong> God loses nothing by being evident to sincere seekers. Only they lose — they lose the relationship. A perfectly loving God would not impose this loss without overwhelming reason."
-],
-objections:[
-{text:"<strong>Epistemic distance is required for genuine free faith — if God were obvious, belief would be coerced.",rebuttal:"Coercion of belief requires overwhelming psychological compulsion, not clear evidence. Many things are clearly evidenced without compelling assent. The argument specifically concerns non-resistant non-belief — people who would welcome belief."},
-{text:"<strong>Hiddenness permits spiritual growth through seeking.",rebuttal:"The degree of hiddenness vastly exceeds any plausible soul-shaping rationale. The quantity of sincere non-belief across all cultures and history is not explained by any plausible spiritual-growth story."}
-]},
-{id:"hid_p2",text:"Non-resistant non-belief genuinely exists — sincere, open, morally serious people who seek God but find no sufficient grounds to believe.",
-evidence:[
-"<strong>Empirical testimony:</strong> Many people report sincere extended seeking without finding adequate grounds for belief — not from moral convenience but from honest epistemic judgment.",
-"<strong>Former believers:</strong> Many people lose faith through honest examination, not moral failure. Sincere anguished deconversions are strong evidence for non-resistant non-belief.",
-"<strong>Cross-cultural breadth:</strong> Vast civilisations contain sincere moral seriousness coexisting with non-belief in a personal God."
-],
-objections:[
-{text:"<strong>All non-belief is ultimately resistant — even if unconsciously so.",rebuttal:"This is unfalsifiable: any sincere testimony of non-resistance is dismissed as self-deception. It also conflicts with orthodox theology, which holds God judges us on our sincere dispositions."},
-{text:"<strong>Natural theology gives everyone access to belief.",rebuttal:"This tool demonstrates exactly how contested natural theology is. Many philosophically sophisticated people find the arguments insufficient — this is an honest epistemic verdict, not culpable resistance."}
-]}
-],
-postPremises:[
-{id:"hid_pp1",text:"Non-resistant non-belief is strong evidence against God's perfect personal love — a perfectly loving God would not remain hidden from sincere seekers.",propKey:"personal",baseLR:0.10,
-evidence:["The Hiddenness argument primarily targets God's personal, relational nature. Hiddenness toward sincere seekers is incompatible with the perfectly loving God of classical theism. baseLR = 0.10: evidence is ~10× more likely if God is not personal than if He is a perfectly loving person."],
-objections:[{text:"<strong>God communicates through religious experience, Scripture, and community.",rebuttal:"The argument is specifically about those for whom these channels fail despite sincere engagement. If such people exist, that is unexplained by a perfectly loving communicating God."}]},
-{id:"hid_pp2",text:"Widespread non-resistant non-belief is evidence against the Christian God — whose self-revelation is supposed to be accessible to all.",propKey:"christian_god",baseLR:0.12,
-evidence:["Christianity holds God reveals himself adequately for all people. The existence of sincere non-resistant non-believers challenges the claim of adequate universal revelation. baseLR = 0.12."],
-objections:[{text:"<strong>God's revelation is adequate; non-belief reflects human limitation.",rebuttal:"If the limitation is non-culpable, then the revelation is by definition not adequate for that person — the responsibility falls on the revealer."}]}
-]},
-];
-
-// ─── ATHEIST UI STATE ────────────────────────────────────────────────────────
-const ATHEIST_UI={};  // {argId: {coreSliders:[], postSliders:[]}}
 
 // ─── PRIOR STATE ─────────────────────────────────────────────────────────────
 let priorP=0.5;
