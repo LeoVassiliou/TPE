@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. Leo Vassiliou — Philosopher & Theologian</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Cinzel:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --void:#050407;
+  --deep:#0a0812;
+  --mid:#12101a;
+  --surface:#1a1726;
+  --border:rgba(255,255,255,0.07);
+  --gold:#c9a84c;
+  --gold2:#e8c97a;
+  --gold3:rgba(201,168,76,0.15);
+  --ivory:#f0eada;
+  --ivory2:#d4ccb8;
+  --ivory3:#a09888;
+  --blue:#3a5f8a;
+  --blue2:#5a8fc0;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --display:'Cinzel',serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  background:var(--void);
+  color:var(--ivory);
+  font-family:var(--serif);
+  cursor:none;
+  overflow-x:hidden;
+}
+
+/* CUSTOM CURSOR */
+#cursor{
+  position:fixed;width:8px;height:8px;
+  background:var(--gold);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transition:transform 0.15s ease,opacity 0.15s;
+  mix-blend-mode:difference;
+}
+#cursor-ring{
+  position:fixed;width:32px;height:32px;
+  border:1px solid var(--gold);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transition:transform 0.35s cubic-bezier(0.23,1,0.32,1),width 0.3s,height 0.3s,opacity 0.3s;
+  opacity:0.5;
+}
+body:hover #cursor{opacity:1}
+
+/* NOISE OVERLAY */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1;opacity:0.3;
+}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  padding:24px 48px;
+  display:flex;justify-content:space-between;align-items:center;
+  transition:background 0.4s,backdrop-filter 0.4s;
+}
+nav.scrolled{
+  background:rgba(5,4,7,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:var(--display);
+  font-size:13px;letter-spacing:0.2em;
+  color:var(--gold);text-transform:uppercase;
+}
+.nav-links{display:flex;gap:36px;list-style:none}
+.nav-links a{
+  font-family:var(--sans);font-size:12px;
+  letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--ivory3);text-decoration:none;
+  transition:color 0.3s;position:relative;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-4px;left:0;
+  width:0;height:0.5px;background:var(--gold);
+  transition:width 0.3s;
+}
+.nav-links a:hover{color:var(--gold2)}
+.nav-links a:hover::after{width:100%}
+
+/* HERO */
+#hero{
+  min-height:100vh;
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;
+  padding:0 48px;
+  position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 80% at 70% 50%, rgba(58,95,138,0.12) 0%, transparent 70%),
+             radial-gradient(ellipse 40% 60% at 30% 80%, rgba(201,168,76,0.06) 0%, transparent 60%);
+}
+.hero-grid-lines{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 70%);
+}
+.hero-left{
+  position:relative;z-index:2;
+  padding:120px 0;
+  opacity:0;transform:translateY(30px);
+  animation:fadeUp 1s ease 0.3s forwards;
+}
+.hero-eyebrow{
+  font-family:var(--sans);font-size:11px;
+  letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:24px;
+  display:flex;align-items:center;gap:12px;
+}
+.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--gold)}
+.hero-name{
+  font-family:var(--display);
+  font-size:clamp(52px,6vw,88px);
+  font-weight:400;line-height:0.95;
+  letter-spacing:0.04em;
+  margin-bottom:32px;
+}
+.hero-name .first{color:var(--ivory);display:block}
+.hero-name .last{
+  color:transparent;
+  -webkit-text-stroke:1px var(--gold);
+  display:block;
+}
+.hero-title-line{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:24px;
+}
+.hero-title-text{
+  font-size:18px;font-style:italic;color:var(--ivory2);
+  font-weight:300;line-height:1.4;
+}
+.hero-desc{
+  font-size:17px;line-height:1.85;color:var(--ivory3);
+  max-width:480px;margin-bottom:40px;font-weight:300;
+}
+.hero-ctas{display:flex;gap:16px;flex-wrap:wrap}
+.btn-primary{
+  font-family:var(--sans);font-size:12px;
+  letter-spacing:0.15em;text-transform:uppercase;
+  padding:14px 32px;
+  background:var(--gold);color:var(--void);
+  border:none;cursor:none;
+  transition:background 0.3s,transform 0.2s;
+  font-weight:500;
+}
+.btn-primary:hover{background:var(--gold2);transform:translateY(-2px)}
+.btn-ghost{
+  font-family:var(--sans);font-size:12px;
+  letter-spacing:0.15em;text-transform:uppercase;
+  padding:13px 32px;
+  background:transparent;color:var(--ivory2);
+  border:1px solid rgba(255,255,255,0.15);cursor:none;
+  transition:border-color 0.3s,color 0.3s,transform 0.2s;
+  font-weight:400;
+}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
+
+.hero-right{
+  position:relative;z-index:2;
+  display:flex;justify-content:center;align-items:center;
+  padding:120px 0;
+  opacity:0;transform:translateY(30px);
+  animation:fadeUp 1s ease 0.6s forwards;
+}
+
+/* PORTRAIT */
+.portrait-container{
+  position:relative;width:340px;height:440px;
+}
+.portrait-glow{
+  position:absolute;inset:-20px;
+  background:radial-gradient(ellipse at 50% 40%, rgba(201,168,76,0.15) 0%, transparent 65%);
+  animation:breathe 4s ease-in-out infinite;
+}
+.portrait-frame-outer{
+  position:absolute;inset:0;
+  border:1px solid rgba(201,168,76,0.25);
+}
+.portrait-frame-inner{
+  position:absolute;inset:8px;
+  border:1px solid rgba(201,168,76,0.1);
+}
+.portrait-corner{
+  position:absolute;width:20px;height:20px;
+}
+.portrait-corner.tl{top:-1px;left:-1px;border-top:2px solid var(--gold);border-left:2px solid var(--gold)}
+.portrait-corner.tr{top:-1px;right:-1px;border-top:2px solid var(--gold);border-right:2px solid var(--gold)}
+.portrait-corner.bl{bottom:-1px;left:-1px;border-bottom:2px solid var(--gold);border-left:2px solid var(--gold)}
+.portrait-corner.br{bottom:-1px;right:-1px;border-bottom:2px solid var(--gold);border-right:2px solid var(--gold)}
+.portrait-svg-wrap{
+  position:absolute;inset:0;overflow:hidden;
+  background:linear-gradient(160deg,#1a1726 0%,#0d0b14 100%);
+}
+
+/* SVG PORTRAIT ILLUSTRATION */
+.portrait-caption-bar{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:16px 20px;
+  background:linear-gradient(transparent,rgba(5,4,7,0.92));
+  font-family:var(--sans);
+}
+.portrait-caption-name{font-size:14px;color:var(--ivory);letter-spacing:0.1em;font-weight:500}
+.portrait-caption-role{font-size:11px;color:var(--gold);letter-spacing:0.08em;margin-top:2px}
+.portrait-year-badge{
+  position:absolute;top:16px;right:16px;
+  font-family:var(--display);font-size:11px;
+  color:var(--gold);letter-spacing:0.15em;
+  background:rgba(5,4,7,0.7);
+  padding:6px 10px;border:1px solid rgba(201,168,76,0.3);
+}
+
+/* SCROLL INDICATOR */
+.scroll-indicator{
+  position:absolute;bottom:40px;left:48px;
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--sans);font-size:11px;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--ivory3);
+  animation:fadeUp 1s ease 1.2s both;
+}
+.scroll-line{
+  width:1px;height:40px;background:var(--border);position:relative;overflow:hidden;
+}
+.scroll-line::after{
+  content:'';position:absolute;top:-40px;left:0;
+  width:100%;height:100%;background:var(--gold);
+  animation:scrollDown 2s ease-in-out infinite;
+}
+@keyframes scrollDown{
+  0%{top:-40px}100%{top:40px}
+}
+
+/* STATS BAR */
+.stats-bar{
+  background:var(--deep);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:32px 48px;
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:0;
+  opacity:0;
+  animation:fadeUp 1s ease 1s forwards;
+}
+.stat{
+  text-align:center;padding:0 24px;
+  border-right:1px solid var(--border);
+}
+.stat:last-child{border-right:none}
+.stat-num{
+  font-family:var(--display);font-size:36px;
+  color:var(--gold);line-height:1;margin-bottom:6px;
+  display:block;
+}
+.stat-label{
+  font-family:var(--sans);font-size:11px;
+  letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--ivory3);
+}
+
+/* SECTIONS COMMON */
+section{padding:100px 48px;max-width:1200px;margin:0 auto;position:relative}
+.section-label{
+  font-family:var(--sans);font-size:10px;
+  letter-spacing:0.25em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;
+}
+.section-label::before{content:'';width:24px;height:1px;background:var(--gold)}
+h2.section-title{
+  font-family:var(--display);font-size:clamp(32px,4vw,52px);
+  font-weight:400;line-height:1.1;
+  color:var(--ivory);margin-bottom:56px;
+}
+h2.section-title em{
+  color:transparent;-webkit-text-stroke:1px var(--gold2);
+  font-style:normal;
+}
+
+/* ABOUT */
+#about{
+  background:var(--deep);
+  max-width:100%;padding:100px 0;
+}
+.about-inner{
+  max-width:1200px;margin:0 auto;
+  padding:0 48px;
+  display:grid;grid-template-columns:1fr 1.2fr;gap:80px;
+  align-items:start;
+}
+.about-text p{
+  font-size:18px;line-height:2;color:var(--ivory2);
+  font-weight:300;margin-bottom:24px;
+}
+.about-text p:first-child::first-letter{
+  font-family:var(--display);font-size:72px;float:left;
+  line-height:0.75;padding-right:12px;padding-top:10px;
+  color:var(--gold);
+}
+.about-pull{
+  font-size:28px;font-style:italic;
+  line-height:1.5;color:var(--ivory);
+  border-left:2px solid var(--gold);
+  padding-left:28px;margin:32px 0;
+  font-weight:300;
+}
+.research-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px}
+.rtag{
+  font-family:var(--sans);font-size:11px;
+  letter-spacing:0.08em;padding:6px 14px;
+  border:1px solid var(--border);color:var(--ivory3);
+  transition:border-color 0.3s,color 0.3s;
+}
+.rtag:hover{border-color:var(--gold);color:var(--gold)}
+
+/* BOOKS */
+.books-masonry{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;
+}
+.book-card{
+  background:var(--deep);
+  border:1px solid var(--border);
+  padding:32px 28px;
+  position:relative;overflow:hidden;
+  transition:transform 0.4s cubic-bezier(0.23,1,0.32,1),border-color 0.3s;
+  cursor:none;
+}
+.book-card::before{
+  content:'';position:absolute;
+  left:0;top:0;bottom:0;width:2px;
+  background:var(--gold);
+  transform:scaleY(0);transform-origin:bottom;
+  transition:transform 0.4s ease;
+}
+.book-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(201,168,76,0.3);
+}
+.book-card:hover::before{transform:scaleY(1)}
+.book-card.featured{
+  background:linear-gradient(135deg,var(--surface) 0%,var(--deep) 100%);
+  border-color:rgba(201,168,76,0.2);
+}
+.book-num{
+  font-family:var(--display);font-size:13px;
+  color:var(--gold);letter-spacing:0.15em;
+  margin-bottom:16px;opacity:0.7;
+}
+.book-title{
+  font-family:var(--serif);font-size:20px;
+  line-height:1.25;color:var(--ivory);margin-bottom:8px;
+}
+.book-sub{
+  font-size:14px;font-style:italic;
+  color:var(--ivory3);margin-bottom:16px;
+}
+.book-pub{
+  font-family:var(--sans);font-size:11px;
+  letter-spacing:0.08em;color:var(--gold);
+  border-top:1px solid var(--border);padding-top:14px;
+  margin-top:auto;
+}
+.book-coming{
+  position:absolute;top:16px;right:16px;
+  background:var(--gold);color:var(--void);
+  font-family:var(--sans);font-size:9px;
+  letter-spacing:0.15em;text-transform:uppercase;
+  padding:4px 10px;font-weight:500;
+}
+
+/* THEISM ENGINE */
+#engine{
+  background:var(--deep);
+  max-width:100%;padding:100px 0;
+}
+.engine-inner{
+  max-width:1200px;margin:0 auto;padding:0 48px;
+  display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;
+}
+
+/* ENGINE SHOWCASE VISUAL */
+.engine-showcase{
+  position:relative;
+  display:flex;flex-direction:column;gap:0;
+}
+.engine-window{
+  position:relative;
+  background:var(--mid);
+  border:1px solid var(--border);
+  overflow:hidden;
+}
+.engine-window-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,0.02);
+}
+.win-dot{width:10px;height:10px;border-radius:50%}
+.win-dot.red{background:#ff5f57}
+.win-dot.yellow{background:#febc2e}
+.win-dot.green{background:#28c840}
+.win-url{
+  flex:1;margin-left:8px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:4px 12px;
+  font-family:var(--sans);font-size:11px;
+  color:var(--ivory3);letter-spacing:0.02em;
+}
+.engine-preview{
+  padding:28px;
+  position:relative;min-height:320px;
+}
+/* Animated argument nodes */
+.arg-nodes{
+  display:flex;flex-direction:column;gap:14px;
+  margin-bottom:24px;
+}
+.anode{
+  display:flex;align-items:center;gap:12px;
+  opacity:0;
+  animation:nodeIn 0.5s ease forwards;
+}
+.anode:nth-child(1){animation-delay:0.2s}
+.anode:nth-child(2){animation-delay:0.4s}
+.anode:nth-child(3){animation-delay:0.6s}
+.anode:nth-child(4){animation-delay:0.8s}
+.anode:nth-child(5){animation-delay:1.0s}
+.anode:nth-child(6){animation-delay:1.2s}
+@keyframes nodeIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.anode-label{
+  font-family:var(--sans);font-size:11px;
+  color:var(--ivory3);width:160px;flex-shrink:0;
+  letter-spacing:0.02em;
+}
+.anode-bar{flex:1;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
+.anode-fill{
+  height:100%;border-radius:2px;
+  background:linear-gradient(90deg,var(--blue2),var(--gold));
+  animation:fillBar 1.2s cubic-bezier(0.23,1,0.32,1) forwards;
+  width:0;
+}
+@keyframes fillBar{from{width:0}to{width:var(--w)}}
+.anode-val{
+  font-family:var(--display);font-size:12px;
+  color:var(--gold);min-width:32px;text-align:right;
+}
+.engine-result-row{
+  border-top:1px solid var(--border);
+  padding-top:20px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.eresult-left{font-family:var(--sans);font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--ivory3)}
+.eresult-val{
+  font-family:var(--display);font-size:20px;
+  color:var(--gold);
+  animation:pulseGold 3s ease-in-out infinite;
+}
+@keyframes pulseGold{0%,100%{text-shadow:0 0 0 transparent}50%{text-shadow:0 0 20px rgba(201,168,76,0.4)}}
+.eresult-pct{
+  font-family:var(--sans);font-size:12px;
+  color:var(--ivory3);margin-top:4px;
+}
+
+/* The launch button — full width, dramatic */
+.engine-launch{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:24px 28px;
+  background:linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(58,95,138,0.08) 100%);
+  border:1px solid rgba(201,168,76,0.25);
+  border-top:none;
+  text-decoration:none;
+  color:var(--ivory);
+  cursor:none;
+  transition:background 0.4s,border-color 0.4s;
+  position:relative;
+  overflow:hidden;
+}
+.engine-launch::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,168,76,0.12),rgba(58,95,138,0.12));
+  opacity:0;transition:opacity 0.4s;
+}
+.engine-launch:hover::before{opacity:1}
+.engine-launch:hover{border-color:rgba(201,168,76,0.5)}
+.el-left{display:flex;flex-direction:column;gap:4px}
+.el-title{font-family:var(--display);font-size:16px;color:var(--ivory);letter-spacing:0.08em}
+.el-sub{font-family:var(--sans);font-size:11px;color:var(--gold);letter-spacing:0.1em;text-transform:uppercase}
+.el-arrow{
+  font-size:28px;color:var(--gold);
+  transition:transform 0.3s;
+}
+.engine-launch:hover .el-arrow{transform:translateX(6px)}
+
+/* Floating badge */
+.engine-badge{
+  position:absolute;top:-14px;right:24px;
+  background:var(--gold);color:var(--void);
+  font-family:var(--sans);font-size:10px;
+  font-weight:600;letter-spacing:0.12em;
+  text-transform:uppercase;padding:5px 14px;
+  z-index:2;
+}
+
+/* TIMELINE */
+.timeline-container{position:relative;padding-left:48px}
+.timeline-spine{
+  position:absolute;left:16px;top:8px;bottom:8px;
+  width:1px;background:var(--border);
+}
+.tl-item{
+  position:relative;margin-bottom:48px;
+  opacity:0;transform:translateX(-20px);
+  transition:opacity 0.6s ease,transform 0.6s ease;
+}
+.tl-item.visible{opacity:1;transform:translateX(0)}
+.tl-marker{
+  position:absolute;left:-40px;top:6px;
+  width:10px;height:10px;border-radius:50%;
+  background:var(--void);border:1.5px solid var(--gold);
+  transition:background 0.3s;
+}
+.tl-item:hover .tl-marker{background:var(--gold)}
+.tl-year{
+  font-family:var(--sans);font-size:11px;
+  letter-spacing:0.1em;color:var(--gold);
+  margin-bottom:6px;text-transform:uppercase;
+}
+.tl-title{
+  font-size:18px;color:var(--ivory);margin-bottom:4px;
+}
+.tl-place{
+  font-family:var(--sans);font-size:13px;
+  color:var(--blue2);margin-bottom:8px;
+}
+.tl-desc{font-size:15px;color:var(--ivory3);line-height:1.7;font-weight:300}
+
+/* TALKS */
+.talks-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:2px;
+}
+.talk-card{
+  background:var(--deep);border:1px solid var(--border);
+  padding:28px;transition:border-color 0.3s,background 0.3s;
+  cursor:none;position:relative;overflow:hidden;
+}
+.talk-card::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(201,168,76,0.05) 0%,transparent 50%);
+  opacity:0;transition:opacity 0.3s;
+}
+.talk-card:hover{border-color:rgba(201,168,76,0.25)}
+.talk-card:hover::after{opacity:1}
+.talk-type{
+  font-family:var(--sans);font-size:10px;
+  letter-spacing:0.15em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:10px;
+}
+.talk-title{font-size:17px;color:var(--ivory);line-height:1.4;margin-bottom:8px}
+.talk-venue{font-family:var(--sans);font-size:12px;color:var(--ivory3)}
+
+/* PHILOSOPHY SECTION */
+.phil-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.phil-card{
+  border:1px solid var(--border);padding:36px 28px;
+  position:relative;overflow:hidden;
+  transition:border-color 0.4s,transform 0.4s;
+  cursor:none;
+}
+.phil-card:hover{border-color:rgba(201,168,76,0.3);transform:translateY(-4px)}
+.phil-icon{
+  font-family:var(--display);font-size:32px;
+  color:var(--gold);opacity:0.4;margin-bottom:20px;
+  display:block;
+}
+.phil-title{font-size:20px;color:var(--ivory);margin-bottom:12px}
+.phil-text{font-size:15px;color:var(--ivory3);line-height:1.75;font-weight:300}
+
+/* QUOTE SECTION */
+.quote-section{
+  text-align:center;padding:120px 48px;
+  background:var(--deep);
+  position:relative;overflow:hidden;
+  max-width:100%;
+}
+.quote-section::before{
+  content:'"';
+  position:absolute;top:-40px;left:50%;transform:translateX(-50%);
+  font-family:var(--display);font-size:300px;
+  color:rgba(201,168,76,0.04);pointer-events:none;
+  line-height:1;
+}
+.quote-text{
+  font-size:clamp(22px,3vw,36px);
+  font-style:italic;line-height:1.6;
+  color:var(--ivory);font-weight:300;
+  max-width:800px;margin:0 auto 28px;
+}
+.quote-attr{
+  font-family:var(--sans);font-size:12px;
+  letter-spacing:0.1em;color:var(--gold);
+  text-transform:uppercase;
+}
+
+/* CONTACT */
+#contact{background:var(--void);max-width:100%;padding:100px 0}
+.contact-inner{max-width:1200px;margin:0 auto;padding:0 48px;display:grid;grid-template-columns:1fr 1fr;gap:80px}
+.contact-text{font-size:17px;line-height:1.9;color:var(--ivory2);font-weight:300}
+.contact-links-list{display:flex;flex-direction:column;gap:2px;margin-top:36px}
+.c-link{
+  display:flex;align-items:center;gap:16px;
+  padding:16px 20px;
+  border:1px solid var(--border);
+  color:var(--ivory2);text-decoration:none;
+  font-family:var(--sans);font-size:13px;
+  transition:border-color 0.3s,background 0.3s,color 0.3s;
+  letter-spacing:0.05em;cursor:none;
+}
+.c-link:hover{border-color:var(--gold);background:rgba(201,168,76,0.05);color:var(--gold)}
+.c-icon{color:var(--gold);font-family:var(--display);font-size:14px;width:20px}
+.contact-info-panel{
+  background:var(--surface);border:1px solid var(--border);
+  padding:40px;
+}
+.info-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 0;border-bottom:1px solid var(--border);
+  font-family:var(--sans);font-size:13px;
+}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--ivory3);letter-spacing:0.06em}
+.info-val{color:var(--ivory);text-align:right}
+
+/* FOOTER */
+footer{
+  background:var(--void);
+  border-top:1px solid var(--border);
+  padding:32px 48px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.footer-name{font-family:var(--display);font-size:15px;color:var(--gold);letter-spacing:0.1em}
+.footer-right{font-family:var(--sans);font-size:12px;color:var(--ivory3);letter-spacing:0.06em}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:0.8}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes shimmer{0%{opacity:0.3}50%{opacity:0.7}100%{opacity:0.3}}
+@keyframes counterUp{from{opacity:0}to{opacity:1}}
+@keyframes rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 0.8s ease,transform 0.8s cubic-bezier(0.23,1,0.32,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.1s}
+.reveal-delay-2{transition-delay:0.2s}
+.reveal-delay-3{transition-delay:0.3s}
+
+/* PARALLAX BG ELEMENTS */
+.parallax-orb{
+  position:absolute;border-radius:50%;pointer-events:none;
+  animation:breathe 6s ease-in-out infinite;
+}
+
+/* HORIZONTAL MARQUEE */
+.marquee-wrap{
+  overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  background:var(--void);padding:0;
+}
+.marquee-track{
+  display:flex;gap:0;white-space:nowrap;
+  animation:marquee 20s linear infinite;
+}
+.marquee-item{
+  font-family:var(--display);font-size:13px;
+  letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--ivory3);padding:14px 32px;
+  border-right:1px solid var(--border);
+  flex-shrink:0;
+}
+.marquee-dot{color:var(--gold)}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ACTIVE NAV */
+.nav-links a.active{color:var(--gold2)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  #hero{grid-template-columns:1fr}
+  .hero-right{display:none}
+  .about-inner,.engine-inner,.contact-inner{grid-template-columns:1fr}
+  .books-masonry,.talks-grid,.phil-grid{grid-template-columns:1fr}
+  .stats-bar{grid-template-columns:repeat(3,1fr)}
+  nav{padding:16px 24px}
+  .nav-links{display:none}
+  section,.about-inner,.engine-inner,.contact-inner{padding-left:24px;padding-right:24px}
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">L · V</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#books">Books</a></li>
+    <li><a href="#engine">Theism Engine</a></li>
+    <li><a href="#career">Career</a></li>
+    <li><a href="#talks">Talks</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-lines"></div>
+
+  <div class="hero-left">
+    <div class="hero-eyebrow">Oxford University · Philosophy of Religion</div>
+    <h1 class="hero-name">
+      <span class="first">Dr. Leo</span>
+      <span class="last">Vassiliou</span>
+    </h1>
+    <div class="hero-title-line">
+      <div class="hero-title-text">Senior Research Fellow · Philosopher of Religion<br>Natural Theologian · Apologist · Author</div>
+    </div>
+    <p class="hero-desc">
+      Dedicated to the most consequential question the human mind can entertain: whether God exists. Deploying the sharpest tools of analytic philosophy — modal logic, Bayesian epistemology, philosophy of cosmology — in service of that ancient question.
+    </p>
+    <div class="hero-ctas">
+      <button class="btn-primary" onclick="document.getElementById('books').scrollIntoView({behavior:'smooth'})">Explore My Work</button>
+      <button class="btn-ghost" onclick="window.open('https://leovassiliou.co.uk/v2','_blank')">Theism Engine →</button>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="portrait-container">
+      <div class="portrait-glow"></div>
+      <div class="portrait-frame-outer">
+        <div class="portrait-corner tl"></div>
+        <div class="portrait-corner tr"></div>
+        <div class="portrait-corner bl"></div>
+        <div class="portrait-corner br"></div>
+      </div>
+      <div class="portrait-frame-inner"></div>
+      <div class="portrait-svg-wrap">
+        <!-- SVG PORTRAIT: Curly-haired Oxford academic illustration -->
+        <svg viewBox="0 0 340 440" xmlns="http://www.w3.org/2000/svg" width="340" height="440">
+          <defs>
+            <radialGradient id="bgGrad" cx="50%" cy="40%" r="60%">
+              <stop offset="0%" stop-color="#1e1a2e"/>
+              <stop offset="100%" stop-color="#0a0812"/>
+            </radialGradient>
+            <radialGradient id="faceGrad" cx="50%" cy="40%" r="55%">
+              <stop offset="0%" stop-color="#d4a882"/>
+              <stop offset="100%" stop-color="#b8865a"/>
+            </radialGradient>
+            <radialGradient id="hairGrad" cx="50%" cy="30%" r="60%">
+              <stop offset="0%" stop-color="#4a3520"/>
+              <stop offset="60%" stop-color="#2a1c10"/>
+              <stop offset="100%" stop-color="#1a1008"/>
+            </radialGradient>
+            <radialGradient id="glowFace" cx="50%" cy="30%" r="50%">
+              <stop offset="0%" stop-color="rgba(201,168,76,0.08)"/>
+              <stop offset="100%" stop-color="transparent"/>
+            </radialGradient>
+            <filter id="softBlur">
+              <feGaussianBlur stdDeviation="2"/>
+            </filter>
+            <filter id="hairBlur">
+              <feGaussianBlur stdDeviation="0.8"/>
+            </filter>
+          </defs>
+
+          <!-- Background -->
+          <rect width="340" height="440" fill="url(#bgGrad)"/>
+
+          <!-- Subtle atmospheric glow -->
+          <ellipse cx="170" cy="180" rx="120" ry="150" fill="url(#glowFace)" filter="url(#softBlur)"/>
+
+          <!-- GOWN / ACADEMIC OUTFIT -->
+          <!-- Body/torso - dark academic jacket -->
+          <path d="M60 440 L60 310 Q90 295 120 285 Q140 310 170 315 Q200 310 220 285 Q250 295 280 310 L280 440Z" fill="#0f0d18"/>
+          <!-- Jacket lapels -->
+          <path d="M140 295 Q155 340 170 355 Q155 300 145 285Z" fill="#1a1726"/>
+          <path d="M200 295 Q185 340 170 355 Q185 300 195 285Z" fill="#1a1726"/>
+          <!-- White collar/shirt -->
+          <path d="M153 286 Q162 300 170 305 Q178 300 187 286 Q178 280 170 282 Q162 280 153 286Z" fill="#d4ccb8"/>
+          <!-- Tie - deep burgundy -->
+          <path d="M168 286 L166 320 L170 325 L174 320 L172 286 L170 285Z" fill="#5c1a1a"/>
+          <!-- Jacket texture lines -->
+          <path d="M65 320 Q90 315 115 310 L115 440" stroke="rgba(255,255,255,0.03)" stroke-width="1" fill="none"/>
+          <path d="M275 320 Q250 315 225 310 L225 440" stroke="rgba(255,255,255,0.03)" stroke-width="1" fill="none"/>
+          <!-- Gold pin/badge on lapel -->
+          <circle cx="155" cy="295" r="3" fill="#c9a84c" opacity="0.7"/>
+
+          <!-- NECK -->
+          <rect x="157" y="270" width="26" height="24" rx="5" fill="#c89a72"/>
+
+          <!-- EARS -->
+          <ellipse cx="125" cy="210" rx="10" ry="14" fill="#c89a72"/>
+          <ellipse cx="215" cy="210" rx="10" ry="14" fill="#c89a72"/>
+          <ellipse cx="125" cy="210" rx="6" ry="9" fill="#b8835a" opacity="0.6"/>
+          <ellipse cx="215" cy="210" rx="6" ry="9" fill="#b8835a" opacity="0.6"/>
+
+          <!-- FACE -->
+          <ellipse cx="170" cy="205" rx="52" ry="62" fill="url(#faceGrad)"/>
+          <!-- Face shadow/depth -->
+          <ellipse cx="170" cy="220" rx="48" ry="50" fill="rgba(0,0,0,0.05)"/>
+          <!-- Jaw definition -->
+          <path d="M128 225 Q130 265 170 275 Q210 265 212 225" fill="#c08060" opacity="0.3"/>
+
+          <!-- BROW AREA - slightly furrowed (his characteristic look) -->
+          <!-- Left eyebrow - slightly furrowed inward -->
+          <path d="M136 183 Q148 178 160 181" stroke="#3d2810" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <!-- Right eyebrow -->
+          <path d="M180 181 Q192 178 204 183" stroke="#3d2810" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <!-- Brow furrow lines (subtle) -->
+          <path d="M167 184 L169 188" stroke="#b8865a" stroke-width="0.8" opacity="0.4"/>
+          <path d="M173 184 L171 188" stroke="#b8865a" stroke-width="0.8" opacity="0.4"/>
+
+          <!-- EYES - grey/dark, direct gaze -->
+          <!-- Eye sockets shadow -->
+          <ellipse cx="148" cy="202" rx="16" ry="12" fill="rgba(0,0,0,0.12)"/>
+          <ellipse cx="192" cy="202" rx="16" ry="12" fill="rgba(0,0,0,0.12)"/>
+          <!-- Eye whites -->
+          <ellipse cx="148" cy="202" rx="13" ry="9" fill="#e8e0d4"/>
+          <ellipse cx="192" cy="202" rx="13" ry="9" fill="#e8e0d4"/>
+          <!-- Irises - grey-blue -->
+          <circle cx="148" cy="202" r="7" fill="#7a8a8f"/>
+          <circle cx="192" cy="202" r="7" fill="#7a8a8f"/>
+          <!-- Pupils -->
+          <circle cx="148" cy="202" r="4" fill="#1a1410"/>
+          <circle cx="192" cy="202" r="4" fill="#1a1410"/>
+          <!-- Iris detail rings -->
+          <circle cx="148" cy="202" r="6.5" fill="none" stroke="#5a6a6f" stroke-width="0.5" opacity="0.6"/>
+          <circle cx="192" cy="202" r="6.5" fill="none" stroke="#5a6a6f" stroke-width="0.5" opacity="0.6"/>
+          <!-- Eye highlights -->
+          <circle cx="151" cy="199" r="2" fill="rgba(255,255,255,0.65)"/>
+          <circle cx="195" cy="199" r="2" fill="rgba(255,255,255,0.65)"/>
+          <circle cx="145" cy="204" r="0.8" fill="rgba(255,255,255,0.3)"/>
+          <circle cx="189" cy="204" r="0.8" fill="rgba(255,255,255,0.3)"/>
+          <!-- Upper eyelids -->
+          <path d="M135 196 Q148 191 161 196" stroke="#8a6040" stroke-width="1.5" fill="none" opacity="0.8"/>
+          <path d="M179 196 Q192 191 205 196" stroke="#8a6040" stroke-width="1.5" fill="none" opacity="0.8"/>
+          <!-- Lower lash lines -->
+          <path d="M137 208 Q148 212 160 208" stroke="#8a6040" stroke-width="0.8" fill="none" opacity="0.5"/>
+          <path d="M180 208 Q192 212 203 208" stroke="#8a6040" stroke-width="0.8" fill="none" opacity="0.5"/>
+
+          <!-- NOSE -->
+          <path d="M165 205 L161 228 Q165 233 170 233 Q175 233 179 228 L175 205" fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="1.5"/>
+          <!-- Nostril hint -->
+          <ellipse cx="162" cy="230" rx="5" ry="3.5" fill="rgba(0,0,0,0.15)"/>
+          <ellipse cx="178" cy="230" rx="5" ry="3.5" fill="rgba(0,0,0,0.15)"/>
+          <!-- Nose bridge highlight -->
+          <line x1="170" y1="190" x2="170" y2="225" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+
+          <!-- LIGHT BEARD/STUBBLE -->
+          <!-- Chin area stubble -->
+          <ellipse cx="170" cy="252" rx="30" ry="14" fill="rgba(80,50,20,0.25)"/>
+          <!-- Mustache area -->
+          <path d="M155 238 Q163 241 170 240 Q177 241 185 238" stroke="rgba(80,50,20,0.3)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- Sideburn area -->
+          <rect x="120" y="215" width="12" height="30" rx="4" fill="rgba(80,50,20,0.2)"/>
+          <rect x="208" y="215" width="12" height="30" rx="4" fill="rgba(80,50,20,0.2)"/>
+
+          <!-- MOUTH - neutral/serious expression -->
+          <path d="M154 242 Q162 246 170 245 Q178 246 186 242" stroke="#a06040" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          <!-- Lower lip -->
+          <path d="M158 247 Q170 252 182 247" stroke="#a06040" stroke-width="1.2" fill="rgba(160,100,70,0.15)" stroke-linecap="round"/>
+
+          <!-- CURLY HAIR - Leo's distinctive curly medium-length hair -->
+          <!-- Back/side hair mass -->
+          <ellipse cx="170" cy="165" rx="75" ry="80" fill="url(#hairGrad)"/>
+          <!-- Left side curls cascading down -->
+          <ellipse cx="105" cy="200" rx="28" ry="45" fill="url(#hairGrad)"/>
+          <ellipse cx="98" cy="215" rx="22" ry="38" fill="#2a1c10"/>
+          <!-- Right side curls -->
+          <ellipse cx="235" cy="200" rx="28" ry="45" fill="url(#hairGrad)"/>
+          <ellipse cx="242" cy="215" rx="22" ry="38" fill="#2a1c10"/>
+
+          <!-- Curl texture - individual curls on top -->
+          <!-- Top curls -->
+          <path d="M145 148 Q138 138 148 132 Q158 127 155 138 Q152 148 160 145" stroke="#4a3520" stroke-width="3.5" fill="none" stroke-linecap="round" filter="url(#hairBlur)"/>
+          <path d="M160 140 Q155 128 165 124 Q175 120 172 132 Q169 142 178 138" stroke="#3a2515" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M175 138 Q170 126 182 124 Q193 122 188 134 Q184 144 192 140" stroke="#4a3520" stroke-width="3.5" fill="none" stroke-linecap="round" filter="url(#hairBlur)"/>
+          <path d="M188 144 Q186 132 197 132 Q207 133 203 143 Q200 152 208 149" stroke="#3a2515" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M130 158 Q124 147 134 143 Q144 139 141 151 Q139 160 148 158" stroke="#4a3520" stroke-width="4" fill="none" stroke-linecap="round" filter="url(#hairBlur)"/>
+          <!-- Side curls left -->
+          <path d="M108 195 Q98 188 102 178 Q108 169 113 180 Q117 190 108 192" stroke="#3a2515" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M105 215 Q94 208 98 197 Q104 187 110 198 Q115 208 106 210" stroke="#4a3520" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M110 235 Q100 226 104 214 Q110 205 115 216 Q118 225 112 228" stroke="#3a2515" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <!-- Side curls right -->
+          <path d="M232 195 Q242 188 238 178 Q232 169 227 180 Q223 190 232 192" stroke="#3a2515" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M235 215 Q246 208 242 197 Q236 187 230 198 Q225 208 234 210" stroke="#4a3520" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M230 235 Q240 226 236 214 Q230 205 225 216 Q222 225 228 228" stroke="#3a2515" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+          <!-- Forehead hairline wisps -->
+          <path d="M148 165 Q152 155 158 163" stroke="#3a2515" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M168 160 Q172 150 178 158" stroke="#3a2515" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M156 162 Q160 152 166 160" stroke="#4a3520" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+          <!-- Hair highlight/sheen -->
+          <path d="M152 142 Q165 132 178 142" stroke="rgba(201,168,76,0.12)" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M155 152 Q170 143 185 152" stroke="rgba(255,255,255,0.06)" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+          <!-- Cover face top slightly with hair -->
+          <path d="M128 172 Q148 162 170 160 Q192 162 212 172 Q200 168 170 167 Q140 168 128 172Z" fill="#2a1c10" opacity="0.8"/>
+
+          <!-- DECORATIVE ELEMENTS - Oxford study background suggestion -->
+          <!-- Book spine hints on left edge -->
+          <rect x="0" y="280" width="8" height="60" fill="#3a2515" opacity="0.3"/>
+          <rect x="0" y="345" width="8" height="45" fill="#1a3a5c" opacity="0.3"/>
+          <rect x="0" y="395" width="8" height="45" fill="#2a1c10" opacity="0.3"/>
+          <!-- Right side bookshelf hint -->
+          <rect x="332" y="270" width="8" height="70" fill="#5c1a1a" opacity="0.3"/>
+          <rect x="332" y="345" width="8" height="50" fill="#1a3a5c" opacity="0.3"/>
+          <rect x="332" y="400" width="8" height="40" fill="#2a3a1c" opacity="0.3"/>
+
+          <!-- Atmospheric vignette -->
+          <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+            <stop offset="50%" stop-color="transparent"/>
+            <stop offset="100%" stop-color="rgba(5,4,7,0.7)"/>
+          </radialGradient>
+          <rect width="340" height="440" fill="url(#vignette)"/>
+
+          <!-- Light source from upper left -->
+          <radialGradient id="keyLight" cx="20%" cy="15%" r="50%">
+            <stop offset="0%" stop-color="rgba(255,240,200,0.08)"/>
+            <stop offset="100%" stop-color="transparent"/>
+          </radialGradient>
+          <rect width="340" height="440" fill="url(#keyLight)"/>
+        </svg>
+      </div>
+      <div class="portrait-caption-bar">
+        <div class="portrait-caption-name">Leo Vassiliou</div>
+        <div class="portrait-caption-role">D.Phil. Oxford · Senior Research Fellow</div>
+      </div>
+      <div class="portrait-year-badge">2036</div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat"><span class="stat-num" data-target="6">0</span><span class="stat-label">Books Published</span></div>
+  <div class="stat"><span class="stat-num" data-target="22">0</span><span class="stat-label">Peer-Reviewed Articles</span></div>
+  <div class="stat"><span class="stat-num" data-target="40">0</span><span class="stat-label">Public Debates</span></div>
+  <div class="stat"><span class="stat-num" data-target="2">0</span><span class="stat-label">Million Engine Users</span></div>
+  <div class="stat"><span class="stat-num" data-target="11">0</span><span class="stat-label">Years at Oxford</span></div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marquee">
+    <span class="marquee-item">Kalām Cosmological Argument <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Fine-Tuning Argument <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Modal Ontological Argument <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Moral Argument <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Leibnizian Contingency <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Minimal Facts — Resurrection <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Bayesian Natural Theology <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Philosophy of Religion <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Analytic Theology <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Kalām Cosmological Argument <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Fine-Tuning Argument <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Modal Ontological Argument <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Moral Argument <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Leibnizian Contingency <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Minimal Facts — Resurrection <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Bayesian Natural Theology <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Philosophy of Religion <span class="marquee-dot">·</span></span>
+    <span class="marquee-item">Analytic Theology <span class="marquee-dot">·</span></span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div id="about">
+  <div class="about-inner">
+    <div>
+      <div class="section-label reveal">Biography</div>
+      <h2 class="section-title reveal reveal-delay-1">The Mind Behind<br>the <em>Argument</em></h2>
+      <div class="about-text">
+        <p class="reveal reveal-delay-2">Leo Vassiliou is one of the foremost voices in contemporary analytic philosophy of religion. His work is characterised by a refusal to separate rigorous philosophical method from genuine theological conviction — deploying modal logic, Bayesian epistemology, and philosophy of cosmology in the service of natural theology's oldest and deepest question.</p>
+        <p class="reveal reveal-delay-3">Educated at the University of York (BA, First Class) and Oxford (M.Phil. and D.Phil.), his doctoral dissertation — <em>Probabilistic Theism and the Cumulative Case</em> — was awarded the Sheppard Prize. He has held a Senior Research Fellowship at Wycliffe Hall, Oxford, since 2034, following a postdoctoral residency at Notre Dame's Center for Philosophy of Religion.</p>
+      </div>
+    </div>
+    <div>
+      <div class="about-pull reveal">"The question of God's existence is not merely a religious question. It is the question on which every other question about meaning, morality and cosmos ultimately depends."</div>
+      <div class="research-tags reveal">
+        <span class="rtag">Natural Theology</span>
+        <span class="rtag">Bayesian Epistemology</span>
+        <span class="rtag">Modal Metaphysics</span>
+        <span class="rtag">Philosophy of Cosmology</span>
+        <span class="rtag">Christian Apologetics</span>
+        <span class="rtag">Early Christology</span>
+        <span class="rtag">Divine Attributes</span>
+        <span class="rtag">Resurrection Historiography</span>
+        <span class="rtag">Analytic Theology</span>
+        <span class="rtag">Philosophy of Science</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKS -->
+<section id="books">
+  <div class="section-label reveal">Published Works</div>
+  <h2 class="section-title reveal reveal-delay-1">Six Books.<br>One <em>Question.</em></h2>
+  <div class="books-masonry">
+    <div class="book-card reveal">
+      <div class="book-num">I · 2034</div>
+      <div class="book-title">Constructing God</div>
+      <div class="book-sub">Philosophical Blueprints of The Architect</div>
+      <div style="font-size:14px;color:var(--ivory3);line-height:1.7;font-weight:300;margin-top:8px">The cumulative case for classical theism, reconstructed from first principles using the tools of analytic philosophy and contemporary cosmology.</div>
+      <div class="book-pub">Oxford University Press</div>
+    </div>
+    <div class="book-card reveal reveal-delay-1">
+      <div class="book-num">II · 2035</div>
+      <div class="book-title">Deus Renatus Est</div>
+      <div class="book-sub">The Rebirth of God in Analytic Thought</div>
+      <div style="font-size:14px;color:var(--ivory3);line-height:1.7;font-weight:300;margin-top:8px">A survey and defence of the renaissance of theism in twentieth and twenty-first century analytic philosophy, from Plantinga to the present.</div>
+      <div class="book-pub">Eerdmans Publishing</div>
+    </div>
+    <div class="book-card reveal reveal-delay-2">
+      <div class="book-num">III · 2033</div>
+      <div class="book-title">The Secular Sin</div>
+      <div class="book-sub">Finding Meaning in a Meaningless Landscape</div>
+      <div style="font-size:14px;color:var(--ivory3);line-height:1.7;font-weight:300;margin-top:8px">A philosophical and pastoral examination of the nihilistic consequences of atheism and the failure of secular frameworks to ground ultimate meaning.</div>
+      <div class="book-pub">InterVarsity Academic</div>
+    </div>
+    <div class="book-card reveal">
+      <div class="book-num">IV · 2031</div>
+      <div class="book-title">Growing Up in Nineveh</div>
+      <div class="book-sub">Faith, Doubt and the Examined Life</div>
+      <div style="font-size:14px;color:var(--ivory3);line-height:1.7;font-weight:300;margin-top:8px">A memoir of intellectual and spiritual formation — the journey from curiosity to conviction, doubt to certainty, and the philosophical life as vocation.</div>
+      <div class="book-pub">SPCK Publishing</div>
+    </div>
+    <div class="book-card reveal reveal-delay-1">
+      <div class="book-num">V · 2032</div>
+      <div class="book-title">The Voice of One Calling in The Wilderness</div>
+      <div class="book-sub">Sermons at the Edge of Reason</div>
+      <div style="font-size:14px;color:var(--ivory3);line-height:1.7;font-weight:300;margin-top:8px">Collected sermons and pastoral addresses — the apologist speaking not to the academy but to the congregation, the sceptic, the seeker.</div>
+      <div class="book-pub">Crossway</div>
+    </div>
+    <div class="book-card featured reveal reveal-delay-2">
+      <div class="book-coming">Forthcoming</div>
+      <div class="book-num">VI · 2036</div>
+      <div class="book-title">The Probability of God</div>
+      <div class="book-sub">A Bayesian Case for Classical Theism</div>
+      <div style="font-size:14px;color:var(--ivory3);line-height:1.7;font-weight:300;margin-top:8px">The magnum opus — a comprehensive probabilistic framework unifying all major theistic arguments into a single formal cumulative case. The philosophical foundation of the Theism Engine.</div>
+      <div class="book-pub">Cambridge University Press</div>
+    </div>
+  </div>
+</section>
+
+<!-- THEISM ENGINE -->
+<div id="engine">
+  <div class="engine-inner">
+    <div>
+      <div class="section-label reveal">Digital Project</div>
+      <h2 class="section-title reveal reveal-delay-1">The Theism<br><em>Probability</em><br>Engine</h2>
+      <p class="reveal reveal-delay-2" style="font-size:17px;line-height:1.9;color:var(--ivory2);font-weight:300;margin-bottom:24px">The world's first interactive Bayesian framework for evaluating arguments for the existence of God. Users input their credences across the major theistic arguments and receive a calculated posterior probability distribution across worldviews — from naturalism to Christian theism.</p>
+      <p class="reveal reveal-delay-3" style="font-size:16px;line-height:1.85;color:var(--ivory3);font-weight:300">Built at the intersection of philosophy, probabilistic reasoning and software engineering — a project that began in a first-year computer science dorm room and became one of the most visited resources in online apologetics.</p>
+      <div style="display:flex;gap:32px;margin-top:36px" class="reveal">
+        <div><div style="font-family:var(--display);font-size:32px;color:var(--gold)">2.4M</div><div style="font-family:var(--sans);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ivory3);margin-top:4px">Users Worldwide</div></div>
+        <div><div style="font-family:var(--display);font-size:32px;color:var(--gold)">18</div><div style="font-family:var(--sans);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ivory3);margin-top:4px">Arguments Modelled</div></div>
+        <div><div style="font-family:var(--display);font-size:32px;color:var(--gold)">34</div><div style="font-family:var(--sans);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ivory3);margin-top:4px">Academic Citations</div></div>
+      </div>
+    </div>
+    <div class="engine-showcase reveal reveal-delay-2">
+      <div class="engine-window">
+        <div class="engine-window-bar">
+          <div class="win-dot red"></div>
+          <div class="win-dot yellow"></div>
+          <div class="win-dot green"></div>
+          <div class="win-url">leovassiliou.co.uk/v2</div>
+        </div>
+        <div class="engine-preview">
+          <div style="font-family:var(--sans);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:18px">Argument Credence Input</div>
+          <div class="arg-nodes">
+            <div class="anode">
+              <div class="anode-label">Kalām Cosmological</div>
+              <div class="anode-bar"><div class="anode-fill" style="--w:88%"></div></div>
+              <div class="anode-val">0.88</div>
+            </div>
+            <div class="anode">
+              <div class="anode-label">Fine-Tuning</div>
+              <div class="anode-bar"><div class="anode-fill" style="--w:82%"></div></div>
+              <div class="anode-val">0.82</div>
+            </div>
+            <div class="anode">
+              <div class="anode-label">Moral Argument</div>
+              <div class="anode-bar"><div class="anode-fill" style="--w:75%"></div></div>
+              <div class="anode-val">0.75</div>
+            </div>
+            <div class="anode">
+              <div class="anode-label">Modal Ontological</div>
+              <div class="anode-bar"><div class="anode-fill" style="--w:71%"></div></div>
+              <div class="anode-val">0.71</div>
+            </div>
+            <div class="anode">
+              <div class="anode-label">Minimal Facts</div>
+              <div class="anode-bar"><div class="anode-fill" style="--w:79%"></div></div>
+              <div class="anode-val">0.79</div>
+            </div>
+            <div class="anode">
+              <div class="anode-label">Contingency</div>
+              <div class="anode-bar"><div class="anode-fill" style="--w:73%"></div></div>
+              <div class="anode-val">0.73</div>
+            </div>
+          </div>
+          <div class="engine-result-row">
+            <div>
+              <div class="eresult-left">Posterior probability</div>
+              <div class="eresult-val">Christian Theism</div>
+              <div class="eresult-pct">P = 0.847 &nbsp;·&nbsp; Naturalism P = 0.061</div>
+            </div>
+            <svg width="56" height="56" viewBox="0 0 56 56">
+              <circle cx="28" cy="28" r="24" fill="none" stroke="rgba(201,168,76,0.15)" stroke-width="3"/>
+              <circle cx="28" cy="28" r="24" fill="none" stroke="var(--gold)" stroke-width="3"
+                stroke-dasharray="150.8" stroke-dashoffset="22.6"
+                stroke-linecap="round" transform="rotate(-90 28 28)"
+                style="animation:dashIn 1.5s ease 1.4s both"/>
+              <text x="28" y="33" text-anchor="middle" font-family="Cinzel,serif" font-size="11" fill="var(--gold)">85%</text>
+              <style>@keyframes dashIn{from{stroke-dashoffset:150.8}to{stroke-dashoffset:22.6}}</style>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <a class="engine-launch" href="https://leovassiliou.co.uk/v2" target="_blank">
+        <div class="engine-badge">Live Project</div>
+        <div class="el-left">
+          <div class="el-title">Launch the Engine</div>
+          <div class="el-sub">leovassiliou.co.uk/v2 &nbsp;·&nbsp; Try it yourself</div>
+        </div>
+        <div class="el-arrow">→</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- QUOTE -->
+<div class="quote-section" style="max-width:100%">
+  <div class="quote-inner" style="max-width:800px;margin:0 auto">
+    <p class="quote-text reveal">"Vassiliou has done for the 21st century what Plantinga did for the 20th — given theistic belief not merely a defence, but a philosophical architecture."</p>
+    <div class="quote-attr reveal reveal-delay-1">— Prof. J. R. Hartley, Notre Dame · Faith & Philosophy, 2035</div>
+  </div>
+</div>
+
+<!-- CAREER -->
+<section id="career">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px">
+    <div>
+      <div class="section-label reveal">Academic Journey</div>
+      <h2 class="section-title reveal reveal-delay-1">Education</h2>
+      <div class="timeline-container">
+        <div class="timeline-spine"></div>
+        <div class="tl-item">
+          <div class="tl-marker"></div>
+          <div class="tl-year">2030 – 2033</div>
+          <div class="tl-title">D.Phil. in Philosophy</div>
+          <div class="tl-place">University of Oxford</div>
+          <div class="tl-desc">Dissertation: <em>Probabilistic Theism and the Cumulative Case</em>. Awarded the Sheppard Prize. Supervised by Prof. R. T. Forster.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker"></div>
+          <div class="tl-year">2028 – 2030</div>
+          <div class="tl-title">M.Phil. in Philosophy</div>
+          <div class="tl-place">University of Oxford</div>
+          <div class="tl-desc">Modal metaphysics and philosophy of religion. Distinction.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker"></div>
+          <div class="tl-year">2025 – 2028</div>
+          <div class="tl-title">B.A. Philosophy — First Class Honours</div>
+          <div class="tl-place">University of York</div>
+          <div class="tl-desc">Top of cohort. Dissertation on the Kalām Argument and the beginning of the universe.</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="section-label reveal">Positions Held</div>
+      <h2 class="section-title reveal reveal-delay-1">Career</h2>
+      <div class="timeline-container">
+        <div class="timeline-spine"></div>
+        <div class="tl-item">
+          <div class="tl-marker"></div>
+          <div class="tl-year">2034 – Present</div>
+          <div class="tl-title">Senior Research Fellow</div>
+          <div class="tl-place">Wycliffe Hall, University of Oxford</div>
+          <div class="tl-desc">Theology and Philosophy of Religion. Graduate seminars in natural theology and Bayesian epistemology of religion.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker"></div>
+          <div class="tl-year">2033 – 2034</div>
+          <div class="tl-title">Postdoctoral Research Associate</div>
+          <div class="tl-place">Notre Dame Center for Philosophy of Religion</div>
+          <div class="tl-desc">Collaborated on the Theism and Science project. Visiting lecturer in analytic philosophy of religion.</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-marker"></div>
+          <div class="tl-year">2026 – Present</div>
+          <div class="tl-title">Founder · Theism Probability Engine</div>
+          <div class="tl-place">theismprobability.com</div>
+          <div class="tl-desc">Founded as a student project. Now the world's most-visited Bayesian natural theology tool, with 2.4 million users.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY PILLARS -->
+<div style="background:var(--deep);padding:80px 0;max-width:100%">
+  <div style="max-width:1200px;margin:0 auto;padding:0 48px">
+    <div class="phil-grid">
+      <div class="phil-card reveal">
+        <span class="phil-icon">∞</span>
+        <div class="phil-title">Natural Theology</div>
+        <div class="phil-text">Developing and defending the strongest versions of cosmological, teleological, ontological and axiological arguments through rigorous analytic method. The cumulative case approach is central to all of Leo's work.</div>
+      </div>
+      <div class="phil-card reveal reveal-delay-1">
+        <span class="phil-icon">∑</span>
+        <div class="phil-title">Bayesian Epistemology</div>
+        <div class="phil-text">Formalising the evidential weight of theistic arguments using probabilistic frameworks. Making explicit what has always been implicit in cumulative case reasoning — and quantifying it.</div>
+      </div>
+      <div class="phil-card reveal reveal-delay-2">
+        <span class="phil-icon">✝</span>
+        <div class="phil-title">Christian Apologetics</div>
+        <div class="phil-text">The historical case for the Resurrection via the Minimal Facts method, early Christology, the reliability of the New Testament, and the evidential case for classical Christian belief specifically.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TALKS -->
+<section id="talks">
+  <div class="section-label reveal">Speaking</div>
+  <h2 class="section-title reveal reveal-delay-1">Selected Talks<br>& <em>Debates</em></h2>
+  <div class="talks-grid">
+    <div class="talk-card reveal">
+      <div class="talk-type">Debate · 2035</div>
+      <div class="talk-title">"Does God Exist?" — Vassiliou vs. Prof. A. Flanagan</div>
+      <div class="talk-venue">Oxford Union · 1,200 in attendance</div>
+    </div>
+    <div class="talk-card reveal reveal-delay-1">
+      <div class="talk-type">Lecture · 2034</div>
+      <div class="talk-title">The Kalām Argument and Quantum Cosmology</div>
+      <div class="talk-venue">Notre Dame Philosophy of Religion Conference</div>
+    </div>
+    <div class="talk-card reveal">
+      <div class="talk-type">Debate · 2033</div>
+      <div class="talk-title">"Is Faith Rational?" — Vassiliou vs. Prof. D. Chen</div>
+      <div class="talk-venue">Cambridge University · Recorded · 4M views</div>
+    </div>
+    <div class="talk-card reveal reveal-delay-1">
+      <div class="talk-type">Keynote · 2035</div>
+      <div class="talk-title">Bayesian Natural Theology and the New Apologetics</div>
+      <div class="talk-venue">Evangelical Philosophical Society Annual Meeting</div>
+    </div>
+    <div class="talk-card reveal">
+      <div class="talk-type">Sermon · 2032</div>
+      <div class="talk-title">The Voice of One Calling — on Intellectual Courage</div>
+      <div class="talk-venue">Oxford University Church of St Mary the Virgin</div>
+    </div>
+    <div class="talk-card reveal reveal-delay-1">
+      <div class="talk-type">Podcast · Recurring</div>
+      <div class="talk-title">Reasonable Faith UK — Regular Guest</div>
+      <div class="talk-venue">In the tradition of William Lane Craig's global ministry</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<div id="contact">
+  <div class="contact-inner">
+    <div>
+      <div class="section-label reveal">Get in Touch</div>
+      <h2 class="section-title reveal reveal-delay-1">Let's Talk About<br>the <em>Big</em> Questions</h2>
+      <p class="contact-text reveal reveal-delay-2">Available for speaking engagements, public debates, academic collaboration, media appearances, and questions about the Theism Probability Engine.</p>
+      <div class="contact-links-list reveal reveal-delay-2">
+        <a class="c-link" href="#">
+          <span class="c-icon">✉</span>
+          leo.vassiliou@philosophy.ox.ac.uk
+        </a>
+        <a class="c-link" href="#">
+          <span class="c-icon">⌂</span>
+          theismprobability.com
+        </a>
+        <a class="c-link" href="#">
+          <span class="c-icon">❡</span>
+          PhilPapers · Academia.edu · Google Scholar
+        </a>
+        <a class="c-link" href="#">
+          <span class="c-icon">◈</span>
+          Wycliffe Hall, Oxford OX2 6PW
+        </a>
+      </div>
+    </div>
+    <div class="contact-info-panel reveal reveal-delay-1">
+      <div style="font-family:var(--display);font-size:16px;color:var(--gold);letter-spacing:0.1em;margin-bottom:24px">Quick Reference</div>
+      <div class="info-row"><span class="info-label">Location</span><span class="info-val">Oxford, United Kingdom</span></div>
+      <div class="info-row"><span class="info-label">Current role</span><span class="info-val">Senior Research Fellow</span></div>
+      <div class="info-row"><span class="info-label">Specialisation</span><span class="info-val">Philosophy of Religion</span></div>
+      <div class="info-row"><span class="info-label">Books published</span><span class="info-val">5 (+ 1 forthcoming)</span></div>
+      <div class="info-row"><span class="info-label">Journal articles</span><span class="info-val">22 peer-reviewed</span></div>
+      <div class="info-row"><span class="info-label">Public debates</span><span class="info-val">40+ worldwide</span></div>
+      <div class="info-row"><span class="info-label">Languages</span><span class="info-val">English · Greek · Latin (reading)</span></div>
+      <div class="info-row"><span class="info-label">Open to</span><span class="info-val">Lectures · Debates · Media</span></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-name">Dr. Leo Vassiliou</div>
+  <div class="footer-right">© 2036 · Oxford · Philosophy of Religion · All Rights Reserved</div>
+</footer>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let mouseX=0,mouseY=0,ringX=0,ringY=0;
+document.addEventListener('mousemove',e=>{
+  mouseX=e.clientX;mouseY=e.clientY;
+  cursor.style.transform=`translate(${mouseX-4}px,${mouseY-4}px)`;
+});
+function animateRing(){
+  ringX+=(mouseX-ringX)*0.12;
+  ringY+=(mouseY-ringY)*0.12;
+  cursorRing.style.transform=`translate(${ringX-16}px,${ringY-16}px)`;
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+document.querySelectorAll('a,button,input,.book-card,.talk-card,.phil-card,.c-link').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    cursorRing.style.width='48px';cursorRing.style.height='48px';
+    cursorRing.style.opacity='0.8';
+  });
+  el.addEventListener('mouseleave',()=>{
+    cursorRing.style.width='32px';cursorRing.style.height='32px';
+    cursorRing.style.opacity='0.5';
+  });
+});
+
+// NAV SCROLL
+const navbar=document.getElementById('navbar');
+window.addEventListener('scroll',()=>{
+  navbar.classList.toggle('scrolled',window.scrollY>60);
+});
+
+// SCROLL REVEAL
+const revealEls=document.querySelectorAll('.reveal,.tl-item');
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}
+  });
+},{threshold:0.12});
+revealEls.forEach(el=>io.observe(el));
+
+// COUNTER ANIMATION
+function animateCounter(el,target,duration=2000){
+  const start=performance.now();
+  function step(now){
+    const progress=Math.min((now-start)/duration,1);
+    const ease=1-Math.pow(1-progress,3);
+    el.textContent=Math.round(ease*target);
+    if(progress<1)requestAnimationFrame(step);
+    else el.textContent=target;
+  }
+  requestAnimationFrame(step);
+}
+const statsBar=document.querySelector('.stats-bar');
+const statsObs=new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting){
+    document.querySelectorAll('.stat-num').forEach(el=>{
+      animateCounter(el,parseInt(el.dataset.target));
+    });
+    statsObs.disconnect();
+  }
+},{threshold:0.5});
+statsObs.observe(statsBar);
+
+
+</script>
+</body>
+</html>
