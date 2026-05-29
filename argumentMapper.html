@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Argument Mapper — Visualize Logic</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --premise: #6366f1;
+            --conclusion: #10b981;
+            --objection: #ef4444;
+            --support: #f59e0b;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --glow-premise: rgba(99, 102, 241, 0.4);
+            --glow-conclusion: rgba(16, 185, 129, 0.4);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle at 30% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 70%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            animation: bgPulse 15s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, transparent 100%);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #6366f1, #10b981, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { filter: drop-shadow(0 0 20px var(--glow-premise)); }
+            50% { filter: drop-shadow(0 0 30px var(--glow-conclusion)); }
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        /* Main Layout */
+        .container {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            max-width: 1800px;
+            margin: 0 auto;
+            height: calc(100vh - 140px);
+        }
+
+        /* Input Panel */
+        .input-panel {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-title::before {
+            content: '📝';
+        }
+
+        textarea {
+            flex: 1;
+            background: var(--bg-input);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 1rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            resize: none;
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--premise);
+            box-shadow: 0 0 20px var(--glow-premise);
+        }
+
+        textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.875rem 1.25rem;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--premise), #4f46e5);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--glow-premise);
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Example Arguments */
+        .examples {
+            margin-top: 0.5rem;
+        }
+
+        .examples-title {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .example-btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .example-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: translateX(5px);
+        }
+
+        /* Canvas Panel */
+        .canvas-panel {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .canvas-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .canvas-title::before {
+            content: '🔮';
+        }
+
+        .canvas-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .control-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-input);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* SVG Canvas */
+        #diagram-canvas {
+            flex: 1;
+            background: radial-gradient(circle at center, rgba(30, 41, 59, 0.5) 0%, var(--bg-dark) 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #diagram-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Node Styles */
+        .node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .node:hover {
+            filter: brightness(1.2);
+        }
+
+        .node-rect {
+            rx: 12;
+            ry: 12;
+            stroke-width: 2;
+            transition: all 0.3s ease;
+        }
+
+        .node-premise .node-rect {
+            fill: rgba(99, 102, 241, 0.15);
+            stroke: var(--premise);
+        }
+
+        .node-conclusion .node-rect {
+            fill: rgba(16, 185, 129, 0.15);
+            stroke: var(--conclusion);
+        }
+
+        .node-objection .node-rect {
+            fill: rgba(239, 68, 68, 0.15);
+            stroke: var(--objection);
+        }
+
+        .node-text {
+            fill: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+
+        .node-label {
+            fill: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Edge Styles */
+        .edge {
+            fill: none;
+            stroke-width: 2;
+            opacity: 0.8;
+        }
+
+        .edge-support {
+            stroke: var(--premise);
+            marker-end: url(#arrowhead-premise);
+        }
+
+        .edge-conclusion {
+            stroke: var(--conclusion);
+            marker-end: url(#arrowhead-conclusion);
+        }
+
+        .edge-objection {
+            stroke: var(--objection);
+            stroke-dasharray: 8 4;
+            marker-end: url(#arrowhead-objection);
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.premise { background: var(--premise); }
+        .legend-dot.conclusion { background: var(--conclusion); }
+        .legend-dot.objection { background: var(--objection); }
+
+        /* Analysis Panel */
+        .analysis-panel {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .analysis-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .analysis-title::before {
+            content: '📊';
+        }
+
+        .analysis-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .analysis-item:last-child {
+            border-bottom: none;
+        }
+
+        .validity-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .validity-valid {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--conclusion);
+        }
+
+        .validity-invalid {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--objection);
+        }
+
+        /* Loading Animation */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(99, 102, 241, 0.2);
+            border-top-color: var(--premise);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Welcome State */
+        .welcome-state {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .welcome-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        /* Node Info Tooltip */
+        .tooltip {
+            position: absolute;
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            max-width: 300px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+
+        .tooltip.active {
+            display: block;
+            animation: tooltipIn 0.2s ease;
+        }
+
+        @keyframes tooltipIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .input-panel {
+                max-height: 400px;
+            }
+
+            .canvas-panel {
+                min-height: 500px;
+            }
+        }
+
+        /* Confetti animation for valid arguments */
+        .confetti {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <h1>🧠 Argument Mapper</h1>
+        <p class="subtitle">Transform philosophical arguments into beautiful logical diagrams</p>
+    </header>
+
+    <main class="container">
+        <aside class="input-panel">
+            <h2 class="panel-title">Enter Your Argument</h2>
+
+            <textarea id="argument-input" placeholder="Enter your argument here...
+
+Format tips:
+• Start premises with P1:, P2:, etc.
+• Start conclusions with C: or ∴
+• Start objections with OBJ: or [Objection]
+• Use → to show logical flow
+• Use standard logical notation (∧, ∨, →, ¬, ∀, ∃)
+
+Example:
+P1: All humans are mortal
+P2: Socrates is a human
+∴ C: Socrates is mortal"></textarea>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="parseAndVisualize()">
+                    <span>🔍</span> Analyze & Map
+                </button>
+                <button class="btn btn-secondary" onclick="clearAll()">
+                    <span>🗑️</span> Clear
+                </button>
+            </div>
+
+            <div class="examples">
+                <p class="examples-title">✨ Try these classic arguments:</p>
+                <button class="example-btn" onclick="loadExample('socrates')">
+                    🏛️ Socratic Syllogism
+                </button>
+                <button class="example-btn" onclick="loadExample('cogito')">
+                    💭 Descartes' Cogito
+                </button>
+                <button class="example-btn" onclick="loadExample('ontological')">
+                    🌌 Ontological Argument
+                </button>
+                <button class="example-btn" onclick="loadExample('trolley')">
+                    🚃 Trolley Problem Analysis
+                </button>
+                <button class="example-btn" onclick="loadExample('freewill')">
+                    ⚖️ Free Will Argument
+                </button>
+            </div>
+        </aside>
+
+        <section class="canvas-panel">
+            <div class="canvas-header">
+                <h2 class="canvas-title">Argument Diagram</h2>
+                <div class="canvas-controls">
+                    <button class="control-btn" onclick="zoomIn()">🔍+</button>
+                    <button class="control-btn" onclick="zoomOut()">🔍-</button>
+                    <button class="control-btn" onclick="resetZoom()">↻</button>
+                    <button class="control-btn" onclick="exportSVG()">📥 Export</button>
+                </div>
+            </div>
+
+            <div id="diagram-canvas">
+                <div class="welcome-state" id="welcome-state">
+                    <div class="welcome-icon">🎯</div>
+                    <p class="welcome-text">
+                        Paste an argument on the left<br>
+                        and watch the logic unfold!
+                    </p>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="loading-spinner"></div>
+                </div>
+
+                <svg id="diagram-svg" viewBox="0 0 800 600">
+                    <defs>
+                        <!-- Arrowheads -->
+                        <marker id="arrowhead-premise" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
+                        </marker>
+                        <marker id="arrowhead-conclusion" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/>
+                        </marker>
+                        <marker id="arrowhead-objection" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444"/>
+                        </marker>
+
+                        <!-- Glow filters -->
+                        <filter id="glow-premise" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="3" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <filter id="glow-conclusion" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="4" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <g id="diagram-group"></g>
+                </svg>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <span class="legend-dot premise"></span>
+                    <span>Premise</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot conclusion"></span>
+                    <span>Conclusion</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-dot objection"></span>
+                    <span>Objection</span>
+                </div>
+            </div>
+
+            <div class="analysis-panel" id="analysis-panel" style="display: none;">
+                <h3 class="analysis-title">Logical Analysis</h3>
+                <div id="analysis-content"></div>
+            </div>
+        </section>
+    </main>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        // Example arguments library
+        const examples = {
+            socrates: `P1: All humans are mortal
+P2: Socrates is a human
+∴ C: Socrates is mortal`,
+
+            cogito: `P1: I am thinking
+P2: If I am thinking, then I must exist
+P3: Doubt itself is a form of thinking
+∴ C: I exist (Cogito ergo sum)
+
+[Objection]: The "I" in "I think" is assumed, not proven`,
+
+            ontological: `P1: God is defined as the greatest conceivable being
+P2: A being that exists in reality is greater than one that exists only in the mind
+P3: If God exists only in the mind, we can conceive of a greater being (one that exists in reality)
+P4: This would contradict P1 (that God is the greatest conceivable being)
+∴ C: Therefore, God must exist in reality
+
+[Objection - Kant]: Existence is not a predicate/property
+[Objection - Gaunilo]: The same logic could "prove" a perfect island exists`,
+
+            trolley: `P1: We have a moral duty to minimize harm
+P2: Pulling the lever saves 5 lives at the cost of 1
+P3: Not acting results in 5 deaths
+P4: 5 deaths > 1 death (in terms of harm)
+∴ C1: According to utilitarianism, we should pull the lever
+
+[Objection - Deontological]: Actively killing is morally different from allowing death
+[Objection - Doctrine of Double Effect]: Intending harm differs from foreseeing it`,
+
+            freewill: `P1: If determinism is true, all our actions are caused by prior events
+P2: If our actions are caused by prior events, we could not have done otherwise
+P3: Moral responsibility requires the ability to have done otherwise
+P4: Determinism appears to be true (based on physics)
+∴ C: We lack moral responsibility (Hard Determinism)
+
+[Objection - Compatibilism]: Free will is compatible with determinism
+[Objection - Frankfurt]: Moral responsibility doesn't require alternative possibilities`
+        };
+
+        // State
+        let currentZoom = 1;
+        let panX = 0, panY = 0;
+        let isDragging = false;
+        let lastMousePos = { x: 0, y: 0 };
+        let parsedArgument = null;
+
+        // Parse the argument text into structured data
+        function parseArgument(text) {
+            const lines = text.split('\n').filter(line => line.trim());
+            const nodes = [];
+            const edges = [];
+
+            let premiseCount = 0;
+            let conclusionCount = 0;
+            let objectionCount = 0;
+
+            lines.forEach((line, index) => {
+                line = line.trim();
+
+                // Detect premises
+                if (/^P\d*[:.]/i.test(line) || /^Premise/i.test(line)) {
+                    premiseCount++;
+                    nodes.push({
+                        id: `p${premiseCount}`,
+                        type: 'premise',
+                        label: `P${premiseCount}`,
+                        text: line.replace(/^P\d*[:.]\s*/i, '').replace(/^Premise[:.]\s*/i, ''),
+                        index: nodes.length
+                    });
+                }
+                // Detect conclusions
+                else if (/^[∴C][:.]/i.test(line) || /^Conclusion/i.test(line) || /^Therefore/i.test(line)) {
+                    conclusionCount++;
+                    nodes.push({
+                        id: `c${conclusionCount}`,
+                        type: 'conclusion',
+                        label: `C${conclusionCount > 1 ? conclusionCount : ''}`,
+                        text: line.replace(/^[∴C]\d*[:.]\s*/i, '').replace(/^Conclusion[:.]\s*/i, '').replace(/^Therefore[,:]?\s*/i, ''),
+                        index: nodes.length
+                    });
+                }
+                // Detect objections
+                else if (/^\[?Objection/i.test(line) || /^OBJ[:.]/i.test(line)) {
+                    objectionCount++;
+                    const objText = line.replace(/^\[?Objection[^\]]*\]?[:.]\s*/i, '').replace(/^OBJ[:.]\s*/i, '');
+                    nodes.push({
+                        id: `obj${objectionCount}`,
+                        type: 'objection',
+                        label: `OBJ${objectionCount}`,
+                        text: objText,
+                        index: nodes.length
+                    });
+                }
+                // Default to premise for unmarked lines with content
+                else if (line.length > 10 && !line.startsWith('//') && !line.startsWith('#')) {
+                    premiseCount++;
+                    nodes.push({
+                        id: `p${premiseCount}`,
+                        type: 'premise',
+                        label: `P${premiseCount}`,
+                        text: line,
+                        index: nodes.length
+                    });
+                }
+            });
+
+            // Create logical edges
+            const premises = nodes.filter(n => n.type === 'premise');
+            const conclusions = nodes.filter(n => n.type === 'conclusion');
+            const objections = nodes.filter(n => n.type === 'objection');
+
+            // Connect premises to conclusions
+            premises.forEach(premise => {
+                conclusions.forEach(conclusion => {
+                    edges.push({
+                        from: premise.id,
+                        to: conclusion.id,
+                        type: 'support'
+                    });
+                });
+            });
+
+            // Connect objections to conclusions
+            objections.forEach(objection => {
+                conclusions.forEach(conclusion => {
+                    edges.push({
+                        from: objection.id,
+                        to: conclusion.id,
+                        type: 'objection'
+                    });
+                });
+            });
+
+            return { nodes, edges };
+        }
+
+        // Calculate node positions using a hierarchical layout
+        function calculateLayout(data) {
+            const { nodes, edges } = data;
+            const width = 800;
+            const height = 600;
+            const nodeWidth = 200;
+            const nodeHeight = 70;
+            const verticalGap = 100;
+            const horizontalGap = 40;
+
+            const premises = nodes.filter(n => n.type === 'premise');
+            const conclusions = nodes.filter(n => n.type === 'conclusion');
+            const objections = nodes.filter(n => n.type === 'objection');
+
+            // Position premises at the top
+            const premiseRowWidth = premises.length * nodeWidth + (premises.length - 1) * horizontalGap;
+            const premiseStartX = (width - premiseRowWidth) / 2;
+
+            premises.forEach((node, i) => {
+                node.x = premiseStartX + i * (nodeWidth + horizontalGap);
+                node.y = 60;
+                node.width = nodeWidth;
+                node.height = nodeHeight;
+            });
+
+            // Position conclusions in the middle
+            const conclusionY = premises.length > 0 ? 60 + nodeHeight + verticalGap : 60;
+            const conclusionRowWidth = conclusions.length * nodeWidth + (conclusions.length - 1) * horizontalGap;
+            const conclusionStartX = (width - conclusionRowWidth) / 2;
+
+            conclusions.forEach((node, i) => {
+                node.x = conclusionStartX + i * (nodeWidth + horizontalGap);
+                node.y = conclusionY;
+                node.width = nodeWidth;
+                node.height = nodeHeight;
+            });
+
+            // Position objections at the bottom or side
+            if (objections.length > 0) {
+                const objectionY = conclusionY + nodeHeight + verticalGap;
+                const objectionRowWidth = objections.length * nodeWidth + (objections.length - 1) * horizontalGap;
+                const objectionStartX = (width - objectionRowWidth) / 2;
+
+                objections.forEach((node, i) => {
+                    node.x = objectionStartX + i * (nodeWidth + horizontalGap);
+                    node.y = objectionY;
+                    node.width = nodeWidth;
+                    node.height = nodeHeight;
+                });
+            }
+
+            return data;
+        }
+
+        // Render the diagram
+        function renderDiagram(data) {
+            const svg = document.getElementById('diagram-svg');
+            const group = document.getElementById('diagram-group');
+            group.innerHTML = '';
+
+            const { nodes, edges } = data;
+
+            // Render edges first (so they appear behind nodes)
+            edges.forEach(edge => {
+                const fromNode = nodes.find(n => n.id === edge.from);
+                const toNode = nodes.find(n => n.id === edge.to);
+
+                if (fromNode && toNode) {
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+
+                    const startX = fromNode.x + fromNode.width / 2;
+                    const startY = fromNode.y + fromNode.height;
+                    const endX = toNode.x + toNode.width / 2;
+                    const endY = toNode.y;
+
+                    // Create a curved path
+                    const midY = (startY + endY) / 2;
+                    const d = `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`;
+
+                    path.setAttribute('d', d);
+                    path.classList.add('edge', `edge-${edge.type}`);
+
+                    // Animate the edge
+                    path.style.strokeDasharray = path.getTotalLength();
+                    path.style.strokeDashoffset = path.getTotalLength();
+                    path.style.animation = `drawEdge 0.8s ease forwards ${0.3 + nodes.indexOf(fromNode) * 0.1}s`;
+
+                    group.appendChild(path);
+                }
+            });
+
+            // Render nodes
+            nodes.forEach((node, index) => {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.classList.add('node', `node-${node.type}`);
+                g.setAttribute('transform', `translate(${node.x}, ${node.y})`);
+                g.style.animation = `nodeAppear 0.5s ease forwards ${index * 0.1}s`;
+                g.style.opacity = '0';
+
+                // Rectangle
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.classList.add('node-rect');
+                rect.setAttribute('width', node.width);
+                rect.setAttribute('height', node.height);
+
+                if (node.type === 'conclusion') {
+                    rect.setAttribute('filter', 'url(#glow-conclusion)');
+                }
+
+                g.appendChild(rect);
+
+                // Label
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.classList.add('node-label');
+                label.setAttribute('x', 10);
+                label.setAttribute('y', 16);
+                label.textContent = node.label;
+                g.appendChild(label);
+
+                // Text (wrapped)
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.classList.add('node-text');
+                text.setAttribute('x', node.width / 2);
+                text.setAttribute('y', node.height / 2 + 5);
+
+                // Simple text truncation
+                const maxChars = 30;
+                const displayText = node.text.length > maxChars 
+                    ? node.text.substring(0, maxChars) + '...' 
+                    : node.text;
+                text.textContent = displayText;
+                g.appendChild(text);
+
+                // Click handler for details
+                g.addEventListener('click', (e) => showNodeDetails(node, e));
+
+                group.appendChild(g);
+            });
+
+            // Add CSS animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes nodeAppear {
+                    from { opacity: 0; transform: translateY(-20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes drawEdge {
+                    to { stroke-dashoffset: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Show node details in tooltip
+        function showNodeDetails(node, event) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.innerHTML = `
+                <strong style="color: var(--${node.type === 'premise' ? 'premise' : node.type === 'conclusion' ? 'conclusion' : 'objection'})">${node.label}</strong>
+                <p style="margin-top: 0.5rem; font-size: 0.9rem; line-height: 1.5;">${node.text}</p>
+            `;
+
+            const rect = event.target.closest('.node').getBoundingClientRect();
+            tooltip.style.left = `${rect.right + 10}px`;
+            tooltip.style.top = `${rect.top}px`;
+            tooltip.classList.add('active');
+
+            // Hide on click outside
+            setTimeout(() => {
+                document.addEventListener('click', function hideTooltip(e) {
+                    if (!tooltip.contains(e.target)) {
+                        tooltip.classList.remove('active');
+                        document.removeEventListener('click', hideTooltip);
+                    }
+                });
+            }, 100);
+        }
+
+        // Analyze the argument structure
+        function analyzeArgument(data) {
+            const { nodes, edges } = data;
+            const premises = nodes.filter(n => n.type === 'premise');
+            const conclusions = nodes.filter(n => n.type === 'conclusion');
+            const objections = nodes.filter(n => n.type === 'objection');
+
+            const analysis = [];
+
+            analysis.push(`<div class="analysis-item">📌 <strong>${premises.length}</strong> premise${premises.length !== 1 ? 's' : ''}</div>`);
+            analysis.push(`<div class="analysis-item">🎯 <strong>${conclusions.length}</strong> conclusion${conclusions.length !== 1 ? 's' : ''}</div>`);
+
+            if (objections.length > 0) {
+                analysis.push(`<div class="analysis-item">⚠️ <strong>${objections.length}</strong> objection${objections.length !== 1 ? 's' : ''}</div>`);
+            }
+
+            // Simple validity check (structural only)
+            const hasStructure = premises.length > 0 && conclusions.length > 0;
+            const validityClass = hasStructure ? 'validity-valid' : 'validity-invalid';
+            const validityText = hasStructure ? 'Valid Structure' : 'Incomplete Structure';
+
+            analysis.push(`<div class="analysis-item">Structure: <span class="validity-badge ${validityClass}">${validityText}</span></div>`);
+
+            // Argument form detection
+            if (premises.length === 2 && conclusions.length === 1) {
+                const p1 = premises[0].text.toLowerCase();
+                const p2 = premises[1].text.toLowerCase();
+
+                if (p1.includes('all') && p2.includes('is a')) {
+                    analysis.push(`<div class="analysis-item">📐 Form: <strong>Categorical Syllogism</strong></div>`);
+                } else if (p1.includes('if') && p2.includes('then')) {
+                    analysis.push(`<div class="analysis-item">📐 Form: <strong>Hypothetical Syllogism</strong></div>`);
+                }
+            }
+
+            return analysis.join('');
+        }
+
+        // Main parse and visualize function
+        function parseAndVisualize() {
+            const input = document.getElementById('argument-input').value.trim();
+
+            if (!input) {
+                alert('Please enter an argument to analyze!');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('welcome-state').style.display = 'none';
+            document.getElementById('loading').classList.add('active');
+
+            setTimeout(() => {
+                try {
+                    // Parse
+                    parsedArgument = parseArgument(input);
+
+                    // Calculate layout
+                    const layoutData = calculateLayout(parsedArgument);
+
+                    // Render
+                    renderDiagram(layoutData);
+
+                    // Analyze
+                    const analysisHTML = analyzeArgument(layoutData);
+                    document.getElementById('analysis-content').innerHTML = analysisHTML;
+                    document.getElementById('analysis-panel').style.display = 'block';
+
+                    // Celebration for valid arguments!
+                    if (parsedArgument.nodes.filter(n => n.type === 'premise').length > 0 &&
+                        parsedArgument.nodes.filter(n => n.type === 'conclusion').length > 0) {
+                        createConfetti();
+                    }
+
+                } catch (error) {
+                    console.error('Error parsing argument:', error);
+                    alert('Error parsing argument. Please check the format.');
+                }
+
+                document.getElementById('loading').classList.remove('active');
+            }, 500);
+        }
+
+        // Load example
+        function loadExample(name) {
+            document.getElementById('argument-input').value = examples[name];
+            parseAndVisualize();
+        }
+
+        // Clear all
+        function clearAll() {
+            document.getElementById('argument-input').value = '';
+            document.getElementById('diagram-group').innerHTML = '';
+            document.getElementById('analysis-panel').style.display = 'none';
+            document.getElementById('welcome-state').style.display = 'block';
+            parsedArgument = null;
+        }
+
+        // Zoom controls
+        function zoomIn() {
+            currentZoom = Math.min(currentZoom * 1.2, 3);
+            updateZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(currentZoom / 1.2, 0.3);
+            updateZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            panX = 0;
+            panY = 0;
+            updateZoom();
+        }
+
+        function updateZoom() {
+            const group = document.getElementById('diagram-group');
+            group.setAttribute('transform', `translate(${panX}, ${panY}) scale(${currentZoom})`);
+        }
+
+        // Export SVG
+        function exportSVG() {
+            const svg = document.getElementById('diagram-svg');
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const blob = new Blob([svgData], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'argument-map.svg';
+            a.click();
+
+            URL.revokeObjectURL(url);
+        }
+
+        // Confetti celebration!
+        function createConfetti() {
+            const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
+
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.cssText = `
+                    position: fixed;
+                    width: 10px;
+                    height: 10px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    left: ${Math.random() * 100}vw;
+                    top: -10px;
+                    border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+                    animation: confettiFall ${2 + Math.random() * 2}s linear forwards;
+                    transform: rotate(${Math.random() * 360}deg);
+                `;
+                document.body.appendChild(confetti);
+
+                setTimeout(() => confetti.remove(), 4000);
+            }
+
+            // Add confetti animation if not exists
+            if (!document.getElementById('confetti-style')) {
+                const style = document.createElement('style');
+                style.id = 'confetti-style';
+                style.textContent = `
+                    @keyframes confettiFall {
+                        to {
+                            top: 100vh;
+                            transform: rotate(720deg) translateX(${Math.random() * 200 - 100}px);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+
+        // Pan functionality
+        const canvas = document.getElementById('diagram-canvas');
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            lastMousePos = { x: e.clientX, y: e.clientY };
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = e.clientX - lastMousePos.x;
+                const dy = e.clientY - lastMousePos.y;
+                panX += dx;
+                panY += dy;
+                lastMousePos = { x: e.clientX, y: e.clientY };
+                updateZoom();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => isDragging = false);
+        canvas.addEventListener('mouseleave', () => isDragging = false);
+
+        // Mouse wheel zoom
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.deltaY < 0) zoomIn();
+            else zoomOut();
+        });
+    </script>
+</body>
+</html>
