@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOGOS — Argument Mapper</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Exo+2:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #010508;
+    --deep: #040d14;
+    --panel: #06131e;
+    --panel2: #091a28;
+    --border: #0e3a55;
+    --border2: #1a5a80;
+    --cyan: #00d4ff;
+    --cyan2: #00a8cc;
+    --cyan3: #007a99;
+    --gold: #ffd700;
+    --gold2: #ffb800;
+    --rose: #ff4466;
+    --green: #00ff88;
+    --purple: #9966ff;
+    --text: #c8e8f8;
+    --text-dim: #6a9ab8;
+    --text-faint: #2a5a7a;
+    --mono: 'Share Tech Mono', monospace;
+    --display: 'Rajdhani', sans-serif;
+    --body: 'Exo 2', sans-serif;
+    --glow-cyan: 0 0 20px #00d4ff44, 0 0 60px #00d4ff22;
+    --glow-gold: 0 0 20px #ffd70044, 0 0 60px #ffd70022;
+    --glow-rose: 0 0 20px #ff446644, 0 0 60px #ff446622;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--void);
+    color: var(--text);
+    font-family: var(--body);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── SCAN LINE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.012) 2px, rgba(0,212,255,0.012) 4px);
+    animation: scanlines 8s linear infinite;
+  }
+  @keyframes scanlines { from { background-position: 0 0; } to { background-position: 0 100vh; } }
+
+  /* ── GRID BACKGROUND ── */
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+  }
+
+  /* ── LAYOUT ── */
+  #app { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* ── HEADER ── */
+  header {
+    padding: 16px 32px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 20px;
+    background: linear-gradient(180deg, rgba(0,212,255,0.03) 0%, transparent 100%);
+    position: relative;
+  }
+  header::after {
+    content: '';
+    position: absolute; bottom: -1px; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), var(--gold), var(--cyan), transparent);
+    animation: headerline 4s ease-in-out infinite;
+  }
+  @keyframes headerline {
+    0%,100% { opacity: 0.4; } 50% { opacity: 1; }
+  }
+
+  .logo {
+    font-family: var(--display);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: var(--cyan);
+    text-shadow: var(--glow-cyan);
+    position: relative;
+  }
+  .logo::after {
+    content: 'ARGUMENT MAPPER';
+    position: absolute; left: 0; top: 100%;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--text-faint);
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .header-stats {
+    margin-left: auto;
+    display: flex; gap: 24px; align-items: center;
+  }
+  .hstat {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+  .hstat span {
+    display: block;
+    font-size: 18px;
+    color: var(--cyan);
+    text-shadow: var(--glow-cyan);
+  }
+
+  .header-actions { display: flex; gap: 8px; }
+
+  /* ── MAIN AREA ── */
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    grid-template-rows: 1fr;
+    min-height: calc(100vh - 65px);
+  }
+
+  /* ── LEFT PANEL ── */
+  .left-panel {
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    background: linear-gradient(180deg, var(--panel) 0%, var(--deep) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .left-panel::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 200px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(0,212,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .panel-section {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .panel-label {
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--cyan3);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .panel-label::before {
+    content: '';
+    width: 16px; height: 1px;
+    background: var(--cyan3);
+    display: inline-block;
+  }
+
+  /* ── INPUT AREA ── */
+  #argumentInput {
+    width: 100%;
+    min-height: 160px;
+    background: rgba(0,212,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 14px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  #argumentInput:focus {
+    border-color: var(--cyan2);
+    box-shadow: 0 0 0 1px var(--cyan2), inset 0 0 20px rgba(0,212,255,0.04);
+  }
+  #argumentInput::placeholder { color: var(--text-faint); }
+
+  /* ── EXAMPLES ── */
+  .example-chips {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+  }
+  .example-chip {
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 4px 10px;
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    color: var(--text-dim);
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .example-chip:hover {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: rgba(0,212,255,0.06);
+    text-shadow: var(--glow-cyan);
+  }
+
+  /* ── ANALYSE BUTTON ── */
+  .analyse-btn {
+    margin: 16px 20px;
+    width: calc(100% - 40px);
+    padding: 14px;
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+  .analyse-btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.15), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.4s;
+  }
+  .analyse-btn:hover::before { transform: translateX(100%); }
+  .analyse-btn:hover {
+    background: rgba(0,212,255,0.1);
+    box-shadow: var(--glow-cyan);
+    text-shadow: var(--glow-cyan);
+  }
+  .analyse-btn.loading {
+    animation: pulse-btn 1s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes pulse-btn {
+    0%,100% { border-color: var(--cyan); color: var(--cyan); }
+    50% { border-color: var(--cyan3); color: var(--cyan3); }
+  }
+
+  /* ── NODE INSPECTOR ── */
+  #inspector {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  #inspector::-webkit-scrollbar { width: 4px; }
+  #inspector::-webkit-scrollbar-track { background: transparent; }
+  #inspector::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .inspector-empty {
+    color: var(--text-faint);
+    font-size: 12px;
+    font-family: var(--mono);
+    text-align: center;
+    padding: 40px 0;
+    line-height: 2;
+  }
+
+  .node-card {
+    background: rgba(0,212,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .node-card::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  }
+  .node-card.premise::before { background: var(--cyan); }
+  .node-card.conclusion::before { background: var(--gold); }
+  .node-card.support::before { background: var(--green); }
+  .node-card.objection::before { background: var(--rose); }
+  .node-card.qualifier::before { background: var(--purple); }
+  .node-card:hover { border-color: var(--border2); background: rgba(0,212,255,0.08); }
+  .node-card.selected { border-color: var(--cyan); background: rgba(0,212,255,0.1); box-shadow: var(--glow-cyan); }
+
+  .node-type-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    display: inline-block;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .premise .node-type-tag { background: rgba(0,212,255,0.15); color: var(--cyan); }
+  .conclusion .node-type-tag { background: rgba(255,215,0,0.15); color: var(--gold); }
+  .support .node-type-tag { background: rgba(0,255,136,0.15); color: var(--green); }
+  .objection .node-type-tag { background: rgba(255,68,102,0.15); color: var(--rose); }
+  .qualifier .node-type-tag { background: rgba(153,102,255,0.15); color: var(--purple); }
+
+  .node-text { font-size: 12px; line-height: 1.6; color: var(--text); }
+  .node-id { font-family: var(--mono); font-size: 10px; color: var(--text-faint); margin-top: 6px; }
+
+  /* ── VALIDITY BADGE ── */
+  .validity-block {
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: rgba(0,0,0,0.3);
+  }
+  .validity-label { font-family: var(--mono); font-size: 10px; color: var(--text-faint); letter-spacing: 2px; margin-bottom: 6px; }
+  .validity-status { font-family: var(--display); font-size: 16px; font-weight: 600; letter-spacing: 2px; }
+  .validity-status.valid { color: var(--green); text-shadow: 0 0 20px rgba(0,255,136,0.4); }
+  .validity-status.invalid { color: var(--rose); text-shadow: var(--glow-rose); }
+  .validity-status.unknown { color: var(--text-faint); }
+  .validity-note { font-size: 11px; color: var(--text-dim); margin-top: 6px; line-height: 1.5; }
+
+  /* ── CANVAS AREA ── */
+  .canvas-area {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,50,80,0.3) 0%, transparent 70%),
+      var(--deep);
+  }
+
+  #canvas-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    cursor: grab;
+  }
+  #canvas-svg:active { cursor: grabbing; }
+
+  /* ── CANVAS CONTROLS ── */
+  .canvas-controls {
+    position: absolute;
+    top: 16px; right: 16px;
+    display: flex; flex-direction: column; gap: 6px;
+    z-index: 10;
+  }
+  .ctrl-btn {
+    width: 36px; height: 36px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+  }
+  .ctrl-btn:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,212,255,0.1); }
+
+  /* ── CANVAS LEGEND ── */
+  .canvas-legend {
+    position: absolute;
+    bottom: 16px; left: 16px;
+    display: flex; gap: 12px;
+    z-index: 10;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-family: var(--mono); font-size: 10px; color: var(--text-faint);
+  }
+  .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+  /* ── CANVAS STATUS ── */
+  .canvas-status {
+    position: absolute;
+    top: 16px; left: 16px;
+    font-family: var(--mono); font-size: 11px; color: var(--text-faint);
+    z-index: 10;
+    letter-spacing: 1px;
+  }
+  .canvas-status .live { color: var(--cyan); animation: blink 2s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* ── SVG NODES ── */
+  .arg-node {
+    cursor: pointer;
+    transition: filter 0.2s;
+  }
+  .arg-node:hover { filter: brightness(1.3); }
+  .arg-node.selected { filter: brightness(1.5) drop-shadow(0 0 12px rgba(0,212,255,0.8)); }
+
+  /* ── HOLOGRAM RING ANIMATION ── */
+  @keyframes ring-spin {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -251; }
+  }
+  @keyframes node-appear {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes edge-draw {
+    from { stroke-dashoffset: 1000; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* ── LOADING SCREEN ── */
+  #loading-overlay {
+    position: absolute; inset: 0;
+    background: rgba(1,5,8,0.92);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 50;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  #loading-overlay.active { opacity: 1; pointer-events: all; }
+
+  .loading-content { text-align: center; }
+  .loading-ring {
+    width: 80px; height: 80px;
+    border: 2px solid var(--border);
+    border-top-color: var(--cyan);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    animation: flicker 1.5s ease-in-out infinite;
+  }
+  @keyframes flicker { 0%,100%{opacity:1} 45%{opacity:0.6} 50%{opacity:0.8} 55%{opacity:0.5} }
+
+  /* ── EMPTY STATE ── */
+  #empty-state {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
+    pointer-events: none;
+  }
+  .empty-icon {
+    font-size: 64px;
+    opacity: 0.1;
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  .empty-text {
+    font-family: var(--display);
+    font-size: 14px;
+    letter-spacing: 4px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+
+  /* ── TOOLTIP ── */
+  #tooltip {
+    position: fixed;
+    background: var(--panel);
+    border: 1px solid var(--cyan);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--text);
+    max-width: 240px;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.15s;
+    box-shadow: var(--glow-cyan);
+    line-height: 1.5;
+  }
+  #tooltip.visible { opacity: 1; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 7px 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { border-color: var(--cyan); color: var(--cyan); }
+  .btn.danger:hover { border-color: var(--rose); color: var(--rose); }
+
+  /* ── EDIT PANEL (node details) ── */
+  .detail-panel {
+    background: rgba(0,212,255,0.04);
+    border: 1px solid var(--cyan);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--glow-cyan);
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from{transform:translateY(-8px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+  .detail-title {
+    font-family: var(--display);
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--cyan);
+    margin-bottom: 12px;
+    text-shadow: var(--glow-cyan);
+  }
+  .detail-field { margin-bottom: 10px; }
+  .detail-field label { font-family: var(--mono); font-size: 10px; color: var(--text-faint); display: block; margin-bottom: 4px; letter-spacing: 1px; }
+  .detail-field select, .detail-field textarea {
+    width: 100%; background: var(--deep); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--body); font-size: 12px;
+    padding: 8px; border-radius: 3px; outline: none;
+  }
+  .detail-field select:focus, .detail-field textarea:focus { border-color: var(--cyan); }
+  .detail-field textarea { min-height: 80px; resize: vertical; line-height: 1.6; }
+
+  .detail-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+
+  /* ── CORNER DECORATIONS ── */
+  .corner { position: absolute; width: 16px; height: 16px; }
+  .corner.tl { top: 0; left: 0; border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+  .corner.tr { top: 0; right: 0; border-top: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+  .corner.bl { bottom: 0; left: 0; border-bottom: 2px solid var(--cyan); border-left: 2px solid var(--cyan); }
+  .corner.br { bottom: 0; right: 0; border-bottom: 2px solid var(--cyan); border-right: 2px solid var(--cyan); }
+
+  /* ── MODE TABS ── */
+  .mode-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+  .mode-tab {
+    flex: 1; padding: 10px;
+    background: transparent;
+    border: none;
+    color: var(--text-faint);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+    text-transform: uppercase;
+  }
+  .mode-tab.active { color: var(--cyan); border-bottom-color: var(--cyan); background: rgba(0,212,255,0.04); }
+  .mode-tab:hover:not(.active) { color: var(--text-dim); }
+
+  /* ── LOGIC FORM DISPLAY ── */
+  .logic-form {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 2;
+    color: var(--text-dim);
+    margin-top: 10px;
+  }
+  .logic-form .prem { color: var(--cyan); }
+  .logic-form .conc { color: var(--gold); font-weight: bold; }
+  .logic-form .oper { color: var(--purple); }
+  .logic-form .line { border-top: 1px solid var(--border); margin: 4px 0; padding-top: 4px; }
+
+  /* ── EXPORT PANEL ── */
+  .export-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+
+  /* ── PARTICLE CANVAS ── */
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.4; }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<div id="app">
+  <header>
+    <div class="logo">LOGOS</div>
+    <div style="width:1px;height:32px;background:var(--border);margin:0 8px"></div>
+    <div style="font-family:var(--body);font-size:12px;color:var(--text-faint);letter-spacing:1px">Argument Visualisation System</div>
+    <div class="header-stats">
+      <div class="hstat"><span id="stat-nodes">0</span>NODES</div>
+      <div class="hstat"><span id="stat-edges">0</span>EDGES</div>
+      <div class="hstat"><span id="stat-depth">0</span>DEPTH</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn" onclick="exportSVG()">EXPORT SVG</button>
+      <button class="btn" onclick="exportJSON()">EXPORT JSON</button>
+      <button class="btn danger" onclick="clearAll()">CLEAR</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <div class="mode-tabs">
+        <button class="mode-tab active" onclick="switchTab('input',this)">INPUT</button>
+        <button class="mode-tab" onclick="switchTab('inspect',this)">INSPECT</button>
+        <button class="mode-tab" onclick="switchTab('logic',this)">LOGIC FORM</button>
+      </div>
+
+      <!-- INPUT TAB -->
+      <div id="tab-input">
+        <div class="panel-section">
+          <div class="panel-label">ARGUMENT TEXT</div>
+          <textarea id="argumentInput" placeholder="Paste or type any philosophical argument...
+
+Example:
+1. If God exists, gratuitous evil would not exist.
+2. Gratuitous evil exists.
+3. Therefore, God does not exist.
+
+Or try a complex argument with objections and qualifications. The AI will extract the logical structure and map every node, connection, and inferential relationship."></textarea>
+          <div class="example-chips" id="example-chips"></div>
+        </div>
+        <button class="analyse-btn" id="analyseBtn" onclick="analyseArgument()">
+          ⟡ ANALYSE ARGUMENT
+        </button>
+        <div class="panel-section" style="border-top:1px solid var(--border)">
+          <div class="panel-label">ADD NODE MANUALLY</div>
+          <div class="detail-field">
+            <label>TEXT</label>
+            <textarea id="manualText" style="min-height:60px" placeholder="Enter node content..."></textarea>
+          </div>
+          <div class="detail-field">
+            <label>TYPE</label>
+            <select id="manualType">
+              <option value="premise">Premise</option>
+              <option value="conclusion">Conclusion</option>
+              <option value="support">Support / Evidence</option>
+              <option value="objection">Objection</option>
+              <option value="qualifier">Qualifier / Caveat</option>
+            </select>
+          </div>
+          <button class="btn" onclick="addManualNode()" style="width:100%;margin-top:8px">+ ADD NODE</button>
+        </div>
+        <div class="panel-section">
+          <div class="panel-label">CONNECT NODES</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <select id="fromNode" style="flex:1;background:var(--deep);border:1px solid var(--border);color:var(--text);padding:7px;font-family:var(--mono);font-size:11px;outline:none"></select>
+            <span style="color:var(--cyan);font-size:18px">→</span>
+            <select id="toNode" style="flex:1;background:var(--deep);border:1px solid var(--border);color:var(--text);padding:7px;font-family:var(--mono);font-size:11px;outline:none"></select>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <select id="edgeType" style="flex:1;background:var(--deep);border:1px solid var(--border);color:var(--text);padding:7px;font-family:var(--mono);font-size:11px;outline:none">
+              <option value="supports">Supports</option>
+              <option value="entails">Entails</option>
+              <option value="objects">Objects to</option>
+              <option value="qualifies">Qualifies</option>
+              <option value="is_used_in">Used in</option>
+            </select>
+            <button class="btn" onclick="addManualEdge()">CONNECT</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- INSPECT TAB -->
+      <div id="tab-inspect" style="display:none;flex:1;overflow:hidden;display:none;flex-direction:column">
+        <div id="inspector">
+          <div class="inspector-empty">
+            ⟡<br>NO NODES YET<br><br>
+            Analyse an argument or<br>add nodes manually
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGIC FORM TAB -->
+      <div id="tab-logic" style="display:none;padding:20px;overflow-y:auto;flex:1">
+        <div class="panel-label">FORMAL REPRESENTATION</div>
+        <div id="logic-form-content">
+          <div style="color:var(--text-faint);font-family:var(--mono);font-size:11px;text-align:center;padding:40px 0">
+            Analyse an argument to see its formal logical structure
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CANVAS -->
+    <div class="canvas-area" id="canvasArea">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+
+      <svg id="canvas-svg" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow-cyan" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#00d4ff" opacity="0.9"/>
+          </marker>
+          <marker id="arrow-rose" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#ff4466" opacity="0.9"/>
+          </marker>
+          <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#00ff88" opacity="0.9"/>
+          </marker>
+          <marker id="arrow-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#ffd700" opacity="0.9"/>
+          </marker>
+          <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#9966ff" opacity="0.9"/>
+          </marker>
+          <filter id="glow-cyan">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow-gold">
+            <feGaussianBlur stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glow-rose">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <radialGradient id="grad-premise" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00d4ff" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#00d4ff" stop-opacity="0.05"/>
+          </radialGradient>
+          <radialGradient id="grad-conclusion" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ffd700" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#ffd700" stop-opacity="0.05"/>
+          </radialGradient>
+          <radialGradient id="grad-support" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00ff88" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="#00ff88" stop-opacity="0.04"/>
+          </radialGradient>
+          <radialGradient id="grad-objection" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ff4466" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="#ff4466" stop-opacity="0.04"/>
+          </radialGradient>
+          <radialGradient id="grad-qualifier" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#9966ff" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="#9966ff" stop-opacity="0.04"/>
+          </radialGradient>
+        </defs>
+        <g id="svg-root">
+          <g id="edges-layer"></g>
+          <g id="nodes-layer"></g>
+        </g>
+      </svg>
+
+      <div id="empty-state">
+        <div class="empty-icon">⟡</div>
+        <div class="empty-text">AWAITING ARGUMENT</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text-faint);letter-spacing:2px;margin-top:8px">PASTE TEXT → ANALYSE → EXPLORE</div>
+      </div>
+
+      <div id="loading-overlay">
+        <div class="loading-content">
+          <div class="loading-ring"></div>
+          <div class="loading-text" id="loading-text">PARSING ARGUMENT...</div>
+        </div>
+      </div>
+
+      <div class="canvas-controls">
+        <button class="ctrl-btn" onclick="zoomIn()" title="Zoom In">+</button>
+        <button class="ctrl-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+        <button class="ctrl-btn" onclick="resetView()" title="Reset View">⊡</button>
+        <button class="ctrl-btn" onclick="autoLayout()" title="Auto Layout">⋮⋮</button>
+      </div>
+
+      <div class="canvas-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div>Premise</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ffd700"></div>Conclusion</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#00ff88"></div>Support</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#ff4466"></div>Objection</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#9966ff"></div>Qualifier</div>
+      </div>
+
+      <div class="canvas-status">
+        <span class="live">●</span> LOGOS v1.0 &nbsp;|&nbsp; <span id="canvas-mode">READY</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// PARTICLE SYSTEM
+// ═══════════════════════════════════════════════════════════════════
+(function() {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      size: Math.random() * 1.5 + 0.5,
+      opacity: Math.random() * 0.5 + 0.1,
+      color: Math.random() > 0.7 ? '#ffd700' : '#00d4ff'
+    });
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.opacity;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+// ═══════════════════════════════════════════════════════════════════
+// DATA MODEL
+// ═══════════════════════════════════════════════════════════════════
+let nodes = [];
+let edges = [];
+let selectedNode = null;
+let nodeIdCounter = 0;
+
+let svgTransform = { x: 0, y: 0, scale: 1 };
+let isPanning = false;
+let panStart = { x: 0, y: 0 };
+
+// Node colors & config
+const NODE_CONFIG = {
+  premise:    { color: '#00d4ff', stroke: '#00d4ff', fill: 'url(#grad-premise)',    label: 'PREMISE',    rx: 8, arrow: 'arrow-cyan', edgeColor: '#00d4ff55' },
+  conclusion: { color: '#ffd700', stroke: '#ffd700', fill: 'url(#grad-conclusion)', label: 'CONCLUSION', rx: 24, arrow: 'arrow-gold', edgeColor: '#ffd70055' },
+  support:    { color: '#00ff88', stroke: '#00ff88', fill: 'url(#grad-support)',    label: 'SUPPORT',    rx: 4, arrow: 'arrow-green', edgeColor: '#00ff8855' },
+  objection:  { color: '#ff4466', stroke: '#ff4466', fill: 'url(#grad-objection)',  label: 'OBJECTION',  rx: 4, arrow: 'arrow-rose', edgeColor: '#ff446655' },
+  qualifier:  { color: '#9966ff', stroke: '#9966ff', fill: 'url(#grad-qualifier)',  label: 'QUALIFIER',  rx: 16, arrow: 'arrow-purple', edgeColor: '#9966ff55' },
+};
+
+const EDGE_CONFIG = {
+  supports:   { color: '#00d4ff', dash: 'none', label: 'SUPPORTS' },
+  entails:    { color: '#ffd700', dash: 'none', label: 'ENTAILS' },
+  objects:    { color: '#ff4466', dash: '6 3', label: 'OBJECTS TO' },
+  qualifies:  { color: '#9966ff', dash: '3 3', label: 'QUALIFIES' },
+  is_used_in: { color: '#00ff88', dash: '8 4', label: 'USED IN' },
+};
+
+// ═══════════════════════════════════════════════════════════════════
+// EXAMPLES
+// ═══════════════════════════════════════════════════════════════════
+const EXAMPLES = [
+  {
+    label: 'Problem of Evil',
+    text: `1. If God exists, then an omnipotent, omniscient, and perfectly good being exists.
+2. A perfectly good omnipotent being would eliminate all evil it could.
+3. An omniscient being knows of all evil.
+4. Gratuitous evil exists in the world.
+5. Therefore, no omnipotent, omniscient, perfectly good being exists.
+6. Therefore, God does not exist.
+
+Objection: The free will defence holds that God permits evil to allow for genuine freedom.
+Qualifier: This argument applies most forcefully to natural evil, not moral evil.`
+  },
+  {
+    label: 'Kalam',
+    text: `1. Everything that begins to exist has a cause.
+2. The universe began to exist.
+3. Therefore, the universe has a cause.
+4. The cause of the universe must be uncaused, timeless, spaceless, and immensely powerful.
+5. The best explanation of such a cause is a personal Creator.
+6. Therefore, a personal Creator of the universe exists.
+
+Support for P2: The Borde-Guth-Vilenkin theorem shows any universe with net positive expansion must have a beginning.
+Objection to P1: Quantum events appear to be uncaused; the premise may not be universally true.`
+  },
+  {
+    label: 'Ontological',
+    text: `1. God is defined as the greatest conceivable being.
+2. A being that exists in reality is greater than one that exists only in the mind.
+3. If God exists only in the mind, we can conceive of a greater being that also exists in reality.
+4. But this contradicts the definition of God as the greatest conceivable being.
+5. Therefore, God must exist in reality.
+
+Objection (Gaunilo): By the same logic, we could prove the existence of a perfect island.
+Qualifier: The argument applies only to beings whose essence entails existence — necessary beings.`
+  },
+  {
+    label: 'Modus Ponens',
+    text: `1. If it is raining, then the streets are wet.
+2. It is raining.
+3. Therefore, the streets are wet.`
+  },
+  {
+    label: 'Trolley Problem',
+    text: `1. We are morally required to minimise harm when we can do so.
+2. Pulling the lever minimises harm: one dies instead of five.
+3. Therefore, we are morally required to pull the lever.
+
+Objection: There is a moral difference between killing and letting die; pulling the lever is killing.
+Qualifier: The principle of double effect permits harmful side-effects if the primary intention is good.
+Support: Utilitarian calculus clearly favours the action that saves the most lives.`
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════
+function init() {
+  // Render example chips
+  const container = document.getElementById('example-chips');
+  EXAMPLES.forEach(ex => {
+    const chip = document.createElement('button');
+    chip.className = 'example-chip';
+    chip.textContent = ex.label;
+    chip.onclick = () => {
+      document.getElementById('argumentInput').value = ex.text;
+    };
+    container.appendChild(chip);
+  });
+
+  // SVG pan
+  const svg = document.getElementById('canvas-svg');
+  svg.addEventListener('mousedown', onPanStart);
+  window.addEventListener('mousemove', onPanMove);
+  window.addEventListener('mouseup', onPanEnd);
+  svg.addEventListener('wheel', onWheel, { passive: false });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ANALYSE WITH CLAUDE API
+// ═══════════════════════════════════════════════════════════════════
+async function analyseArgument() {
+  const text = document.getElementById('argumentInput').value.trim();
+  if (!text) { showStatus('NO INPUT', 1500); return; }
+
+  showLoading(true);
+  showStatus('ANALYSING...');
+
+  const PROMPT = `You are an expert in analytic philosophy and formal logic. Analyse the following argument and extract its logical structure.
+
+Return ONLY valid JSON (no markdown, no explanation) in this exact format:
+{
+  "nodes": [
+    {"id": "n1", "type": "premise|conclusion|support|objection|qualifier", "text": "...", "label": "P1|P2|C|S1|O1|Q1"}
+  ],
+  "edges": [
+    {"from": "n1", "to": "n2", "type": "supports|entails|objects|qualifies|is_used_in"}
+  ],
+  "validity": "valid|invalid|unknown",
+  "validity_note": "Brief explanation of whether the argument is valid/sound",
+  "argument_form": "Name of argument form if recognised (e.g. Modus Ponens, Dilemma, etc.) or null",
+  "formal_premises": ["P1: ...", "P2: ..."],
+  "formal_conclusion": "C: ..."
+}
+
+Node types:
+- premise: A stated assumption or claim used to support the conclusion
+- conclusion: The final claim the argument is trying to establish  
+- support: Evidence, data, or examples backing a premise
+- objection: A counter-argument or challenge to a premise/conclusion
+- qualifier: A caveat, limitation, or condition on a claim
+
+Edge types:
+- supports: The source provides evidence/reasons for the target
+- entails: The source logically necessitates the target
+- objects: The source challenges or contradicts the target
+- qualifies: The source limits or conditions the target
+- is_used_in: The source premise is used in deriving the target
+
+Be comprehensive — identify ALL logical relationships including implicit ones.
+The argument to analyse:
+
+${text}`;
+
+  const loadingMessages = [
+    'PARSING ARGUMENT...',
+    'EXTRACTING PREMISES...',
+    'MAPPING INFERENTIAL STRUCTURE...',
+    'VALIDATING LOGICAL FORM...',
+    'RENDERING HOLOGRAM...'
+  ];
+  let msgIdx = 0;
+  const msgInterval = setInterval(() => {
+    msgIdx = (msgIdx + 1) % loadingMessages.length;
+    document.getElementById('loading-text').textContent = loadingMessages[msgIdx];
+  }, 700);
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: PROMPT }]
+      })
+    });
+
+    clearInterval(msgInterval);
+    const data = await response.json();
+    const raw = data.content?.map(b => b.text || '').join('') || '';
+
+    let parsed;
+    try {
+      const clean = raw.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+      parsed = JSON.parse(clean);
+    } catch(e) {
+      showLoading(false);
+      showStatus('PARSE ERROR', 2000);
+      return;
+    }
+
+    // Load into our data model
+    nodes = [];
+    edges = [];
+    nodeIdCounter = 0;
+
+    parsed.nodes.forEach(n => {
+      nodes.push({
+        id: n.id,
+        type: n.type || 'premise',
+        text: n.text,
+        label: n.label || n.id,
+        x: 0, y: 0
+      });
+    });
+    parsed.edges.forEach(e => {
+      if (e.from && e.to) edges.push({ from: e.from, to: e.to, type: e.type || 'supports' });
+    });
+
+    // Store analysis results
+    window._analysisResult = parsed;
+
+    autoLayout();
+    renderCanvas();
+    renderInspector();
+    renderLogicForm();
+    updateStats();
+    updateNodeSelects();
+    showLoading(false);
+    showStatus('ARGUMENT MAPPED');
+    document.getElementById('empty-state').style.display = 'none';
+
+  } catch (err) {
+    clearInterval(msgInterval);
+    showLoading(false);
+    showStatus('ERROR: ' + err.message.slice(0, 30), 3000);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// LAYOUT ENGINE — Hierarchical force-directed
+// ═══════════════════════════════════════════════════════════════════
+function autoLayout() {
+  if (!nodes.length) return;
+
+  const area = document.getElementById('canvasArea');
+  const W = area.clientWidth;
+  const H = area.clientHeight;
+
+  // Find conclusions (no outgoing edges of type entails/supports to other conclusions)
+  const conclusionIds = new Set(nodes.filter(n => n.type === 'conclusion').map(n => n.id));
+  const objectionIds = new Set(nodes.filter(n => n.type === 'objection').map(n => n.id));
+
+  // BFS from conclusions to assign layers
+  const layers = {};
+  const queue = [];
+
+  // Layer 0: conclusions
+  nodes.filter(n => n.type === 'conclusion').forEach(n => { layers[n.id] = 0; queue.push(n.id); });
+  if (!queue.length) { layers[nodes[0].id] = 0; queue.push(nodes[0].id); }
+
+  // BFS backwards
+  let maxLayer = 0;
+  while (queue.length) {
+    const current = queue.shift();
+    const parents = edges.filter(e => e.to === current && e.type !== 'objects').map(e => e.from);
+    parents.forEach(pid => {
+      if (layers[pid] === undefined) {
+        layers[pid] = layers[current] + 1;
+        maxLayer = Math.max(maxLayer, layers[pid]);
+        queue.push(pid);
+      }
+    });
+  }
+
+  // Assign remaining nodes
+  nodes.forEach(n => { if (layers[n.id] === undefined) layers[n.id] = maxLayer + 1; });
+
+  // Group by layer
+  const byLayer = {};
+  nodes.forEach(n => {
+    const l = layers[n.id];
+    if (!byLayer[l]) byLayer[l] = [];
+    byLayer[l].push(n);
+  });
+
+  // Position nodes
+  const layerCount = Object.keys(byLayer).length;
+  const layerHeight = Math.min(200, (H - 120) / Math.max(layerCount, 1));
+
+  Object.keys(byLayer).forEach(layer => {
+    const l = parseInt(layer);
+    const layerNodes = byLayer[l];
+    const y = 80 + (layerCount - 1 - l) * layerHeight + layerHeight / 2;
+    const spacing = Math.min(220, (W - 100) / Math.max(layerNodes.length, 1));
+    const totalW = spacing * (layerNodes.length - 1);
+    const startX = (W - totalW) / 2;
+
+    // Objections: push to sides
+    layerNodes.forEach((n, i) => {
+      n.y = y;
+      if (n.type === 'objection') {
+        n.x = i < layerNodes.length / 2 ? startX - 120 + i * 30 : startX + totalW + 60 + (i - layerNodes.length) * 30;
+      } else {
+        n.x = startX + i * spacing;
+      }
+    });
+  });
+
+  // Apply transform to center
+  svgTransform = { x: 0, y: 0, scale: 1 };
+  updateTransform();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════
+function renderCanvas() {
+  renderEdges();
+  renderNodes();
+}
+
+function renderEdges() {
+  const layer = document.getElementById('edges-layer');
+  layer.innerHTML = '';
+
+  edges.forEach((edge, i) => {
+    const from = nodes.find(n => n.id === edge.from);
+    const to = nodes.find(n => n.id === edge.to);
+    if (!from || !to) return;
+
+    const cfg = EDGE_CONFIG[edge.type] || EDGE_CONFIG.supports;
+
+    // Compute path
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    const nx = dx / dist; const ny = dy / dist;
+
+    const fromR = getNodeRadius(from);
+    const toR = getNodeRadius(to);
+    const x1 = from.x + nx * fromR;
+    const y1 = from.y + ny * fromR;
+    const x2 = to.x - nx * (toR + 8);
+    const y2 = to.y - ny * (toR + 8);
+
+    // Curved path
+    const midX = (x1 + x2) / 2 + (Math.random() > 0.5 ? 1 : -1) * Math.min(30, dist * 0.15);
+    const midY = (y1 + y2) / 2;
+
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+    // Glow path
+    const glow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    glow.setAttribute('d', `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`);
+    glow.setAttribute('stroke', cfg.color);
+    glow.setAttribute('stroke-opacity', '0.15');
+    glow.setAttribute('stroke-width', '6');
+    glow.setAttribute('fill', 'none');
+
+    // Main path
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    const pathLen = 300;
+    path.setAttribute('d', `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`);
+    path.setAttribute('stroke', cfg.color);
+    path.setAttribute('stroke-opacity', '0.7');
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('marker-end', `url(#arrow-${edgeArrowName(edge.type)})`);
+    if (cfg.dash !== 'none') path.setAttribute('stroke-dasharray', cfg.dash);
+    path.style.strokeDasharray = pathLen;
+    path.style.strokeDashoffset = pathLen;
+    path.style.animation = `edge-draw 0.6s ease ${i * 0.08}s forwards`;
+
+    // Label
+    const labelX = midX;
+    const labelY = midY - 8;
+    const labelEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    labelEl.setAttribute('x', labelX);
+    labelEl.setAttribute('y', labelY);
+    labelEl.setAttribute('text-anchor', 'middle');
+    labelEl.setAttribute('fill', cfg.color);
+    labelEl.setAttribute('font-size', '9');
+    labelEl.setAttribute('font-family', 'Share Tech Mono');
+    labelEl.setAttribute('letter-spacing', '1');
+    labelEl.setAttribute('opacity', '0.7');
+    labelEl.textContent = cfg.label;
+
+    g.appendChild(glow);
+    g.appendChild(path);
+    g.appendChild(labelEl);
+
+    // Hover
+    const hitPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    hitPath.setAttribute('d', `M ${x1} ${y1} Q ${midX} ${midY} ${x2} ${y2}`);
+    hitPath.setAttribute('stroke', 'transparent');
+    hitPath.setAttribute('stroke-width', '12');
+    hitPath.setAttribute('fill', 'none');
+    hitPath.setAttribute('cursor', 'pointer');
+    hitPath.addEventListener('mouseenter', (e) => showTooltip(`${cfg.label}\n${from.label} → ${to.label}`, e));
+    hitPath.addEventListener('mouseleave', hideTooltip);
+    g.appendChild(hitPath);
+
+    layer.appendChild(g);
+  });
+}
+
+function edgeArrowName(type) {
+  const m = { supports:'cyan', entails:'gold', objects:'rose', qualifies:'purple', is_used_in:'green' };
+  return m[type] || 'cyan';
+}
+
+function getNodeRadius(node) {
+  const base = { premise: 56, conclusion: 68, support: 50, objection: 50, qualifier: 50 };
+  return (base[node.type] || 52);
+}
+
+function renderNodes() {
+  const layer = document.getElementById('nodes-layer');
+  layer.innerHTML = '';
+
+  nodes.forEach((node, i) => {
+    const cfg = NODE_CONFIG[node.type] || NODE_CONFIG.premise;
+    const r = getNodeRadius(node);
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', `arg-node ${node.id === selectedNode ? 'selected' : ''}`);
+    g.setAttribute('transform', `translate(${node.x}, ${node.y})`);
+    g.style.animation = `node-appear 0.4s ease ${i * 0.06}s both`;
+    g.setAttribute('cursor', 'pointer');
+
+    // Outer ring (spinning for conclusions)
+    if (node.type === 'conclusion') {
+      const ringOuter = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      ringOuter.setAttribute('r', r + 10);
+      ringOuter.setAttribute('fill', 'none');
+      ringOuter.setAttribute('stroke', cfg.color);
+      ringOuter.setAttribute('stroke-opacity', '0.2');
+      ringOuter.setAttribute('stroke-width', '1');
+      ringOuter.setAttribute('stroke-dasharray', '4 8');
+      ringOuter.style.transformOrigin = 'center';
+      ringOuter.style.animation = 'ring-spin 8s linear infinite';
+      g.appendChild(ringOuter);
+    }
+
+    // Glow circle
+    const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    glow.setAttribute('r', r + 4);
+    glow.setAttribute('fill', 'none');
+    glow.setAttribute('stroke', cfg.color);
+    glow.setAttribute('stroke-opacity', node.type === 'conclusion' ? '0.3' : '0.15');
+    glow.setAttribute('stroke-width', node.type === 'conclusion' ? '3' : '2');
+    g.appendChild(glow);
+
+    // Main body
+    if (node.type === 'premise') {
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', -r); rect.setAttribute('y', -r/1.8);
+      rect.setAttribute('width', r*2); rect.setAttribute('height', r/0.9);
+      rect.setAttribute('rx', cfg.rx);
+      rect.setAttribute('fill', cfg.fill);
+      rect.setAttribute('stroke', cfg.color);
+      rect.setAttribute('stroke-width', node.id === selectedNode ? '2' : '1');
+      rect.setAttribute('stroke-opacity', '0.8');
+      g.appendChild(rect);
+    } else {
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('r', r);
+      circle.setAttribute('fill', cfg.fill);
+      circle.setAttribute('stroke', cfg.color);
+      circle.setAttribute('stroke-width', node.id === selectedNode ? '2.5' : '1.5');
+      circle.setAttribute('stroke-opacity', '0.9');
+      g.appendChild(circle);
+    }
+
+    // Type label
+    const typeLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    typeLabel.setAttribute('text-anchor', 'middle');
+    typeLabel.setAttribute('fill', cfg.color);
+    typeLabel.setAttribute('font-size', '8');
+    typeLabel.setAttribute('font-family', 'Share Tech Mono');
+    typeLabel.setAttribute('letter-spacing', '2');
+    typeLabel.setAttribute('y', node.type === 'premise' ? -r/1.8 + 12 : -r/2 + 4);
+    typeLabel.textContent = cfg.label;
+    g.appendChild(typeLabel);
+
+    // ID label
+    const idLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    idLabel.setAttribute('text-anchor', 'middle');
+    idLabel.setAttribute('fill', cfg.color);
+    idLabel.setAttribute('font-size', '11');
+    idLabel.setAttribute('font-family', 'Rajdhani');
+    idLabel.setAttribute('font-weight', '700');
+    idLabel.setAttribute('letter-spacing', '1');
+    idLabel.setAttribute('y', node.type === 'premise' ? -r/1.8 + 26 : -r/2 + 18);
+    idLabel.textContent = node.label || node.id;
+    g.appendChild(idLabel);
+
+    // Text (wrapped)
+    const words = node.text.split(' ');
+    const maxCharsPerLine = node.type === 'premise' ? 22 : 18;
+    const lines = [];
+    let currentLine = '';
+    words.forEach(word => {
+      if ((currentLine + ' ' + word).trim().length > maxCharsPerLine) {
+        lines.push(currentLine.trim());
+        currentLine = word;
+      } else {
+        currentLine = (currentLine + ' ' + word).trim();
+      }
+    });
+    if (currentLine) lines.push(currentLine.trim());
+    const maxLines = 4;
+    const displayLines = lines.slice(0, maxLines);
+    if (lines.length > maxLines) displayLines[maxLines-1] = displayLines[maxLines-1].slice(0,-3) + '...';
+
+    const lineH = 12;
+    const textStartY = node.type === 'premise' ? -r/1.8 + 40 : -r/2 + 34;
+
+    displayLines.forEach((line, li) => {
+      const t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      t.setAttribute('text-anchor', 'middle');
+      t.setAttribute('fill', '#c8e8f8');
+      t.setAttribute('font-size', '9.5');
+      t.setAttribute('font-family', 'Exo 2');
+      t.setAttribute('y', textStartY + li * lineH);
+      t.textContent = line;
+      g.appendChild(t);
+    });
+
+    // Interactions
+    g.addEventListener('click', () => selectNode(node.id));
+    g.addEventListener('mouseenter', (e) => showTooltip(node.text, e));
+    g.addEventListener('mouseleave', hideTooltip);
+    makeDraggable(g, node);
+
+    layer.appendChild(g);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// DRAGGABLE NODES
+// ═══════════════════════════════════════════════════════════════════
+function makeDraggable(g, node) {
+  let dragging = false, ox, oy, nx, ny;
+
+  g.addEventListener('mousedown', e => {
+    if (e.button !== 0) return;
+    dragging = true;
+    const inv = getInverseTransform();
+    const pt = screenToSVG(e.clientX, e.clientY);
+    ox = pt.x - node.x;
+    oy = pt.y - node.y;
+    e.stopPropagation();
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const pt = screenToSVG(e.clientX, e.clientY);
+    node.x = pt.x - ox;
+    node.y = pt.y - oy;
+    renderCanvas();
+  });
+  window.addEventListener('mouseup', () => { dragging = false; });
+}
+
+function screenToSVG(screenX, screenY) {
+  const svg = document.getElementById('canvas-svg');
+  const rect = svg.getBoundingClientRect();
+  return {
+    x: (screenX - rect.left - svgTransform.x) / svgTransform.scale,
+    y: (screenY - rect.top - svgTransform.y) / svgTransform.scale
+  };
+}
+function getInverseTransform() { return { scale: 1/svgTransform.scale }; }
+
+// ═══════════════════════════════════════════════════════════════════
+// PAN & ZOOM
+// ═══════════════════════════════════════════════════════════════════
+function onPanStart(e) {
+  if (e.target.closest('.arg-node')) return;
+  isPanning = true;
+  panStart = { x: e.clientX - svgTransform.x, y: e.clientY - svgTransform.y };
+}
+function onPanMove(e) {
+  if (!isPanning) return;
+  svgTransform.x = e.clientX - panStart.x;
+  svgTransform.y = e.clientY - panStart.y;
+  updateTransform();
+}
+function onPanEnd() { isPanning = false; }
+
+function onWheel(e) {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.9 : 1.1;
+  svgTransform.scale = Math.min(3, Math.max(0.2, svgTransform.scale * delta));
+  updateTransform();
+}
+function zoomIn() { svgTransform.scale = Math.min(3, svgTransform.scale * 1.2); updateTransform(); }
+function zoomOut() { svgTransform.scale = Math.max(0.2, svgTransform.scale / 1.2); updateTransform(); }
+function resetView() { svgTransform = { x: 0, y: 0, scale: 1 }; updateTransform(); }
+function updateTransform() {
+  document.getElementById('svg-root').setAttribute('transform',
+    `translate(${svgTransform.x},${svgTransform.y}) scale(${svgTransform.scale})`);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INSPECTOR
+// ═══════════════════════════════════════════════════════════════════
+function renderInspector() {
+  const el = document.getElementById('inspector');
+  if (!nodes.length) {
+    el.innerHTML = '<div class="inspector-empty">⟡<br>NO NODES YET</div>';
+    return;
+  }
+  el.innerHTML = nodes.map(n => `
+    <div class="node-card ${n.type} ${n.id === selectedNode ? 'selected' : ''}" onclick="selectNode('${n.id}')">
+      <span class="node-type-tag">${NODE_CONFIG[n.type]?.label || n.type}</span>
+      <div class="node-text">${n.text}</div>
+      <div class="node-id">${n.label || n.id} &nbsp;·&nbsp; ${edges.filter(e=>e.from===n.id||e.to===n.id).length} connections</div>
+    </div>
+  `).join('');
+
+  // Validity block
+  const ar = window._analysisResult;
+  if (ar) {
+    el.innerHTML += `
+      <div class="validity-block">
+        <div class="validity-label">VALIDITY ASSESSMENT</div>
+        <div class="validity-status ${ar.validity}">${ar.validity?.toUpperCase() || 'UNKNOWN'}</div>
+        ${ar.argument_form ? `<div style="font-family:var(--mono);font-size:10px;color:var(--gold);margin-top:4px;letter-spacing:1px">${ar.argument_form}</div>` : ''}
+        <div class="validity-note">${ar.validity_note || ''}</div>
+      </div>
+    `;
+  }
+}
+
+function selectNode(id) {
+  selectedNode = selectedNode === id ? null : id;
+  renderCanvas();
+  renderInspector();
+  updateNodeSelects();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// LOGIC FORM
+// ═══════════════════════════════════════════════════════════════════
+function renderLogicForm() {
+  const el = document.getElementById('logic-form-content');
+  const ar = window._analysisResult;
+  const premises = nodes.filter(n => n.type === 'premise');
+  const conclusions = nodes.find(n => n.type === 'conclusion');
+
+  let html = '';
+
+  if (ar?.argument_form) {
+    html += `<div style="font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:2px;margin-bottom:12px;text-shadow:var(--glow-gold)">FORM: ${ar.argument_form}</div>`;
+  }
+
+  html += '<div class="logic-form">';
+  if (ar?.formal_premises?.length) {
+    ar.formal_premises.forEach(p => {
+      html += `<div><span class="prem">${escHtml(p)}</span></div>`;
+    });
+    html += '<div class="line"></div>';
+    if (ar.formal_conclusion) {
+      html += `<div><span class="conc">∴ ${escHtml(ar.formal_conclusion)}</span></div>`;
+    }
+  } else {
+    premises.forEach(p => {
+      html += `<div><span class="prem">${escHtml(p.label)}: ${escHtml(p.text)}</span></div>`;
+    });
+    html += '<div class="line"></div>';
+    if (conclusions) html += `<div><span class="conc">∴ C: ${escHtml(conclusions.text)}</span></div>`;
+  }
+  html += '</div>';
+
+  // Objections
+  const objections = nodes.filter(n => n.type === 'objection');
+  if (objections.length) {
+    html += `<div class="panel-label" style="margin-top:16px">OBJECTIONS</div>`;
+    objections.forEach(o => {
+      const targets = edges.filter(e => e.from === o.id).map(e => nodes.find(n=>n.id===e.to)?.label || e.to);
+      html += `<div style="background:rgba(255,68,102,0.05);border:1px solid rgba(255,68,102,0.2);border-radius:4px;padding:10px;margin-bottom:8px;font-size:12px;line-height:1.6"><span style="color:var(--rose);font-family:var(--mono);font-size:9px;letter-spacing:2px;display:block;margin-bottom:4px">${o.label} → ${targets.join(', ')}</span>${escHtml(o.text)}</div>`;
+    });
+  }
+
+  el.innerHTML = html;
+}
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ═══════════════════════════════════════════════════════════════════
+// MANUAL ADD
+// ═══════════════════════════════════════════════════════════════════
+function addManualNode() {
+  const text = document.getElementById('manualText').value.trim();
+  const type = document.getElementById('manualType').value;
+  if (!text) return;
+  const id = 'n' + (++nodeIdCounter + Date.now() % 1000);
+  const typeLabels = { premise:'P', conclusion:'C', support:'S', objection:'O', qualifier:'Q' };
+  const existingOfType = nodes.filter(n => n.type === type).length + 1;
+  const label = typeLabels[type] + existingOfType;
+
+  const area = document.getElementById('canvasArea');
+  nodes.push({ id, type, text, label, x: 80 + Math.random() * (area.clientWidth - 200), y: 80 + Math.random() * (area.clientHeight - 160) });
+  document.getElementById('manualText').value = '';
+  renderCanvas();
+  renderInspector();
+  renderLogicForm();
+  updateStats();
+  updateNodeSelects();
+  document.getElementById('empty-state').style.display = 'none';
+}
+
+function addManualEdge() {
+  const from = document.getElementById('fromNode').value;
+  const to = document.getElementById('toNode').value;
+  const type = document.getElementById('edgeType').value;
+  if (!from || !to || from === to) return;
+  if (!edges.find(e => e.from === from && e.to === to)) {
+    edges.push({ from, to, type });
+    renderCanvas();
+    updateStats();
+  }
+}
+
+function updateNodeSelects() {
+  ['fromNode','toNode'].forEach(id => {
+    const sel = document.getElementById(id);
+    const val = sel.value;
+    sel.innerHTML = nodes.map(n => `<option value="${n.id}" ${n.id===val?'selected':''}>${n.label}: ${n.text.slice(0,30)}...</option>`).join('');
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════════════
+function switchTab(tab, btn) {
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  ['tab-input','tab-inspect','tab-logic'].forEach(id => {
+    const el = document.getElementById(id);
+    el.style.display = id === 'tab-' + tab ? (tab === 'inspect' ? 'flex' : 'block') : 'none';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════════════════════════════
+function updateStats() {
+  document.getElementById('stat-nodes').textContent = nodes.length;
+  document.getElementById('stat-edges').textContent = edges.length;
+
+  // Compute depth (longest path)
+  let maxDepth = 0;
+  function dfs(id, depth, visited) {
+    if (visited.has(id)) return;
+    visited.add(id);
+    maxDepth = Math.max(maxDepth, depth);
+    edges.filter(e => e.from === id).forEach(e => dfs(e.to, depth+1, new Set(visited)));
+  }
+  nodes.forEach(n => dfs(n.id, 1, new Set()));
+  document.getElementById('stat-depth').textContent = maxDepth;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CLEAR / EXPORT
+// ═══════════════════════════════════════════════════════════════════
+function clearAll() {
+  if (!confirm('Clear all nodes and edges?')) return;
+  nodes = []; edges = []; selectedNode = null; nodeIdCounter = 0;
+  window._analysisResult = null;
+  document.getElementById('edges-layer').innerHTML = '';
+  document.getElementById('nodes-layer').innerHTML = '';
+  document.getElementById('empty-state').style.display = 'flex';
+  document.getElementById('inspector').innerHTML = '<div class="inspector-empty">⟡<br>NO NODES YET</div>';
+  document.getElementById('logic-form-content').innerHTML = '<div style="color:var(--text-faint);font-family:var(--mono);font-size:11px;text-align:center;padding:40px 0">Analyse an argument to see its formal logical structure</div>';
+  updateStats();
+}
+
+function exportSVG() {
+  const svg = document.getElementById('canvas-svg').outerHTML;
+  const blob = new Blob([svg], { type: 'image/svg+xml' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'argument-map.svg'; a.click();
+}
+
+function exportJSON() {
+  const data = JSON.stringify({ nodes, edges, analysis: window._analysisResult }, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'argument-map.json'; a.click();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════════════════
+function showLoading(show) {
+  const overlay = document.getElementById('loading-overlay');
+  overlay.classList.toggle('active', show);
+}
+
+function showStatus(text, duration) {
+  document.getElementById('canvas-mode').textContent = text;
+  if (duration) setTimeout(() => document.getElementById('canvas-mode').textContent = 'READY', duration);
+}
+
+const tooltip = document.getElementById('tooltip');
+function showTooltip(text, e) {
+  tooltip.textContent = text;
+  tooltip.classList.add('visible');
+  moveTooltip(e);
+}
+function moveTooltip(e) {
+  tooltip.style.left = (e.clientX + 16) + 'px';
+  tooltip.style.top = (e.clientY - 8) + 'px';
+}
+function hideTooltip() { tooltip.classList.remove('visible'); }
+document.addEventListener('mousemove', e => { if (tooltip.classList.contains('visible')) moveTooltip(e); });
+
+// ═══════════════════════════════════════════════════════════════════
+// KEYBOARD
+// ═══════════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Delete' && selectedNode) {
+    nodes = nodes.filter(n => n.id !== selectedNode);
+    edges = edges.filter(e => e.from !== selectedNode && e.to !== selectedNode);
+    selectedNode = null;
+    renderCanvas(); renderInspector(); updateStats(); updateNodeSelects();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') analyseArgument();
+  if (e.key === 'Escape') { selectedNode = null; renderCanvas(); renderInspector(); }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// START
+// ═══════════════════════════════════════════════════════════════════
+init();
+</script>
+</body>
+</html>
