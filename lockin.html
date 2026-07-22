@@ -658,7 +658,7 @@ document.getElementById('saveSettings').onclick = ()=>{
 };
 
 document.getElementById('resetAll').onclick = ()=>{
-  if(confirm('This clears all history and today\\'s progress. Sure?')){
+  if(confirm('This clears all history and todays progress. Sure?')){
     Object.keys(localStorage).filter(k=>k.startsWith('lockin_')).forEach(k=>localStorage.removeItem(k));
     location.reload();
   }
