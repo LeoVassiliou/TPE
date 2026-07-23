@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lock In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0d14;
+    --panel-solid: #121724;
+    --panel-raised: #1a2132;
+    --line: #26304a;
+    --amber: #ffb454;
+    --amber-dim: #ffb45433;
+    --green: #6ee7b7;
+    --green-dim: #6ee7b722;
+    --blue: #7dd3fc;
+    --red: #f87171;
+    --red-dim: #f8717122;
+    --text: #e7ebf5;
+    --text-dim: #8290ad;
+    --text-faint: #4c5876;
+    --font-display: 'Big Shoulders Display', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: radial-gradient(ellipse 1200px 800px at 50% -10%, #1a2035 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    padding: 20px 16px 80px;
+  }
+  .wrap{ max-width: 900px; margin: 0 auto; }
+
+  header{
+    display:flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 14px; margin-bottom: 14px;
+  }
+  .brand{
+    font-family: var(--font-display); font-weight: 800; font-size: 44px;
+    letter-spacing: 0.5px; line-height: 0.9; text-transform: uppercase;
+  }
+  .brand span{ color: var(--amber); }
+  .date-row{ font-family: var(--font-mono); color: var(--text-dim); font-size: 13px; margin-top: 4px; }
+  .stat-pills{ display:flex; gap:10px; flex-wrap: wrap; }
+  .pill{
+    background: var(--panel-solid); border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 14px; text-align:center; min-width: 84px;
+  }
+  .pill .num{ font-family: var(--font-mono); font-size: 20px; font-weight:700; color:var(--amber); }
+  .pill .lbl{ font-size: 10px; color: var(--text-dim); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px; }
+
+  /* ---------- wake bar ---------- */
+  #wakeBar{
+    border-radius: 12px; padding: 12px 16px; margin-bottom: 18px;
+    display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;
+    font-size: 13px; border:1px solid var(--line); background: var(--panel-solid); color: var(--text-dim);
+  }
+  #wakeBar .wb-field{ display:flex; align-items:center; gap:8px; }
+  #wakeBar b{ color: var(--text); }
+
+  .now-card{
+    background: linear-gradient(135deg, var(--panel-raised), #171d2e);
+    border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px;
+    margin-bottom: 20px; position: relative; overflow: hidden;
+  }
+  .now-card::before{
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(circle at 90% -20%, var(--amber-dim), transparent 60%);
+    pointer-events:none;
+  }
+  .now-eyebrow{ font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-dim); font-weight:600; }
+  .now-title{
+    font-family: var(--font-display); font-size: 38px; font-weight: 700; color: var(--amber);
+    line-height: 1; margin-top: 6px; text-transform: uppercase;
+  }
+  .now-sub{ color: var(--text-dim); font-size: 13px; margin-top: 8px; line-height:1.5; }
+  .now-quote{ margin-top:14px; font-size: 13px; color: var(--text-faint); font-style: italic; }
+  .now-actions{ margin-top:14px; display:flex; gap:8px; flex-wrap:wrap; position:relative; z-index:1; }
+
+  .section-label{
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--text-dim); font-weight: 700; margin-bottom: 10px;
+  }
+  .section{ margin-bottom: 26px; }
+  .section-note{ font-size:12px; color: var(--text-dim); margin-top:8px; line-height:1.5; }
+
+  /* ---------- pace bar ---------- */
+  .pace-card{ background: var(--panel-solid); border:1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+  .pace-track{ position:relative; height: 16px; background:#1b2233; border-radius: 8px; overflow:visible; border:1px solid var(--line); }
+  .pace-fill{ position:absolute; left:0; top:0; bottom:0; border-radius:8px; transition: width .4s ease; }
+  .pace-marker{ position:absolute; top:-4px; bottom:-4px; width:2px; background:#fff; box-shadow:0 0 6px 1px #fff8; }
+  .pace-legend{ display:flex; justify-content:space-between; font-size:11px; color:var(--text-dim); margin-top:8px; }
+  .pace-verdict{ font-size:13px; font-weight:600; margin-top:10px; }
+
+  /* ---------- priority list ---------- */
+  .plan-list{ margin-top:16px; display:flex; flex-direction:column; gap:8px; }
+  .plan-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background: var(--panel-raised); border:1px solid var(--line); border-radius:10px;
+    padding:10px 14px; flex-wrap:wrap; border-left: 3px solid var(--line);
+  }
+  .plan-row.tier-red{ border-left-color: var(--red); }
+  .plan-row.tier-amber{ border-left-color: var(--amber); }
+  .plan-row.tier-green{ border-left-color: var(--green); }
+  .plan-row .pname{ font-weight:600; font-size:13.5px; min-width:110px; }
+  .plan-row .ptag{ font-size:10px; text-transform:uppercase; letter-spacing:0.06em; font-weight:700; padding:2px 7px; border-radius:5px; }
+  .tier-red .ptag{ background: var(--red-dim); color: var(--red); }
+  .tier-amber .ptag{ background: var(--amber-dim); color: var(--amber); }
+  .tier-green .ptag{ background: var(--green-dim); color: var(--green); }
+  .plan-row .pmeta{ font-family: var(--font-mono); font-size:12px; color: var(--text-dim); }
+  .plan-row .pmeta b{ color: var(--text); }
+  .plan-row .pcompressed{ font-size:10px; color: var(--text-faint); font-style:italic; }
+  .plan-row-actions{ display:flex; gap:6px; }
+  .plan-row-actions button{ padding:5px 10px; font-size:11px; }
+  .plan-done-all{ text-align:center; padding: 18px; color: var(--green); font-size:14px; font-weight:600; }
+
+  .grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 12px; }
+  .grid.checks{ grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); }
+  .task{
+    background: var(--panel-solid); border:1px solid var(--line); border-radius: 12px;
+    padding: 14px 16px; display:flex; flex-direction:column; gap:8px; transition: border-color 0.2s;
+  }
+  .task.done{ border-color: var(--green); box-shadow: 0 0 0 1px var(--green) inset; }
+  .task.flexible{ border-style: dashed; }
+  .task-top{ display:flex; justify-content:space-between; align-items:center; }
+  .task-name{ font-weight:600; font-size:14px; }
+  .task-check{ font-size: 11px; font-family: var(--font-mono); color: var(--text-dim); }
+  .task.done .task-check{ color: var(--green); }
+  .task-progress{ font-family: var(--font-mono); font-size: 26px; font-weight:700; }
+  .task-bar{ height:6px; background:#1b2233; border-radius:4px; overflow:hidden; }
+  .task-bar-fill{ height:100%; background: linear-gradient(90deg, var(--amber), var(--green)); }
+  .task-meta{ font-size:11px; color: var(--text-dim); }
+  .task-controls{ display:flex; gap:6px; flex-wrap:wrap; margin-top:2px; }
+  button{
+    font-family: var(--font-body); cursor:pointer; border:none; border-radius:7px;
+    padding: 7px 12px; font-size: 12px; font-weight:600;
+    background: var(--panel-raised); color: var(--text); border:1px solid var(--line);
+  }
+  button:hover{ border-color: var(--amber); color: var(--amber); }
+  button.primary{ background: var(--amber); color:#1a1200; border-color: var(--amber); }
+  button.primary:hover{ filter: brightness(1.08); color:#1a1200; }
+  button.ghost{ background: transparent; }
+  button.danger:hover{ border-color: var(--red); color: var(--red); }
+  input[type=number], input[type=text], input[type=time]{
+    background: var(--panel-raised); border:1px solid var(--line); color:var(--text);
+    border-radius:6px; padding:6px 8px; font-family: var(--font-mono); font-size:13px;
+  }
+  input[type=number]{ width: 64px; }
+  select{ background: var(--panel-raised); border:1px solid var(--line); color:var(--text); border-radius:6px; padding:6px 8px; font-size:13px; }
+
+  .ring-wrap{ display:flex; align-items:center; gap:16px; }
+  .ring{ width:74px; height:74px; border-radius:50%; position:relative; flex-shrink:0; background: conic-gradient(var(--amber) calc(var(--pct)*1%), #1b2233 0); }
+  .ring::after{ content:''; position:absolute; inset:7px; border-radius:50%; background: var(--panel-solid); }
+  .ring-label{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family: var(--font-mono); font-size:12px; font-weight:700; z-index:1; }
+
+  .glass-wrap{ display:flex; align-items:center; gap:16px; }
+  .glass{ width:44px; height:64px; border:2px solid var(--line); border-top:none; border-radius: 0 0 8px 8px; position:relative; overflow:hidden; flex-shrink:0; background:#0e1420; }
+  .glass-fill{ position:absolute; left:0; right:0; bottom:0; background: linear-gradient(180deg, var(--blue), #3b8fc4); transition: height 0.3s ease; }
+
+  .heatmap{ display:flex; gap:3px; flex-wrap:wrap; }
+  .hcell{ width:14px; height:14px; border-radius:3px; background:#171d2e; border:1px solid #202944; }
+
+  details{ background: var(--panel-solid); border:1px solid var(--line); border-radius:12px; padding: 14px 18px; margin-bottom: 20px; }
+  summary{ cursor:pointer; font-weight:600; font-size:13px; color: var(--text-dim); list-style:none; }
+  summary::-webkit-details-marker{ display:none; }
+  summary:before{ content:'\2699 '; }
+  .settings-block{ margin-top:16px; }
+  .settings-grid{ display:grid; grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); gap:10px; margin-top: 10px; }
+  .settings-grid label{ font-size:11px; color: var(--text-dim); display:block; margin-bottom:4px; }
+  .settings-grid input{ width:100%; }
+  .activity-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .activity-row .arlabel{ min-width:130px; font-size:13px; font-weight:600; }
+  .activity-row label{ font-size:11px; color:var(--text-dim); }
+  .custom-row{ display:flex; gap:8px; margin-top:6px; align-items:center; flex-wrap:wrap; }
+  .custom-row input[type=text]{ flex:1; min-width:120px; }
+  footer{ text-align:center; color: var(--text-faint); font-size:11px; margin-top: 30px; }
+
+  @media (max-width: 480px){ .now-title{ font-size:30px; } .brand{ font-size:34px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="brand">LOCK <span>IN</span></div>
+      <div class="date-row" id="dateRow">—</div>
+    </div>
+    <div class="stat-pills">
+      <div class="pill"><div class="num" id="pillScore">0%</div><div class="lbl">Today</div></div>
+      <div class="pill"><div class="num" id="pillRun">0</div><div class="lbl">Streak</div></div>
+      <div class="pill"><div class="num" id="pillAvg">0%</div><div class="lbl">30d avg</div></div>
+    </div>
+  </header>
+
+  <div id="wakeBar">
+    <div class="wb-field">Woke up at <input type="time" id="wakeInput"></div>
+    <div class="wb-field">Target bedtime <b id="bedtimeLabel">—</b></div>
+  </div>
+
+  <div class="now-card">
+    <div class="now-eyebrow">Right now</div>
+    <div class="now-title" id="nowTitle">—</div>
+    <div class="now-sub" id="nowSub">—</div>
+    <div class="now-quote" id="nowQuote"></div>
+    <div class="now-actions" id="nowActions"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Pace: where you are vs where you should be</div>
+    <div class="pace-card">
+      <div class="pace-track" id="paceTrack"><div class="pace-fill" id="paceFill"></div><div class="pace-marker" id="paceMarker"></div></div>
+      <div class="pace-legend"><span id="paceStartLbl">wake</span><span id="paceEndLbl">bedtime</span></div>
+      <div class="pace-verdict" id="paceVerdict">—</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Priority order for the rest of today</div>
+    <div class="plan-list" id="planList"></div>
+    <div class="section-note">Every task stays on this list until it is done — nothing quietly fades out just because you have not touched it. The longer something sits behind pace, the more time it gets allocated. When there is not enough time left for everything, lower-priority items get compressed first — never marked as failed.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Today's activities</div>
+    <div class="grid" id="activityGrid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Other / free time <span style="color:var(--text-faint); font-weight:400; text-transform:none; letter-spacing:0;">— flexible, never compressed</span></div>
+    <div class="grid" id="otherGrid"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Daily checklist</div>
+    <div class="grid checks" id="checkGrid"></div>
+    <div class="section-note" id="checkEmptyNote"></div>
+  </div>
+
+  <div class="section">
+    <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(240px,1fr));">
+      <div class="task" id="kcalCard"></div>
+      <div class="task" id="waterCard"></div>
+      <div class="task" id="sleepCard"></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Last 30 days</div>
+    <div class="heatmap" id="heatmap"></div>
+    <div class="section-note">One bad day does not erase this. Missed days show up faint — they do not wipe the rest.</div>
+  </div>
+
+  <details>
+    <summary>Settings — targets, priority &amp; bedtime</summary>
+    <div class="settings-block">
+      <div class="section-label">Target bedtime &amp; usual wake time</div>
+      <div class="custom-row">
+        <div><label style="display:block;font-size:11px;color:var(--text-dim);margin-bottom:4px;">Target bedtime</label><input type="time" id="bedtimeInput"></div>
+        <div><label style="display:block;font-size:11px;color:var(--text-dim);margin-bottom:4px;">Usual wake time (default fill)</label><input type="time" id="defaultWakeInput"></div>
+      </div>
+      <div class="section-note">Wake time is logged fresh each day at the top of the page — this is just what pre-fills it. The pace comparison always recalculates against however much window is actually left before bedtime.</div>
+    </div>
+    <div class="settings-block">
+      <div class="section-label">Breathing room reserved for meals/breaks/life</div>
+      <select id="bufferSelect">
+        <option value="tight">Tight (15%)</option>
+        <option value="normal">Normal (25%)</option>
+        <option value="generous">Generous (35%)</option>
+      </select>
+    </div>
+    <div class="settings-block">
+      <div class="section-label">Activity targets &amp; priority order</div>
+      <div class="section-note">Priority decides what gets compressed first when there is not enough time left. Priority 0 is protected longest; higher numbers get squeezed first.</div>
+      <div id="activitySettings"></div>
+      <div class="custom-row">
+        <input type="text" id="newActivityLabel" placeholder="add a custom activity">
+        <input type="number" id="newActivityMins" placeholder="min" style="width:60px;">
+        <input type="number" id="newActivityPriority" placeholder="priority" style="width:70px;">
+        <button id="addActivity">+ Add</button>
+      </div>
+    </div>
+    <div class="settings-block">
+      <div class="section-label">Other / free time target (minutes, flexible floor)</div>
+      <input type="number" id="targetOther">
+    </div>
+    <div class="settings-block">
+      <div class="section-label">Checklist tasks</div>
+      <div class="settings-grid" id="checkTargets"></div>
+      <div class="custom-row">
+        <input type="text" id="newCheckLabel" placeholder="add a custom checklist item">
+        <button id="addCheckTask">+ Add</button>
+      </div>
+    </div>
+    <div class="settings-block">
+      <div class="section-label">Other targets</div>
+      <div class="settings-grid">
+        <div><label>Water (ml)</label><input type="number" id="targetWater"></div>
+        <div><label>Calories (kcal)</label><input type="number" id="targetKcal"></div>
+        <div><label>Sleep (hrs)</label><input type="number" id="targetSleep" step="0.5"></div>
+      </div>
+    </div>
+    <div class="settings-block">
+      <button id="saveSettings" class="primary">Save settings</button>
+      <button id="resetAll" style="margin-left:8px;">Reset all data</button>
+    </div>
+  </details>
+
+  <footer>leovassiliou.co.uk/lockin — built to keep you honest, not to guilt you.</footer>
+</div>
+
+<script>
+/* ============ CONFIG ============
+   Activities are the priority-ranked, adaptively-rebalanced categories.
+   priority: 0 = protected longest (compressed last), higher = compressed first.
+   kind: 'duration' tracks accumulated minutes toward a target;
+         'session' tracks a 0 / 0.5 / 1 completion fraction (e.g. a workout —
+         there is no meaningful "minutes so far" to accumulate).
+*/
+const DEFAULT_ACTIVITIES = [
+  { id:'workout', label:'Workout',  kind:'session',  target:30,  priority:0 },
+  { id:'read',    label:'Reading',  kind:'duration', target:180, priority:1 },
+  { id:'write',   label:'Writing',  kind:'duration', target:60,  priority:2 },
+  { id:'code',    label:'Coding',   kind:'duration', target:60,  priority:3 },
+];
+const DEFAULT_CHECK = [];
+const DEFAULT_SETTINGS = {
+  defaultWakeTime: '08:00',
+  targetBedtime: '23:00',
+  bufferLevel: 'normal',
+  activities: DEFAULT_ACTIVITIES,
+  check: DEFAULT_CHECK,
+  targetOther: 60,
+  targetWater: 2000,
+  targetKcal: 3000,
+  targetSleep: 8,
+};
+const BUFFER_PCT = { tight:0.15, normal:0.25, generous:0.35 };
+const QUOTES = [
+  "You do not have to feel ready. You just have to start the next small thing.",
+  "Behind pace is information, not a verdict.",
+  "Progress today is whatever is more than zero.",
+  "The list does not forget. Neither should you.",
+  "Compressed is not cancelled.",
+];
+
+/* ============ STORAGE ============ */
+const todayKey = () => {
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+};
+function nowHHMM(){
+  const d = new Date();
+  return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+function loadJSON(key, fallback){
+  try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; }
+}
+function saveJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+let settings = loadJSON('lockin_settings_v4', null);
+if(!settings) settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+if(!settings.activities) settings.activities = DEFAULT_ACTIVITIES;
+if(!settings.check) settings.check = DEFAULT_CHECK;
+if(!settings.defaultWakeTime) settings.defaultWakeTime = '08:00';
+if(!settings.targetBedtime) settings.targetBedtime = '23:00';
+if(settings.targetOther===undefined) settings.targetOther = 60;
+
+let history = loadJSON('lockin_history_v4', []);
+let dayState = loadJSON('lockin_day4_'+todayKey(), null);
+
+function freshDayState(){
+  const s = { wakeTime: settings.defaultWakeTime || nowHHMM(), act:{}, check:{}, other:{accumulated:0}, water:{value:0}, kcal:{value:0}, sleep:{value:0} };
+  settings.activities.forEach(a=>{ s.act[a.id] = a.kind==='session' ? { fraction:0 } : { accumulated:0 }; });
+  settings.check.forEach(c=>{ s.check[c.id] = { fraction:0 }; });
+  return s;
+}
+
+function rollOver(){
+  const keys = Object.keys(localStorage).filter(k=>k.startsWith('lockin_day4_'));
+  const tk = todayKey();
+  keys.forEach(k=>{
+    const dateStr = k.replace('lockin_day4_','');
+    if(dateStr !== tk){
+      const st = loadJSON(k, null);
+      if(st){
+        const sc = computeScore(st);
+        if(!history.find(h=>h.date===dateStr)) history.push({date:dateStr, score:sc});
+      }
+      localStorage.removeItem(k);
+    }
+  });
+  saveJSON('lockin_history_v4', history);
+  history.sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+function reconcileDayState(){
+  settings.activities.forEach(a=>{
+    if(!dayState.act[a.id]) dayState.act[a.id] = a.kind==='session' ? { fraction:0 } : { accumulated:0 };
+  });
+  settings.check.forEach(c=>{ if(!dayState.check[c.id]) dayState.check[c.id] = { fraction:0 }; });
+  if(!dayState.other) dayState.other = { accumulated:0 };
+  if(!dayState.water) dayState.water = { value:0 };
+  if(!dayState.kcal) dayState.kcal = { value:0 };
+  if(!dayState.sleep) dayState.sleep = { value:0 };
+  if(!dayState.wakeTime) dayState.wakeTime = settings.defaultWakeTime || nowHHMM();
+}
+
+/* computeScore must work on raw stored state (used for rolled-over days too) */
+function computeScore(state){
+  let sum=0, count=0;
+  settings.activities.forEach(a=>{
+    const st = state.act && state.act[a.id]; if(!st) return;
+    count++;
+    sum += a.kind==='session' ? (st.fraction||0) : Math.min((st.accumulated||0)/(a.target||1), 1);
+  });
+  settings.check.forEach(c=>{
+    const st = state.check && state.check[c.id]; if(!st) return;
+    count++; sum += st.fraction||0;
+  });
+  count++; sum += Math.min(((state.other&&state.other.accumulated)||0)/(settings.targetOther||1), 1);
+  ['water','kcal','sleep'].forEach(k=>{
+    const st = state[k]; if(!st) return;
+    count++;
+    const target = k==='water'?settings.targetWater:(k==='kcal'?settings.targetKcal:settings.targetSleep);
+    sum += Math.min((st.value||0)/(target||1), 1);
+  });
+  return count ? Math.round((sum/count)*100) : 0;
+}
+
+rollOver();
+if(!dayState) dayState = freshDayState();
+reconcileDayState();
+
+function persistDay(){ saveJSON('lockin_day4_'+todayKey(), dayState); }
+
+function currentRun(){
+  let run = 0;
+  const todayScore = computeScore(dayState);
+  if(todayScore >= 50) run = 1;
+  for(let i=history.length-1;i>=0;i--){ if(history[i].score>=50) run++; else break; }
+  return run;
+}
+function avg30(){
+  const last = history.slice(-30);
+  if(!last.length) return 0;
+  return Math.round(last.reduce((a,b)=>a+b.score,0)/last.length);
+}
+
+/* ============ TIME HELPERS ============ */
+function timeToMinutes(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
+function fmtMin(m){
+  m = Math.round(m);
+  const h = Math.floor(m/60), mm = m%60;
+  if(h<=0) return mm+'m';
+  return h+'h '+mm+'m';
+}
+
+/* ============ PACE / PRIORITY ENGINE ============
+   Base allocation is proportional to each activity's deficit (how far behind
+   the elapsed fraction of the wake->bedtime window it is) — this is the
+   "redistribute proportionally across remaining hours" mechanic.
+   When the proportional total needs more time than is actually left, the
+   shortfall is cut from the lowest-priority activities first (highest
+   `priority` number) before ever touching higher-priority ones — this is the
+   "compress lower-priority items first" mechanic. Other/free time never
+   enters this engine at all: it is deliberately excluded so it is never
+   compressed.
+*/
+function computePlan(){
+  const now = new Date();
+  const nowMin = now.getHours()*60 + now.getMinutes();
+  const wakeMin = timeToMinutes(dayState.wakeTime || settings.defaultWakeTime || '08:00');
+  const bedMin = timeToMinutes(settings.targetBedtime || '23:00');
+  const totalWindow = Math.max(1, bedMin - wakeMin);
+  const elapsedFraction = Math.max(0, Math.min(1, (nowMin - wakeMin) / totalWindow));
+
+  const minutesLeftInWindow = Math.max(0, bedMin - nowMin);
+  const bufferPct = BUFFER_PCT[settings.bufferLevel] || 0.25;
+  const workableMinutes = minutesLeftInWindow * (1 - bufferPct);
+
+  const tasks = settings.activities.map(a=>{
+    const st = dayState.act[a.id];
+    const completionFraction = a.kind==='session' ? (st.fraction||0) : Math.min(1, (st.accumulated||0)/(a.target||1));
+    const remain = Math.max(0, a.target*(1-completionFraction));
+    const deficit = Math.max(0, elapsedFraction - completionFraction);
+    return { ...a, completionFraction, remain, deficit };
+  });
+
+  const remaining = tasks.filter(t=>t.remain > 0.4);
+  const totalNeeded = remaining.reduce((a,b)=>a+b.remain,0);
+
+  // proportional, deficit-weighted base allocation
+  const weights = remaining.map(t=>t.deficit + 0.08);
+  const totalWeight = weights.reduce((a,b)=>a+b,0) || 1;
+  let desired = remaining.map((t,i)=> workableMinutes>0 ? workableMinutes*weights[i]/totalWeight : 0);
+  let capped = remaining.map((t,i)=> Math.min(desired[i], t.remain));
+  let excess = desired.reduce((a,v,i)=>a+(desired[i]-capped[i]),0);
+  if(excess > 0.5){
+    const openIdx = remaining.map((t,i)=>i).filter(i=>capped[i] < remaining[i].remain - 0.1);
+    const openWeight = openIdx.reduce((a,i)=>a+weights[i],0) || 1;
+    openIdx.forEach(i=>{
+      const add = excess*weights[i]/openWeight;
+      capped[i] = Math.min(remaining[i].remain, capped[i]+add);
+    });
+  }
+
+  // priority-order compression when the proportional total doesn't fit
+  let allocated = capped.slice();
+  const sumAlloc = allocated.reduce((a,b)=>a+b,0);
+  let shortfall = Math.max(0, sumAlloc - workableMinutes);
+  if(shortfall > 0.5){
+    const order = remaining.map((t,i)=>i).sort((x,y)=> remaining[y].priority - remaining[x].priority);
+    for(const i of order){
+      if(shortfall <= 0.01) break;
+      const cut = Math.min(allocated[i], shortfall);
+      allocated[i] -= cut;
+      shortfall -= cut;
+    }
+  }
+
+  const suggestions = remaining.map((t,i)=>({
+    ...t,
+    desired: capped[i],
+    suggested: Math.round(Math.max(0, allocated[i])),
+    compressed: (capped[i] - allocated[i]) > 1,
+  })).sort((a,b)=> b.deficit - a.deficit);
+
+  const overallCompletion = tasks.reduce((a,t)=>a+t.completionFraction,0) / (tasks.length || 1);
+
+  let status = 'ok';
+  if(totalNeeded===0) status = 'complete';
+  else if(workableMinutes >= totalNeeded) status = 'roomy';
+  else if(workableMinutes > 0) status = 'tight';
+  else status = 'none';
+
+  return {
+    now, nowMin, wakeMin, bedMin, elapsedFraction, workableMinutes, totalNeeded,
+    suggestions, overallCompletion, status
+  };
+}
+
+function tierFor(deficit){
+  if(deficit > 0.22) return 'red';
+  if(deficit > 0.05) return 'amber';
+  return 'green';
+}
+
+/* ============ QUICK LOG (done / partial / skip) ============ */
+function logActivity(id, action){
+  const a = settings.activities.find(x=>x.id===id);
+  const st = dayState.act[id];
+  if(a.kind==='session'){
+    if(action==='done') st.fraction = 1;
+    else if(action==='partial') st.fraction = Math.max(st.fraction||0, 0.5);
+    // skip: leave as-is, it stays on the list and will resurface
+  } else {
+    const plan = computePlan();
+    const sug = plan.suggestions.find(s=>s.id===id);
+    const amt = sug ? sug.suggested : Math.round(a.target*0.25);
+    if(action==='done') st.accumulated = Math.min(a.target, (st.accumulated||0) + Math.max(amt, 1));
+    else if(action==='partial') st.accumulated = Math.min(a.target, (st.accumulated||0) + Math.max(Math.round(amt/2), 1));
+    // skip: no change
+  }
+  persistDay(); renderAll();
+}
+function logCheck(id, action){
+  const st = dayState.check[id];
+  if(action==='done') st.fraction = 1;
+  else if(action==='partial') st.fraction = 0.5;
+  else if(action==='skip') st.fraction = 0;
+  persistDay(); renderAll();
+}
+
+/* ============ RENDER: HEADER / WAKE BAR / NOW ============ */
+function renderHeader(){
+  const now = new Date();
+  document.getElementById('dateRow').textContent = now.toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'}) + ' · ' + now.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+  const score = computeScore(dayState);
+  document.getElementById('pillScore').textContent = score+'%';
+  document.getElementById('pillRun').textContent = currentRun();
+  document.getElementById('pillAvg').textContent = avg30()+'%';
+
+  document.getElementById('wakeInput').value = dayState.wakeTime;
+  document.getElementById('bedtimeLabel').textContent = settings.targetBedtime;
+}
+
+function renderNow(){
+  const plan = computePlan();
+  const nowTitle = document.getElementById('nowTitle');
+  const nowSub = document.getElementById('nowSub');
+  const nowActions = document.getElementById('nowActions');
+  nowActions.innerHTML = '';
+
+  if(plan.status === 'complete'){
+    nowTitle.textContent = 'All activities done';
+    nowSub.textContent = 'Nice work. Checklist, other/free time and nutrition are still there whenever you want them.';
+  } else if(plan.nowMin >= plan.bedMin){
+    nowTitle.textContent = 'Past target bedtime';
+    nowSub.textContent = 'Whatever is left carries into tomorrow as its new starting point. That is the system working, not you failing.';
+  } else {
+    const top = plan.suggestions[0];
+    if(top){
+      nowTitle.textContent = top.label;
+      const doneTxt = top.kind==='session'
+        ? (top.completionFraction>=0.5 ? 'partially done so far' : 'not done yet')
+        : fmtMin(dayState.act[top.id].accumulated||0) + ' logged so far';
+      nowSub.textContent = doneTxt + ' · suggest ' + fmtMin(top.suggested) + ' now · ' + fmtMin(top.remain) + ' to full target.' + (top.compressed ? ' Compressed to make room for higher-priority items.' : '');
+      ['done','partial','skip'].forEach(action=>{
+        const btn = document.createElement('button');
+        btn.className = action==='done' ? 'primary' : 'ghost';
+        btn.textContent = action==='done'?'Done':(action==='partial'?'Partial':'Skip for now');
+        btn.onclick = ()=> logActivity(top.id, action);
+        nowActions.appendChild(btn);
+      });
+    } else {
+      nowTitle.textContent = 'Pick anything';
+      nowSub.textContent = 'Nothing flagged as behind. Move to whichever activity you feel like.';
+    }
+  }
+  document.getElementById('nowQuote').textContent = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+}
+
+/* ============ RENDER: PACE BAR + PRIORITY LIST ============ */
+function renderPace(){
+  const plan = computePlan();
+  const fill = document.getElementById('paceFill');
+  const marker = document.getElementById('paceMarker');
+  const completionPct = Math.min(100, plan.overallCompletion*100);
+  const elapsedPct = plan.elapsedFraction*100;
+  fill.style.width = completionPct+'%';
+  marker.style.left = elapsedPct+'%';
+  const ahead = plan.overallCompletion >= plan.elapsedFraction;
+  fill.style.background = ahead ? 'linear-gradient(90deg, var(--green), #4fd19b)' : 'linear-gradient(90deg, var(--red), var(--amber))';
+
+  document.getElementById('paceStartLbl').textContent = 'wake ' + dayState.wakeTime;
+  document.getElementById('paceEndLbl').textContent = 'bed ' + settings.targetBedtime;
+
+  const verdict = document.getElementById('paceVerdict');
+  const gapPts = Math.round((plan.overallCompletion - plan.elapsedFraction)*100);
+  if(plan.status==='complete'){
+    verdict.textContent = 'Every activity target hit today.';
+    verdict.style.color = 'var(--green)';
+  } else if(gapPts >= 0){
+    verdict.textContent = Math.round(plan.elapsedFraction*100)+'% through the window, '+Math.round(plan.overallCompletion*100)+'% through the total — on pace or ahead.';
+    verdict.style.color = 'var(--green)';
+  } else {
+    verdict.textContent = Math.round(plan.elapsedFraction*100)+'% through the window, only '+Math.round(plan.overallCompletion*100)+'% through the total — behind, and the list below has already re-weighted toward what needs it most.';
+    verdict.style.color = 'var(--amber)';
+  }
+
+  const list = document.getElementById('planList');
+  list.innerHTML = '';
+  if(plan.suggestions.length===0){
+    const done = document.createElement('div');
+    done.className = 'plan-done-all';
+    done.textContent = 'Nothing left on the priority list — nice.';
+    list.appendChild(done);
+    return;
+  }
+  plan.suggestions.forEach(s=>{
+    const tier = tierFor(s.deficit);
+    const row = document.createElement('div');
+    row.className = 'plan-row tier-'+tier;
+    const tagText = tier==='red' ? 'behind' : (tier==='amber' ? 'watch' : 'on pace');
+    row.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="ptag">${tagText}</span>
+        <div class="pname">${s.label}</div>
+      </div>
+      <div>
+        <div class="pmeta">do <b>${fmtMin(s.suggested)}</b> now · ${fmtMin(s.remain)} to target</div>
+        ${s.compressed ? '<div class="pcompressed">compressed for higher priority items</div>' : ''}
+      </div>
+      <div class="plan-row-actions">
+        <button class="qa primary" data-action="done">Done</button>
+        <button class="qa" data-action="partial">Partial</button>
+        <button class="qa ghost" data-action="skip">Skip</button>
+      </div>
+    `;
+    row.querySelectorAll('.qa').forEach(b=>{
+      b.onclick = ()=> logActivity(s.id, b.dataset.action);
+    });
+    list.appendChild(row);
+  });
+}
+
+/* ============ RENDER: ACTIVITY GRID ============ */
+function renderActivityGrid(){
+  const grid = document.getElementById('activityGrid');
+  grid.innerHTML = '';
+  const plan = computePlan();
+  settings.activities.forEach(a=>{
+    const st = dayState.act[a.id];
+    const completionFraction = a.kind==='session' ? (st.fraction||0) : Math.min(1, (st.accumulated||0)/(a.target||1));
+    const isDone = completionFraction >= 1;
+    const pct = completionFraction*100;
+    const sug = plan.suggestions.find(s=>s.id===a.id);
+    const card = document.createElement('div');
+    card.className = 'task';
+    if(isDone) card.classList.add('done');
+
+    let progressHtml;
+    if(a.kind==='session'){
+      const stateTxt = isDone ? 'Done' : (completionFraction>=0.5 ? 'Partially done' : 'Not done yet');
+      progressHtml = `<div class="task-progress" style="font-size:18px;">${stateTxt}</div>`;
+    } else {
+      const mins = Math.round(st.accumulated||0);
+      progressHtml = `<div class="task-progress">${mins}<span style="color:var(--text-dim);font-size:13px;"> / ${a.target} min</span></div>`;
+    }
+
+    const suggestHtml = (!isDone && sug) ? `<div class="task-meta">suggest ${fmtMin(sug.suggested)} now${sug.compressed?' (compressed)':''}</div>` : '';
+
+    card.innerHTML = `
+      <div class="task-top"><div class="task-name">${a.label}</div><div class="task-check">${isDone?'✓ done':''}</div></div>
+      ${progressHtml}
+      <div class="task-bar"><div class="task-bar-fill" style="width:${pct}%"></div></div>
+      ${suggestHtml}
+      <div class="task-controls">
+        ${isDone ? '' : `
+          <button class="primary qa" data-action="done">Done</button>
+          <button class="qa" data-action="partial">Partial</button>
+          <button class="ghost qa" data-action="skip">Skip</button>
+        `}
+      </div>
+    `;
+    card.querySelectorAll('.qa').forEach(b=>{
+      b.onclick = ()=> logActivity(a.id, b.dataset.action);
+    });
+    grid.appendChild(card);
+  });
+}
+
+/* ============ RENDER: OTHER / FREE TIME ============ */
+function renderOther(){
+  const grid = document.getElementById('otherGrid');
+  const other = dayState.other;
+  const target = settings.targetOther || 60;
+  const pct = Math.min(100, (other.accumulated/target)*100);
+  grid.innerHTML = `
+    <div class="task flexible">
+      <div class="task-top"><div class="task-name">Other / free time</div><div class="task-check">${other.accumulated>=target?'✓':''}</div></div>
+      <div class="task-progress">${Math.round(other.accumulated)}<span style="color:var(--text-dim);font-size:13px;"> / ${target} min+</span></div>
+      <div class="task-bar"><div class="task-bar-fill" style="width:${pct}%"></div></div>
+      <div class="task-meta">Flexible — never compressed when you are behind on everything else.</div>
+      <div class="task-controls">
+        <button class="oadd" data-amt="15">+15</button>
+        <button class="oadd" data-amt="30">+30</button>
+        <button class="ghost oreset">Reset</button>
+      </div>
+    </div>
+  `;
+  grid.querySelectorAll('.oadd').forEach(b=>{
+    b.onclick = ()=>{ other.accumulated += parseInt(b.dataset.amt); persistDay(); renderAll(); };
+  });
+  grid.querySelector('.oreset').onclick = ()=>{ other.accumulated = 0; persistDay(); renderAll(); };
+}
+
+/* ============ RENDER: CHECKLIST ============ */
+function renderCheckGrid(){
+  const grid = document.getElementById('checkGrid');
+  grid.innerHTML = '';
+  document.getElementById('checkEmptyNote').textContent = settings.check.length ? '' : 'No checklist items yet — add your own personal habits (e.g. shower, skincare) in Settings.';
+  settings.check.forEach(c=>{
+    const st = dayState.check[c.id];
+    const isDone = (st.fraction||0) >= 1;
+    const card = document.createElement('div');
+    card.className = 'task';
+    if(isDone) card.classList.add('done');
+    card.innerHTML = `
+      <div class="task-top"><div class="task-name">${c.label}</div><div class="task-check">${isDone?'✓':(st.fraction===0.5?'½':'')}</div></div>
+      <div class="task-controls">
+        <button class="primary qa" data-action="done">Done</button>
+        <button class="qa" data-action="partial">Partial</button>
+        <button class="ghost qa" data-action="skip">Skip</button>
+      </div>
+    `;
+    card.querySelectorAll('.qa').forEach(b=>{
+      b.onclick = ()=> logCheck(c.id, b.dataset.action);
+    });
+    grid.appendChild(card);
+  });
+}
+
+/* ============ RENDER: KCAL / WATER / SLEEP ============ */
+function renderNutrition(){
+  const kcal = dayState.kcal, target = settings.targetKcal||1;
+  const pct = Math.min(100, (kcal.value/target)*100);
+  const kcalCard = document.getElementById('kcalCard');
+  kcalCard.innerHTML = `
+    <div class="task-top"><div class="task-name">Calories</div><div class="task-check">${kcal.value>=target?'✓ hit target':''}</div></div>
+    <div class="ring-wrap">
+      <div class="ring" style="--pct:${pct}"><div class="ring-label">${Math.round(pct)}%</div></div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:20px;font-weight:700;">${kcal.value}<span style="color:var(--text-dim);font-size:12px;"> / ${target}</span></div>
+        <div class="task-controls" style="margin-top:6px;">
+          <button class="kadd" data-amt="200">+200</button>
+          <button class="kadd" data-amt="400">+400</button>
+          <button class="kadd" data-amt="600">+600</button>
+        </div>
+      </div>
+    </div>
+  `;
+  kcalCard.querySelectorAll('.kadd').forEach(b=>{
+    b.onclick = ()=>{ kcal.value += parseInt(b.dataset.amt); persistDay(); renderAll(); };
+  });
+
+  const water = dayState.water, wTarget = settings.targetWater||1;
+  const wPct = Math.min(100, (water.value/wTarget)*100);
+  const waterCard = document.getElementById('waterCard');
+  waterCard.innerHTML = `
+    <div class="task-top"><div class="task-name">Water</div><div class="task-check">${water.value>=wTarget?'✓ hit target':''}</div></div>
+    <div class="glass-wrap">
+      <div class="glass"><div class="glass-fill" style="height:${wPct}%"></div></div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:20px;font-weight:700;">${(water.value/1000).toFixed(2)}L<span style="color:var(--text-dim);font-size:12px;"> / ${(wTarget/1000).toFixed(1)}L</span></div>
+        <div class="task-controls" style="margin-top:6px;">
+          <button class="wadd" data-amt="250">+250ml</button>
+          <button class="wadd" data-amt="500">+500ml</button>
+          <button class="ghost wminus">-250ml</button>
+        </div>
+      </div>
+    </div>
+  `;
+  waterCard.querySelectorAll('.wadd').forEach(b=>{
+    b.onclick = ()=>{ water.value += parseInt(b.dataset.amt); persistDay(); renderAll(); };
+  });
+  waterCard.querySelector('.wminus').onclick = ()=>{ water.value = Math.max(0, water.value-250); persistDay(); renderAll(); };
+
+  const sleep = dayState.sleep, sTarget = settings.targetSleep||1;
+  const sleepCard = document.getElementById('sleepCard');
+  sleepCard.innerHTML = `
+    <div class="task-top"><div class="task-name">Sleep last night</div><div class="task-check">${sleep.value>=sTarget?'✓':''}</div></div>
+    <div class="task-progress">${sleep.value}<span style="color:var(--text-dim);font-size:13px;"> / ${sTarget} hrs</span></div>
+    <div class="task-controls">
+      <button class="sadd" data-amt="0.5">+0.5</button>
+      <button class="sadd" data-amt="1">+1</button>
+      <button class="ghost sreset">Reset</button>
+    </div>
+  `;
+  sleepCard.querySelectorAll('.sadd').forEach(b=>{
+    b.onclick = ()=>{ sleep.value = +(sleep.value+parseFloat(b.dataset.amt)).toFixed(1); persistDay(); renderAll(); };
+  });
+  sleepCard.querySelector('.sreset').onclick = ()=>{ sleep.value=0; persistDay(); renderAll(); };
+}
+
+/* ============ RENDER: HEATMAP ============ */
+function renderHeatmap(){
+  const el = document.getElementById('heatmap');
+  el.innerHTML='';
+  const tk = todayKey();
+  for(let i=29;i>=0;i--){
+    const d = new Date();
+    d.setDate(d.getDate()-i);
+    const key = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    let score = null;
+    if(key===tk) score = computeScore(dayState);
+    else { const h = history.find(x=>x.date===key); score = h ? h.score : null; }
+    const cell = document.createElement('div');
+    cell.className='hcell';
+    cell.title = key + (score!==null ? ' — '+score+'%' : ' — no data');
+    if(score!==null){
+      const alpha = Math.max(0.12, score/100);
+      cell.style.background = `rgba(110,231,183,${alpha})`;
+      cell.style.borderColor = `rgba(110,231,183,${Math.min(1,alpha+0.2)})`;
+    }
+    el.appendChild(cell);
+  }
+}
+
+/* ============ SETTINGS PANEL ============ */
+function renderSettingsPanel(){
+  document.getElementById('bedtimeInput').value = settings.targetBedtime;
+  document.getElementById('defaultWakeInput').value = settings.defaultWakeTime;
+  document.getElementById('bufferSelect').value = settings.bufferLevel;
+  document.getElementById('targetOther').value = settings.targetOther;
+  document.getElementById('targetWater').value = settings.targetWater;
+  document.getElementById('targetKcal').value = settings.targetKcal;
+  document.getElementById('targetSleep').value = settings.targetSleep;
+
+  const aw = document.getElementById('activitySettings');
+  aw.innerHTML='';
+  settings.activities.forEach((a,i)=>{
+    const row = document.createElement('div');
+    row.className = 'activity-row';
+    row.innerHTML = `
+      <div class="arlabel">${a.label}</div>
+      <div><label>Target (min)</label><input type="number" data-act-target="${i}" value="${a.target}"></div>
+      <div><label>Priority</label><input type="number" data-act-priority="${i}" value="${a.priority}"></div>
+      <button class="ghost danger" data-act-remove="${i}">Remove</button>
+    `;
+    aw.appendChild(row);
+  });
+  aw.querySelectorAll('[data-act-remove]').forEach(b=>{
+    b.onclick = ()=>{
+      const idx = +b.dataset.actRemove;
+      const removed = settings.activities.splice(idx,1)[0];
+      delete dayState.act[removed.id];
+      renderSettingsPanel(); persistDay();
+    };
+  });
+
+  const cw = document.getElementById('checkTargets');
+  cw.innerHTML='';
+  settings.check.forEach((c,i)=>{
+    const wrap = document.createElement('div');
+    wrap.innerHTML = `<label>${c.label}</label><button class="ghost danger" data-check-remove="${i}" style="width:100%;">Remove</button>`;
+    cw.appendChild(wrap);
+  });
+  cw.querySelectorAll('[data-check-remove]').forEach(b=>{
+    b.onclick = ()=>{
+      const idx = +b.dataset.checkRemove;
+      const removed = settings.check.splice(idx,1)[0];
+      delete dayState.check[removed.id];
+      renderSettingsPanel(); persistDay();
+    };
+  });
+}
+
+document.getElementById('wakeInput').onchange = (e)=>{
+  dayState.wakeTime = e.target.value || nowHHMM();
+  persistDay(); renderAll();
+};
+
+document.getElementById('addActivity').onclick = ()=>{
+  const label = document.getElementById('newActivityLabel').value.trim();
+  const mins = parseFloat(document.getElementById('newActivityMins').value);
+  const priority = parseFloat(document.getElementById('newActivityPriority').value);
+  if(!label || !mins) return;
+  const id = 'custom_'+Date.now();
+  settings.activities.push({ id, label, kind:'duration', target: mins, priority: isNaN(priority) ? settings.activities.length : priority });
+  dayState.act[id] = { accumulated:0 };
+  document.getElementById('newActivityLabel').value='';
+  document.getElementById('newActivityMins').value='';
+  document.getElementById('newActivityPriority').value='';
+  renderSettingsPanel(); persistDay();
+};
+document.getElementById('addCheckTask').onclick = ()=>{
+  const label = document.getElementById('newCheckLabel').value.trim();
+  if(!label) return;
+  const id = 'custom_'+Date.now();
+  settings.check.push({ id, label });
+  dayState.check[id] = { fraction:0 };
+  document.getElementById('newCheckLabel').value='';
+  renderSettingsPanel(); persistDay();
+};
+
+document.getElementById('saveSettings').onclick = ()=>{
+  settings.targetBedtime = document.getElementById('bedtimeInput').value || '23:00';
+  settings.defaultWakeTime = document.getElementById('defaultWakeInput').value || '08:00';
+  settings.bufferLevel = document.getElementById('bufferSelect').value;
+  settings.targetOther = parseFloat(document.getElementById('targetOther').value) || 60;
+  settings.targetWater = parseFloat(document.getElementById('targetWater').value) || 2000;
+  settings.targetKcal = parseFloat(document.getElementById('targetKcal').value) || 3000;
+  settings.targetSleep = parseFloat(document.getElementById('targetSleep').value) || 8;
+  document.querySelectorAll('[data-act-target]').forEach(inp=>{
+    settings.activities[+inp.dataset.actTarget].target = parseFloat(inp.value) || 1;
+  });
+  document.querySelectorAll('[data-act-priority]').forEach(inp=>{
+    settings.activities[+inp.dataset.actPriority].priority = parseFloat(inp.value) || 0;
+  });
+  saveJSON('lockin_settings_v4', settings);
+  renderAll();
+};
+
+document.getElementById('resetAll').onclick = ()=>{
+  if(confirm('This clears all history and todays progress. Sure?')){
+    Object.keys(localStorage).filter(k=>k.startsWith('lockin_')).forEach(k=>localStorage.removeItem(k));
+    location.reload();
+  }
+};
+
+/* ============ MASTER RENDER ============ */
+function renderAll(){
+  renderHeader();
+  renderNow();
+  renderPace();
+  renderActivityGrid();
+  renderOther();
+  renderCheckGrid();
+  renderNutrition();
+  renderHeatmap();
+}
+
+renderSettingsPanel();
+renderAll();
+
+setInterval(()=>{ renderHeader(); renderNow(); renderPace(); }, 30000);
+
+window.addEventListener('beforeunload', persistDay);
+</script>
+</body>
+</html>
