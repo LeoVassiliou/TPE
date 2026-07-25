@@ -1,8 +1,18 @@
 # LockIn — Adaptive Daily Routine Tracker
 
-Single-file app at `lockin/index.html`. No build step, no backend — open the
-file (or serve the directory) and it runs. All state lives in the browser's
-`localStorage`.
+Two single-file apps, no build step, no backend — open the files (or serve
+the directory) and they run. All state lives in the browser's `localStorage`.
+
+- `lockin/index.html` — the daily routine/pace engine described below.
+- `lockin/loading.html` — The Loading Protocol: nutrition, training and
+  weight tracking for the 52kg→60kg bulk. Ported from a React prototype into
+  the same vanilla-JS/localStorage style as this file, restyled to match
+  LockIn's dark/amber theme instead of its own separate palette. Storage
+  keys `loading_log_v1` / `loading_start_v1`, namespaced separately from
+  `lockin_*` so the two apps don't collide.
+
+Linked from each other's header (`← Lock In` / `Loading Protocol →`), and
+both from the homepage `index.html` "Lock In" card.
 
 ## The problem this solves
 
