@@ -1,20 +1,24 @@
-# LockIn — Adaptive Daily Routine Tracker
+# LockIn
 
-Two single-file apps, no build step, no backend — open the files (or serve
+Four single-file apps, no build step, no backend — open the files (or serve
 the directory) and they run. All state lives in the browser's `localStorage`.
 
-- `lockin/index.html` — the daily routine/pace engine described below.
+- `lockin/index.html` — **the front door: the decider.** One action at a time.
+  See "The 2026-07-25 rebuild" at the bottom of this file for why it is shaped
+  this way; that section is the governing spec for it.
+- `lockin/plan.html` — the read-once reference: researched answers, the 12-day
+  sequence, shop list, and what 12 days can/cannot deliver. Facts live here.
+- `lockin/dashboard.html` — the original adaptive pace tracker, described in
+  the sections below. Demoted from front door on 2026-07-25, kept intact.
 - `lockin/loading.html` — The Loading Protocol: nutrition, training and
   weight tracking for the 52kg→60kg bulk. Ported from a React prototype into
-  the same vanilla-JS/localStorage style as this file, restyled to match
-  LockIn's dark/amber theme instead of its own separate palette. Storage
-  keys `loading_log_v1` / `loading_start_v1`, namespaced separately from
-  `lockin_*` so the two apps don't collide.
+  the same vanilla-JS/localStorage style, restyled to match LockIn's
+  dark/amber theme instead of its own separate palette. Storage keys
+  `loading_log_v1` / `loading_start_v1`.
 
-Linked from each other's header (`← Lock In` / `Loading Protocol →`), and
-both from the homepage `index.html` "Lock In" card.
+Homepage `index.html`'s "Lock In" card points at `lockin/index.html`.
 
-## The problem this solves
+## The problem dashboard.html solves
 
 Static checklists fail the moment you fall behind on one item, which tends to
 cause abandoning the whole day. LockIn continuously recalculates a realistic
@@ -113,3 +117,42 @@ banner that wasn't part of the spec at all.
 - Changing defaults: edit `DEFAULT_ACTIVITIES` / `DEFAULT_SETTINGS` in the
   `<script>` block. Bump the `_v4` storage suffix if the shape of stored
   state changes, so existing users don't load a mismatched blob.
+
+## The 2026-07-25 rebuild — why index.html changed shape
+
+The original dashboard (now `dashboard.html`) was a **tracker**: it asked Leo to
+set targets, choose tasks from lists, log against them, and showed a completion
+percentage. That is the wrong tool for the actual failure mode.
+
+The diagnosed failure mode: **evaluate → "not worth it" → do nothing.** Every
+stalled decision terminates there ("a 500 kcal sandwich isn't worth it", "don't
+know what to buy so won't shop", "no protein powder so no creatine so no
+workout"). The dashboard required exactly the executive function that breaks in
+those moments, and its completion % actively reinforced the write-off instinct.
+
+So `index.html` is now a **decider**, not a tracker. Design rules, which any
+future change must preserve:
+
+1. **One action on screen at a time.** Never a list as the primary ask — a list
+   is a decision, and decisions are where he stalls. "Something else" cycles to
+   the next candidate rather than showing all of them.
+2. **The value is always numeric and attached.** Every food action states its
+   kcal and its % of the day, because "worth it" must never be a judgement call.
+3. **Every action carries a `counter`** — a line that pre-empts the specific
+   objection that would otherwise kill it (e.g. creatine needs no shake).
+4. **Nothing is ever red, and there is no score or streak.** Progress is shown
+   additively ("done today") only. A streak is a thing that breaks, and a broken
+   streak is the excuse.
+5. **A floor action is always available** as the last candidate, so the page can
+   never return nothing.
+6. **Pantry state is a first-class toggle** — "nothing in" surfaces a fixed shop
+   list, because "I don't know what to buy" was a real, recurring stall.
+
+`plan.html` holds the read-once reference: the researched answers (whitening
+strips, salicylic acid, the protein-powder myth, creatine loading for a 12-day
+deadline, the wake-time/morning-light fix for the sleep loop), the day-by-day
+sequence, the shop list, and an honest account of what 12 days can and cannot
+deliver. Facts live there; `index.html` holds only actions.
+
+Storage keys are `li5_meta` and `li5_<YYYY-MM-DD>`, namespaced away from the old
+`lockin_*` (dashboard) and `loading_*` (loading.html) keys so all three coexist.
