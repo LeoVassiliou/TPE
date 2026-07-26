@@ -162,6 +162,11 @@
       <input type="time" id="wakeIn">
       <button class="mini" id="wakeNow">Just now</button>
     </div>
+    <div class="qlabel">Tonight's bedtime</div>
+    <div class="qgrid">
+      <input type="time" id="bedIn">
+      <span style="font-size:12px;color:var(--faint);align-self:center;">shift this 45 min earlier each day</span>
+    </div>
     <div class="qlabel">Add calories manually</div>
     <div class="qgrid">
       <input type="number" id="kcalIn" placeholder="kcal" style="width:100px;">
@@ -211,6 +216,10 @@ function save(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} 
 
 let meta = load('li5_meta', null);
 if(!meta){ meta = { start: new Date().toISOString().slice(0,10), pantry:'yes' }; save('li5_meta', meta); }
+/* bedtime is per-user and shifts during a sleep-schedule reset, so it lives in
+   meta rather than CFG. CFG.bedtime is only the first-run default. */
+if(!meta.bedtime){ meta.bedtime = CFG.bedtime; save('li5_meta', meta); }
+const bedStr = () => meta.bedtime || CFG.bedtime;
 
 const BLANK = { wake:'', kcal:0, water:0, read:0, creatine:false, workout:false, sun:false,
                 teeth:false, skinAM:false, skinPM:false, shower:false, bodywash:false, walk:false };
@@ -280,7 +289,7 @@ const ONE_OFFS = {
    Order is deliberate: the thing that unblocks the most other things wins.
    ========================================================================= */
 function candidates(){
-  const c = [], m = nowMin(), bed = t2m(CFG.bedtime), left = bed - m;
+  const c = [], m = nowMin(), bed = t2m(bedStr()), left = bed - m;
   const hasFood = meta.pantry === 'yes';
   const kcalLeft = Math.max(0, CFG.kcal - day.kcal);
   const eatenRecently = day.lastEat && (m - day.lastEat) < 200;
@@ -381,7 +390,7 @@ function candidates(){
 
   /* --- wind down --- */
   if(left < 75 && left > -60){
-    c.push({ verb:'Start winding down', what:'Bed is at '+CFG.bedtime+'. That is '+fmtGap(left)+' away.',
+    c.push({ verb:'Start winding down', what:'Bed is at '+bedStr()+'. That is '+fmtGap(left)+' away.',
       how:'Phone on charge across the room. Lights down. This is the hour that decides what tomorrow looks like.',
       value:'A fixed wake time is what fixes the loop — and it only survives if tonight ends on time.',
       counter:'Waking at the same time every day is the anchor. Not bedtime, not willpower. Protect the wake time and the rest follows.',
@@ -400,7 +409,7 @@ function candidates(){
 
 /* ---------- what still fits before bed ---------- */
 function fits(){
-  const m = nowMin(), left = t2m(CFG.bedtime) - m;
+  const m = nowMin(), left = t2m(bedStr()) - m;
   const rows = [];
   const add = (label, done) => rows.push({ label, done });
   const kcalLeft = Math.max(0, CFG.kcal - day.kcal);
@@ -518,6 +527,7 @@ function renderTop(){
   document.getElementById('pantryNote').textContent =
     meta.pantry==='yes' ? '' : 'Shopping list is in the card above.';
   document.getElementById('wakeIn').value = day.wake || '';
+  document.getElementById('bedIn').value = bedStr();
 }
 
 function renderAll(){ renderTop(); renderCard(); renderFits(); renderDone(); renderQuick(); }
@@ -526,6 +536,7 @@ function renderAll(){ renderTop(); renderCard(); renderFits(); renderDone(); ren
 document.getElementById('pYes').onclick = ()=>{ meta.pantry='yes'; save('li5_meta',meta); cursor=0; renderAll(); };
 document.getElementById('pNo').onclick  = ()=>{ meta.pantry='no';  save('li5_meta',meta); cursor=0; renderAll(); };
 document.getElementById('wakeIn').onchange = (e)=>{ day.wake = e.target.value; persist(); renderAll(); };
+document.getElementById('bedIn').onchange = (e)=>{ meta.bedtime = e.target.value || CFG.bedtime; save('li5_meta', meta); cursor=0; renderAll(); };
 document.getElementById('wakeNow').onclick = ()=>{
   const d=new Date(); day.wake = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
   persist(); renderAll();
