@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The training programme</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#080b11; --panel:#111624; --raised:#182032; --line:#242e46;
+    --amber:#ffb454; --amber-soft:#ffb45420; --green:#6ee7b7; --green-soft:#6ee7b71a;
+    --red:#f87171; --text:#eef2fa; --dim:#8493b0; --faint:#4a5674;
+    --disp:'Big Shoulders Display',sans-serif; --body:'Inter',sans-serif; --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{background:radial-gradient(ellipse 1000px 700px at 50% -15%, #1b2338 0%, var(--bg) 60%);
+    color:var(--text);font-family:var(--body);min-height:100vh;padding:18px 14px 70px;line-height:1.6;}
+  .wrap{max-width:700px;margin:0 auto;}
+  a{color:var(--amber);}
+  .back{font-size:12.5px;font-weight:600;text-decoration:none;color:var(--dim);display:inline-block;margin-bottom:18px;}
+  .back:hover{color:var(--amber);}
+
+  h1{font-family:var(--disp);font-weight:900;font-size:clamp(34px,9vw,50px);line-height:.95;
+    text-transform:uppercase;margin:0 0 8px;letter-spacing:.5px;}
+  h1 span{color:var(--amber);}
+  .lede{color:var(--dim);font-size:15px;margin-bottom:28px;}
+
+  h2{font-family:var(--disp);font-weight:800;font-size:26px;text-transform:uppercase;
+    margin:38px 0 4px;letter-spacing:.4px;color:var(--amber);}
+  .h2note{color:var(--faint);font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;margin-bottom:16px;}
+  h3{font-size:17px;margin:22px 0 6px;font-weight:700;}
+  p{margin:0 0 12px;font-size:14.5px;color:#cfd7e8;}
+  strong{color:var(--text);}
+  ul{margin:0 0 14px;padding-left:20px;}
+  li{font-size:14.5px;color:#cfd7e8;margin-bottom:7px;}
+
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px 19px;margin-bottom:16px;}
+  .box h3{margin-top:0;}
+
+  .ex{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--line);
+    border-radius:0 12px 12px 0;padding:15px 18px;margin-bottom:11px;}
+  .ex.pri{border-left-color:var(--amber);background:linear-gradient(100deg,#1a2132,var(--panel));}
+  .ex-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px;}
+  .ex-num{font-family:var(--mono);font-size:12px;color:var(--faint);}
+  .ex-name{font-weight:700;font-size:16px;}
+  .ex-pri{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--amber);color:#170f00;padding:2px 7px;border-radius:20px;font-weight:700;}
+  .ex-pres{font-family:var(--mono);font-size:13px;color:var(--green);margin:6px 0 8px;}
+  .ex-why{font-size:13.5px;color:var(--dim);margin-bottom:8px;}
+  .ex-form{font-size:13.5px;color:#cfd7e8;border-top:1px solid var(--line);padding-top:8px;margin-top:8px;}
+  .ex-form b{color:var(--amber);font-size:11px;font-family:var(--mono);letter-spacing:.08em;
+    text-transform:uppercase;display:block;margin-bottom:3px;}
+
+  table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px;}
+  th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--dim);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line);}
+  td{padding:9px 10px;border-bottom:1px solid #1a2234;color:#cfd7e8;vertical-align:top;}
+  td:first-child{font-family:var(--mono);color:var(--amber);white-space:nowrap;font-size:13px;}
+
+  .callout{background:linear-gradient(160deg,var(--raised),#131a29);border:1px solid var(--line);
+    border-radius:16px;padding:20px 22px;margin:22px 0;}
+  .callout h3{margin-top:0;color:var(--amber);font-family:var(--disp);font-size:22px;text-transform:uppercase;}
+
+  footer{text-align:center;color:var(--faint);font-size:11.5px;margin-top:36px;line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Back to right now</a>
+
+  <h1>The <span>programme</span></h1>
+  <p class="lede">Built around two priorities: upper chest and triceps long head. Everything else is ordered behind them.</p>
+
+  <h2>The five rules</h2>
+  <div class="h2note">these decide everything below</div>
+  <div class="box">
+    <ul>
+      <li><strong>Priorities go first.</strong> Whatever you do fresh gets your best sets. If upper chest is the goal, it cannot be third.</li>
+      <li><strong>Stop 2–3 reps short of failure.</strong> Except bodyweight movements where you can only manage a few — there, failure is unavoidable and fine.</li>
+      <li><strong>Full range, especially the stretch.</strong> The bottom of every rep — chest to the floor, dumbbell behind the head — is where most of the growth signal lives. It is also the first thing to disappear when you tire.</li>
+      <li><strong>Double progression.</strong> Add a rep each session. When every set hits the top of the range, add the smallest weight increment and drop back to the bottom.</li>
+      <li><strong>Write down weight and reps every session.</strong> Without the record you cannot beat last time, and beating last time is the entire mechanism.</li>
+    </ul>
+  </div>
+
+  <h2>Session A — push</h2>
+  <div class="h2note">upper chest · triceps · delts</div>
+
+  <div class="ex pri">
+    <div class="ex-top"><span class="ex-num">01</span><span class="ex-name">Deficit feet-elevated push-ups</span><span class="ex-pri">Priority</span></div>
+    <div class="ex-pres">5 sets × 8–15 · rest 2 min</div>
+    <div class="ex-why">Your incline press substitute, and the single most important exercise on the page. With feet elevated, your arms press in a direction that — relative to your torso — travels toward your head. That is the same relative vector as an incline bench press, so it loads the clavicular head: the upper chest. The name "decline push-up" describes your body position, not the muscle worked.</div>
+    <div class="ex-form"><b>Form</b>
+      Feet on the bed or a chair. Hands on two hex dumbbells, books or push-up handles so your chest can travel <em>below</em> hand level — that deficit is the whole point, and it is the part you cannot get on the floor. Chest all the way down every rep. Elbows about 45° from your body, not flared to 90°. Higher feet shifts more onto upper chest, but only go as high as you can still get 8 clean reps. When 15 is easy, load a backpack.</div>
+  </div>
+
+  <div class="ex pri">
+    <div class="ex-top"><span class="ex-num">02</span><span class="ex-name">Improvised incline dumbbell press</span><span class="ex-pri">Priority</span></div>
+    <div class="ex-pres">3 sets × 8–12 · rest 2 min</div>
+    <div class="ex-why">A second angle at the same muscle, and this one lets you actually load it with weight rather than bodyweight. Two upper-chest movements is deliberate — it is the weak point, so it gets double the attention.</div>
+    <div class="ex-form"><b>Form</b>
+      Lie on the floor with a firm stack of cushions or folded duvet under your upper back and shoulders so your torso sits at roughly 20–30°. Dumbbells start at chest level, press up and slightly inward so they finish closer together than they started. That inward path is what contracts the pec rather than just the shoulder. Lower slowly, get a real stretch at the bottom.</div>
+  </div>
+
+  <div class="ex pri">
+    <div class="ex-top"><span class="ex-num">03</span><span class="ex-name">Overhead tricep extension</span><span class="ex-pri">Priority</span></div>
+    <div class="ex-pres">4 sets × 10–12 · rest 90s</div>
+    <div class="ex-why">The long head is roughly two thirds of your triceps mass, and it is the part that makes an arm look thick from the side. It <em>only</em> reaches full stretch when your arm is overhead — which means pushdowns, bench dips and close-grip work barely touch it. This is why it sits third instead of last.</div>
+    <div class="ex-form"><b>Form</b>
+      Both hands cupping one dumbbell, seated or standing. Lower it behind your head as far as you can, slowly. <strong>Elbows point forward and stay there</strong> — if they flare out to the sides you have turned it into a different, worse exercise. The deep stretch at the bottom is the entire movement.</div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-top"><span class="ex-num">04</span><span class="ex-name">Dips</span></div>
+    <div class="ex-pres">3 sets max reps, then 2 sets × 4 negatives · rest 2 min</div>
+    <div class="ex-why">Excellent for <em>lower</em> chest and triceps — a dip is a decline-angle press, so it works the sternal head, not the clavicular. Genuinely one of the weaker choices for upper chest specifically, which is why it is fourth rather than first. It stays in for triceps and overall chest mass.</div>
+    <div class="ex-form"><b>Form</b>
+      Only to parallel — upper arm level with the floor. Deeper under fatigue is how shoulders get hurt. <strong>Stay upright for more triceps, lean forward for more chest.</strong> Negatives: step to the top, lower for a slow 5 seconds, step back up. That is how you get from 3 reps to 10.</div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-top"><span class="ex-num">05</span><span class="ex-name">Seated dumbbell shoulder press</span></div>
+    <div class="ex-pres">3 sets × 8–12 · rest 90s</div>
+    <div class="ex-why">Front delts and overall shoulder mass. Sits below the priorities but above isolation work.</div>
+    <div class="ex-form"><b>Form</b>
+      Pick a weight you can do 10 with 2 left. Aim 10/9/8 across the sets, not 12/6/5 — if reps collapse like that you either went to failure on set one or rested too little.</div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-top"><span class="ex-num">06</span><span class="ex-name">Lateral raises</span></div>
+    <div class="ex-pres">4 sets × 12–20 · rest 60–90s</div>
+    <div class="ex-why">The highest visual return per unit of effort on your whole body. Side delts are what make a narrow frame read as broad — they widen your silhouette in a way chest and arms cannot.</div>
+    <div class="ex-form"><b>Form</b>
+      Light — 3–4kg. Slight forward lean, tiny bend in the elbows, raise to shoulder height and control the way down. No swinging. If you need momentum the weight is too heavy and your traps are doing it.</div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-top"><span class="ex-num">07</span><span class="ex-name">Hanging knee raises</span></div>
+    <div class="ex-pres">3 sets × 10–15 · rest 60s</div>
+    <div class="ex-why">Core. Optional, but you own the bar and it costs five minutes.</div>
+    <div class="ex-form"><b>Form</b>
+      Control the lowering. Swinging trains nothing.</div>
+  </div>
+
+  <h2>Session B — pull</h2>
+  <div class="h2note">back width · back thickness · biceps · rear delts</div>
+
+  <div class="ex pri">
+    <div class="ex-top"><span class="ex-num">01</span><span class="ex-name">Pull-ups / chin-ups</span><span class="ex-pri">Priority</span></div>
+    <div class="ex-pres">4 sets max reps · rest 2–3 min</div>
+    <div class="ex-why">Lat width — the V-taper. This is what makes your waist look smaller by comparison and your shoulders wider. At 52kg you have a real advantage that a heavier person does not.</div>
+    <div class="ex-form"><b>Form</b>
+      First two sets overhand (better for width), last two underhand (easier, so you keep getting reps when tired, and more biceps). Full dead hang at the bottom of every rep. Chest toward the bar, not chin over it. Control the descent — do not drop.</div>
+  </div>
+
+  <div class="ex pri">
+    <div class="ex-top"><span class="ex-num">02</span><span class="ex-name">Single-arm dumbbell row</span><span class="ex-pri">Priority</span></div>
+    <div class="ex-pres">4 sets × 8–12 each arm · rest 2 min</div>
+    <div class="ex-why">Back thickness — what fills out a shirt from the side. Braced on the bed, so your lower back does nothing.</div>
+    <div class="ex-form"><b>Form</b>
+      Start at 8.75kg (7.5 plus a 1.25 plate) — micro-loading beats jumping 2.5kg at a time, which is a 33% increase on a small dumbbell. Let the weight pull your shoulder blade forward at the bottom for a full stretch, then drive your <strong>elbow back past your ribs</strong>, not up toward your shoulder. Do not twist your torso to help.</div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-top"><span class="ex-num">03</span><span class="ex-name">Seated rear delt fly</span></div>
+    <div class="ex-pres">3 sets × 15 · rest 60–90s</div>
+    <div class="ex-why">Two jobs: rounds out the shoulder from behind, and pulls your shoulders back so you stand like someone bigger. Direct posture payoff.</div>
+    <div class="ex-form"><b>Form</b>
+      Sit on the bed edge, lean until your chest is near your thighs — this removes the lower back entirely. 3kg. Slight elbow bend, raise out to the sides, squeeze the shoulder blades. Chase the squeeze, not the weight.</div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-top"><span class="ex-num">04</span><span class="ex-name">Dumbbell curls</span></div>
+    <div class="ex-pres">3 sets × 8–12 · rest 90s</div>
+    <div class="ex-why">Biceps. Note they are already pre-fatigued from pull-ups and rows, so your working weight here will be lower than if you did them fresh. That is normal and not weakness.</div>
+    <div class="ex-form"><b>Form</b>
+      7.5kg to start. Elbows pinned to your sides and <strong>stationary</strong>. Full straight arm at the bottom every rep. If your elbows drift forward or your body rocks, drop the weight.</div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-top"><span class="ex-num">05</span><span class="ex-name">Hammer curls</span></div>
+    <div class="ex-pres">3 sets × 10–12 · rest 60–90s</div>
+    <div class="ex-why">Brachialis — the muscle underneath the bicep. Growing it physically pushes the bicep up and makes the arm look thicker from the front. Most people skip it and wonder why their arms look flat.</div>
+    <div class="ex-form"><b>Form</b>
+      Thumbs up throughout, same elbow rules as curls.</div>
+  </div>
+
+  <div class="ex">
+    <div class="ex-top"><span class="ex-num">06</span><span class="ex-name">Goblet squat</span></div>
+    <div class="ex-pres">2 sets × 12 · rest 90s</div>
+    <div class="ex-why">Token legs. Deliberately minimal while the priority is upper body appearance — add proper leg work back once this block ends.</div>
+    <div class="ex-form"><b>Form</b>
+      Dumbbell at the chest, sit down between your knees, as deep as you can go.</div>
+  </div>
+
+  <h2>Weights to start from</h2>
+  <div class="h2note">based on what you have actually lifted</div>
+  <table>
+    <tr><th>Movement</th><th>Start</th><th>Progress when</th></tr>
+    <tr><td>Single-arm row</td><td>8.75kg</td><td>12 reps on all sets → +1.25kg</td></tr>
+    <tr><td>Shoulder press</td><td>Weight you can do 10 with 2 left</td><td>12 on all sets → +1.25kg</td></tr>
+    <tr><td>Dumbbell curls</td><td>7.5kg</td><td>12 on all sets → +1.25kg</td></tr>
+    <tr><td>Hammer curls</td><td>7.5kg</td><td>12 on all sets → +1.25kg</td></tr>
+    <tr><td>Lateral raises</td><td>3–4kg</td><td>20 on all sets → +1kg</td></tr>
+    <tr><td>Rear delt fly</td><td>3kg</td><td>Stay light — this is not a loading exercise</td></tr>
+    <tr><td>Overhead extension</td><td>Weight you can do 10 with 2 left</td><td>12 on all sets → +1.25kg</td></tr>
+    <tr><td>Push-ups</td><td>Bodyweight, feet + hands elevated</td><td>15 on all sets → raise feet, then loaded backpack</td></tr>
+  </table>
+
+  <div class="callout">
+    <h3>The honest timeline</h3>
+    <p><strong>Upper chest and triceps will not visibly change by 7 August.</strong> Muscle tissue accrues at roughly 0.5–1kg per month for a well-fed beginner, spread across the whole body. Five days is not a fraction of that — it is noise.</p>
+    <p>What changes by the 7th: fullness from creatine saturation and glycogen refill, and the pump on the day. That is 1.5–3kg of visible volume on a 52kg frame, and it is real — but it comes from <strong>eating and creatine</strong>, which you have been doing right.</p>
+    <p style="margin-bottom:0"><strong>This programme is not for the 7th of August. It is for December.</strong> Run it for three months and your upper chest genuinely changes. Run it for five days and it does not. Both statements are true and only one of them is a reason to stop.</p>
+  </div>
+
+  <footer>
+    Written for Leo · 52kg · pull-up bar, dip bar, barbell, adjustable dumbbells, no bench.<br>
+    Priorities: upper chest, triceps long head, shoulder width.
+  </footer>
+</div>
+</body>
+</html>
