@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Protocol — Aug 3 to Aug 24</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#05070c; --panel:#0f1420; --raised:#161d2c; --line:#212a3e; --line2:#2d3852;
+    --amber:#ffb454; --amber-soft:#ffb45418; --amber-line:#ffb45440;
+    --cyan:#5eead4; --cyan-soft:#5eead418; --cyan-line:#5eead440;
+    --violet:#a78bfa; --violet-soft:#a78bfa18; --violet-line:#a78bfa40;
+    --red:#f87171; --green:#6ee7b7;
+    --text:#f2f5fb; --dim:#8593b2; --faint:#4a5674;
+    --disp:'Big Shoulders Display',sans-serif; --body:'Inter',sans-serif; --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:var(--body);line-height:1.6;
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -5%, #1a2338 0%, transparent 60%),
+      radial-gradient(ellipse 700px 400px at 90% 12%, #14243a 0%, transparent 55%);
+    background-attachment:fixed;}
+  .wrap{max-width:760px;margin:0 auto;padding:0 15px 90px;}
+  a{color:var(--amber);}
+
+  /* ---------- hero ---------- */
+  .hero{padding:34px 0 24px;}
+  .back{font-size:12.5px;font-weight:600;text-decoration:none;color:var(--faint);display:inline-block;margin-bottom:26px;}
+  .back:hover{color:var(--amber);}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--amber);margin-bottom:14px;}
+  h1{font-family:var(--disp);font-weight:900;font-size:clamp(46px,13vw,88px);line-height:.84;
+    text-transform:uppercase;margin:0 0 18px;letter-spacing:-.5px;}
+  h1 em{font-style:normal;color:var(--amber);}
+  .sub{color:var(--dim);font-size:16px;max-width:52ch;margin-bottom:26px;}
+
+  .phasebar{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px;}
+  .pcard{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px 15px;
+    text-decoration:none;display:block;transition:transform .18s,border-color .18s;}
+  .pcard:hover{transform:translateY(-2px);}
+  .pcard .pnum{font-family:var(--mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);}
+  .pcard .pname{font-family:var(--disp);font-weight:800;font-size:23px;text-transform:uppercase;
+    line-height:1;margin:6px 0 4px;color:var(--text);}
+  .pcard .pdate{font-family:var(--mono);font-size:11.5px;}
+  .pcard.a{border-left:3px solid var(--amber);} .pcard.a:hover{border-color:var(--amber-line);border-left-color:var(--amber);} .pcard.a .pdate{color:var(--amber);}
+  .pcard.v{border-left:3px solid var(--violet);} .pcard.v:hover{border-color:var(--violet-line);border-left-color:var(--violet);} .pcard.v .pdate{color:var(--violet);}
+  .pcard.c{border-left:3px solid var(--cyan);} .pcard.c:hover{border-color:var(--cyan-line);border-left-color:var(--cyan);} .pcard.c .pdate{color:var(--cyan);}
+
+  /* ---------- sections ---------- */
+  section{padding-top:46px;}
+  .shead{display:flex;align-items:flex-start;gap:16px;margin-bottom:8px;}
+  .sn{font-family:var(--disp);font-weight:900;font-size:60px;line-height:.75;color:var(--line2);flex:none;}
+  .st h2{font-family:var(--disp);font-weight:800;font-size:32px;text-transform:uppercase;
+    margin:0;letter-spacing:.3px;line-height:1;}
+  .st .sd{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;margin-top:5px;}
+  .amber h2{color:var(--amber);} .amber .sd{color:var(--faint);}
+  .violet h2{color:var(--violet);} .violet .sd{color:var(--faint);}
+  .cyan h2{color:var(--cyan);} .cyan .sd{color:var(--faint);}
+  .lede{color:var(--dim);font-size:15px;margin:0 0 20px;}
+
+  h3{font-size:17px;margin:26px 0 8px;font-weight:700;}
+  p{margin:0 0 13px;font-size:14.5px;color:#cbd4e6;}
+  strong{color:var(--text);}
+  ul{margin:0 0 14px;padding-left:20px;}
+  li{font-size:14.5px;color:#cbd4e6;margin-bottom:7px;}
+
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:18px 20px;margin-bottom:15px;}
+  .box h3{margin-top:0;}
+  .box.hl{background:linear-gradient(155deg,var(--raised),var(--panel));}
+
+  /* ---------- timeline (hour by hour) ---------- */
+  .tl{position:relative;padding-left:22px;margin-bottom:16px;}
+  .tl::before{content:'';position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:var(--line2);}
+  .tlrow{position:relative;padding:9px 0 9px 4px;}
+  .tlrow::before{content:'';position:absolute;left:-21px;top:16px;width:9px;height:9px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--line2);}
+  .tlrow.key::before{border-color:var(--amber);background:var(--amber);}
+  .tltime{font-family:var(--mono);font-size:12px;color:var(--amber);}
+  .tlwhat{font-size:14.5px;font-weight:600;margin-top:2px;}
+  .tlnote{font-size:13px;color:var(--dim);margin-top:3px;}
+
+  /* ---------- day grid ---------- */
+  .days{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;margin-bottom:16px;}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:10px 11px;}
+  .day .dd{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.06em;}
+  .day .ds{font-family:var(--disp);font-weight:800;font-size:19px;text-transform:uppercase;line-height:1;margin:4px 0 3px;}
+  .day .dn{font-size:10.5px;color:var(--dim);line-height:1.4;}
+  .day.A{border-left:3px solid var(--amber);} .day.A .ds{color:var(--amber);}
+  .day.B{border-left:3px solid var(--cyan);} .day.B .ds{color:var(--cyan);}
+  .day.R{border-left:3px solid var(--line2);} .day.R .ds{color:var(--faint);}
+  .day.X{border-left:3px solid var(--violet);background:linear-gradient(150deg,var(--raised),var(--panel));} .day.X .ds{color:var(--violet);}
+
+  /* ---------- floor / target ---------- */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:15px;}
+  @media(max-width:560px){.split{grid-template-columns:1fr;}}
+  .tier{border-radius:15px;padding:17px 19px;border:1px solid var(--line);}
+  .tier.floor{background:linear-gradient(155deg,#132019,#0f1420);border-left:3px solid var(--green);}
+  .tier.target{background:linear-gradient(155deg,var(--raised),var(--panel));border-left:3px solid var(--amber);}
+  .tier .tlab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:3px;}
+  .tier.floor .tlab{color:var(--green);} .tier.target .tlab{color:var(--amber);}
+  .tier .tname{font-family:var(--disp);font-weight:800;font-size:26px;text-transform:uppercase;line-height:1;margin-bottom:9px;}
+  .tier ul{margin:0;padding-left:17px;} .tier li{font-size:13.5px;margin-bottom:5px;}
+
+  table{width:100%;border-collapse:collapse;margin-bottom:15px;font-size:14px;}
+  th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.11em;text-transform:uppercase;
+    color:var(--dim);font-weight:500;padding:8px 9px;border-bottom:1px solid var(--line2);}
+  td{padding:9px;border-bottom:1px solid #151d2c;color:#cbd4e6;vertical-align:top;}
+  td:first-child{font-family:var(--mono);color:var(--amber);white-space:nowrap;font-size:12.5px;}
+
+  .warn{background:linear-gradient(155deg,#2a1a1a,#141018);border:1px solid #f8717133;
+    border-left:3px solid var(--red);border-radius:15px;padding:18px 20px;margin-bottom:15px;}
+  .warn h3{margin-top:0;color:var(--red);font-family:var(--disp);font-size:22px;text-transform:uppercase;}
+
+  .callout{background:linear-gradient(155deg,var(--raised),var(--panel));border:1px solid var(--line2);
+    border-radius:17px;padding:22px 24px;margin:20px 0;}
+  .callout h3{margin-top:0;color:var(--amber);font-family:var(--disp);font-size:24px;text-transform:uppercase;}
+
+  .chip{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    padding:3px 9px;border-radius:20px;margin:0 5px 5px 0;}
+  .chip.a{background:var(--amber-soft);color:var(--amber);border:1px solid var(--amber-line);}
+  .chip.c{background:var(--cyan-soft);color:var(--cyan);border:1px solid var(--cyan-line);}
+  .chip.v{background:var(--violet-soft);color:var(--violet);border:1px solid var(--violet-line);}
+
+  footer{text-align:center;color:var(--faint);font-size:11.5px;margin-top:50px;line-height:1.9;
+    border-top:1px solid var(--line);padding-top:24px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <a class="back" href="index.html">← Back to right now</a>
+    <div class="kicker">Leo · 52kg · August 2026</div>
+    <h1>The<br><em>Protocol</em></h1>
+    <p class="sub">Three phases. Every hour that matters is already decided, so you never have to work out what to do next — you only have to do it.</p>
+    <div class="phasebar">
+      <a class="pcard a" href="#p1"><div class="pnum">Phase 01</div><div class="pname">Tomorrow</div><div class="pdate">Aug 3</div></a>
+      <a class="pcard v" href="#p2"><div class="pnum">Phase 02</div><div class="pname">The run-in</div><div class="pdate">Aug 3 → 7</div></a>
+      <a class="pcard c" href="#p3"><div class="pnum">Phase 03</div><div class="pname">The block</div><div class="pdate">Aug 9 → 24</div></a>
+    </div>
+  </div>
+
+  <!-- ================= PHASE 1 ================= -->
+  <section id="p1">
+    <div class="shead amber">
+      <div class="sn">01</div>
+      <div class="st"><h2>Tomorrow</h2><div class="sd">Sunday 3 August · Session B — pull</div></div>
+    </div>
+    <p class="lede">One rule for tomorrow: the barber call happens before you open your laptop. Everything else is recoverable; that one has a deadline.</p>
+
+    <div class="tl">
+      <div class="tlrow key">
+        <div class="tltime">11:30</div>
+        <div class="tlwhat">Up. Water + 5g creatine before anything else.</div>
+        <div class="tlnote">Phone across the room tonight so you have to stand up. Do not lie there — the 75 minutes you lose in bed is the difference between a day and half a day.</div>
+      </div>
+      <div class="tlrow">
+        <div class="tltime">11:40</div>
+        <div class="tlwhat">Outside. 10 minutes.</div>
+        <div class="tlnote">Actual daylight, not through a window. This is the single strongest lever on your sleep schedule and it only works in the first hour after waking.</div>
+      </div>
+      <div class="tlrow key">
+        <div class="tltime">11:50</div>
+        <div class="tlwhat">RING THE BARBER.</div>
+        <div class="tlnote">Book for Monday 4th or Tuesday 5th. A fade looks best 2–3 days after cutting — this is your tightest deadline and the highest-visibility item you own.</div>
+      </div>
+      <div class="tlrow">
+        <div class="tltime">12:15</div>
+        <div class="tlwhat">Meal 1 — meal deal as normal.</div>
+        <div class="tlnote">~1,000 kcal, 60g protein. This part of your routine already works. Don't change it.</div>
+      </div>
+      <div class="tlrow key">
+        <div class="tltime">16:00</div>
+        <div class="tlwhat">ALARM → Meal 2. Peanut butter sandwich + pint of whole milk.</div>
+        <div class="tlnote">~700 kcal, 3 minutes. This is the meal that has been missing every single day. Set the alarm now, tonight, not tomorrow.</div>
+      </div>
+      <div class="tlrow">
+        <div class="tltime">17:30</div>
+        <div class="tlwhat">Session B — pull.</div>
+        <div class="tlnote">Pull-ups 4× max · single-arm row 4×8–12 @ 8.75kg · seated rear delt fly 3×15 @ 3kg · curls 3×8–12 @ 7.5kg · hammer curls 3×10–12 · goblet squat 2×12.</div>
+      </div>
+      <div class="tlrow">
+        <div class="tltime">18:45</div>
+        <div class="tlwhat">Shower immediately. Then the test shave.</div>
+        <div class="tlnote">Warm shower first, cream, fresh blade, ONE pass with the grain. Then watch your skin for 48 hours. You need this data before the real shave on the 6th — never debut a method on the day that matters.</div>
+      </div>
+      <div class="tlrow">
+        <div class="tltime">19:30</div>
+        <div class="tlwhat">Meal 3 — dinner.</div>
+        <div class="tlnote">~750 kcal. Eat what's cooked, add olive oil or cheese if it looks light.</div>
+      </div>
+      <div class="tlrow key">
+        <div class="tltime">21:30</div>
+        <div class="tlwhat">ALARM → Meal 4. Yogurt, granola, honey, banana.</div>
+        <div class="tlnote">~600 kcal, 2 minutes. Puts you at roughly 3,050 for the day.</div>
+      </div>
+      <div class="tlrow">
+        <div class="tltime">23:00</div>
+        <div class="tlwhat">Lights down. Phone brightness down.</div>
+        <div class="tlnote">Bright light late pushes your body clock later — the exact opposite of what the morning light is doing.</div>
+      </div>
+      <div class="tlrow">
+        <div class="tltime">00:30</div>
+        <div class="tlwhat">Night routine, then bed.</div>
+        <div class="tlnote">Floss → brush → spit, don't rinse → tongue scrape → moisturiser. 45 minutes earlier than tonight.</div>
+      </div>
+    </div>
+
+    <div class="box hl">
+      <h3>The two alarms are the whole intervention</h3>
+      <p style="margin-bottom:0">Your morning already works — you wake, read, wash, and eat 1,000 calories with creatine. The failure is a single five-and-a-half-hour hole between 2pm and dinner where nothing happens. <strong>16:00 and 21:30, set once, labelled with the actual food.</strong> That closes the hole without requiring you to decide anything at 4pm.</p>
+    </div>
+  </section>
+
+  <!-- ================= PHASE 2 ================= -->
+  <section id="p2">
+    <div class="shead violet">
+      <div class="sn">02</div>
+      <div class="st"><h2>The run-in</h2><div class="sd">3 → 7 August · five days to the 7th</div></div>
+    </div>
+    <p class="lede">Nothing here builds muscle — five days can't. This phase is entirely about grooming sequencing, sleeping well the right two nights, and arriving full rather than flat.</p>
+
+    <div class="days">
+      <div class="day B"><div class="dd">SUN 3</div><div class="ds">Pull</div><div class="dn">Barber booked · test shave</div></div>
+      <div class="day R"><div class="dd">MON 4</div><div class="ds">Rest</div><div class="dn">Barber (or Tue) · check shave reaction</div></div>
+      <div class="day A"><div class="dd">TUE 5</div><div class="ds">Push</div><div class="dn">Body hair, evening</div></div>
+      <div class="day B"><div class="dd">WED 6</div><div class="ds">Pull</div><div class="dn">Lighter · real shave · 8h sleep</div></div>
+      <div class="day X"><div class="dd">THU 7</div><div class="ds">Pump</div><div class="dn">2–4h before · SEE FRIENDS</div></div>
+    </div>
+
+    <table>
+      <tr><th>When</th><th>What, and why that day specifically</th></tr>
+      <tr><td>Mon 4 or Tue 5</td><td><strong>Barber.</strong> A fade sits best 2–3 days after cutting, never the same day. Ask for the fade and tell them you're growing the curl on top — don't let them thin it out.</td></tr>
+      <tr><td>Tue 5, evening</td><td><strong>Body hair.</strong> Two days of buffer, not one — you reacted badly last time and it lasted weeks. Alcohol-wipe the clippers first (dirty blades cause folliculitis), guard on at 0.5–1mm, with the grain, benzoyl peroxide after rather than a soothing lotion.</td></tr>
+      <tr><td>Wed 6</td><td><strong>Real shave</strong>, using whatever the Sunday test proved your skin tolerates. Keep the session light. <strong>8 hours sleep tonight</strong> — this is the night that shows on your face.</td></tr>
+      <tr><td>Thu 7</td><td><strong>Pump session 2–4 hours before.</strong> Lateral raises 4×20, push-ups 3×15, curls 3×15, tricep extension 3×15. Short rests. Then eat properly and drink water — do not skip meals to "look leaner," empty muscles look smaller, not sharper.</td></tr>
+    </table>
+
+    <div class="box">
+      <h3>What actually changes by the 7th</h3>
+      <p>Roughly <strong>1.5–3kg of fullness</strong> from creatine saturation and glycogen refilled by eating properly. On a 52kg frame that genuinely changes how a t-shirt sits. You have already banked most of it — the creatine every day was the right call.</p>
+      <p style="margin-bottom:0"><strong>What does not change:</strong> upper chest size, triceps size, the flat marks on your arms and chest. Five days is not a small amount of muscle growth — it's zero. Anyone promising otherwise is selling something. Knowing this now is what stops the 7th feeling like a failure.</p>
+    </div>
+  </section>
+
+  <!-- ================= PHASE 3 ================= -->
+  <section id="p3">
+    <div class="shead cyan">
+      <div class="sn">03</div>
+      <div class="st"><h2>The block</h2><div class="sd">9 → 24 August · sixteen days, no deadline</div></div>
+    </div>
+    <p class="lede">This is the one that actually works. Sixteen days with nobody to impress at the end of it is long enough for skin, teeth, sleep and habits to genuinely change — and those are most of what you're actually insecure about.</p>
+
+    <div class="callout">
+      <h3>Read this before anything else</h3>
+      <p>You said you want to do it <em>perfectly</em>. That single word has ended every previous attempt, and it will end this one too.</p>
+      <p>The mechanism is the same loop you already know: day four goes wrong, "perfect" is broken, the whole thing feels contaminated, you stop. That is "not worth it → do nothing" wearing a more ambitious costume.</p>
+      <p style="margin-bottom:0"><strong>So there is no "perfect" in this block. There is a floor and there is a target.</strong> Hitting the floor means the day counted. Ten target days and six floor days beats four perfect days followed by quitting, by an enormous margin — and it is the version that actually happens.</p>
+    </div>
+
+    <div class="split">
+      <div class="tier floor">
+        <div class="tlab">Non-negotiable · 15 min</div>
+        <div class="tname">The floor</div>
+        <ul>
+          <li>Eat three times</li>
+          <li>5g creatine</li>
+          <li>2L water</li>
+          <li>Night routine — floss, brush, tongue, moisturiser</li>
+        </ul>
+        <p style="font-size:12.5px;color:var(--dim);margin:10px 0 0;">Hit these and <strong>the day counted.</strong> Not a good day — a day that happened. Nothing gets written off, ever.</p>
+      </div>
+      <div class="tier target">
+        <div class="tlab">A good day</div>
+        <div class="tname">The target</div>
+        <ul>
+          <li>2,900 kcal · four meals</li>
+          <li>Session per the rotation</li>
+          <li>Skincare AM + PM, shower after training</li>
+          <li>30 min reading</li>
+          <li>8 hours, fixed wake time</li>
+        </ul>
+        <p style="font-size:12.5px;color:var(--dim);margin:10px 0 0;">Aim here. Land here most days. Do not punish yourself for the others.</p>
+      </div>
+    </div>
+
+    <h3>The sixteen days</h3>
+    <div class="days">
+      <div class="day X"><div class="dd">SAT 9</div><div class="ds">Push</div><div class="dn">PHOTOS · weigh · start retinoid</div></div>
+      <div class="day B"><div class="dd">SUN 10</div><div class="ds">Pull</div><div class="dn"></div></div>
+      <div class="day R"><div class="dd">MON 11</div><div class="ds">Rest</div><div class="dn"></div></div>
+      <div class="day A"><div class="dd">TUE 12</div><div class="ds">Push</div><div class="dn"></div></div>
+      <div class="day B"><div class="dd">WED 13</div><div class="ds">Pull</div><div class="dn"></div></div>
+      <div class="day R"><div class="dd">THU 14</div><div class="ds">Rest</div><div class="dn"></div></div>
+      <div class="day A"><div class="dd">FRI 15</div><div class="ds">Push</div><div class="dn"></div></div>
+      <div class="day B"><div class="dd">SAT 16</div><div class="ds">Pull</div><div class="dn">Weigh — 7-day average</div></div>
+      <div class="day R"><div class="dd">SUN 17</div><div class="ds">Rest</div><div class="dn"></div></div>
+      <div class="day A"><div class="dd">MON 18</div><div class="ds">Push</div><div class="dn"></div></div>
+      <div class="day B"><div class="dd">TUE 19</div><div class="ds">Pull</div><div class="dn"></div></div>
+      <div class="day R"><div class="dd">WED 20</div><div class="ds">Rest</div><div class="dn"></div></div>
+      <div class="day A"><div class="dd">THU 21</div><div class="ds">Push</div><div class="dn"></div></div>
+      <div class="day B"><div class="dd">FRI 22</div><div class="ds">Pull</div><div class="dn"></div></div>
+      <div class="day R"><div class="dd">SAT 23</div><div class="ds">Rest</div><div class="dn"></div></div>
+      <div class="day X"><div class="dd">SUN 24</div><div class="ds">Push</div><div class="dn">PHOTOS · weigh · review</div></div>
+    </div>
+    <p style="font-size:13px;color:var(--dim);"><span class="chip a">Push A</span><span class="chip c">Pull B</span><span class="chip v">Milestone</span> Eleven sessions in sixteen days. If you genuinely feel wrecked, take the rest day early and shift everything down one — the pattern survives.</p>
+
+    <h3>The daily template</h3>
+    <table>
+      <tr><th>Time</th><th>What</th></tr>
+      <tr><td>Wake</td><td>500ml water + creatine · 10 min outside · SPF after washing</td></tr>
+      <tr><td>+1h</td><td><strong>Meal 1</strong> — ~900 kcal</td></tr>
+      <tr><td>16:00</td><td><strong>Meal 2</strong> — ~700 kcal (alarm)</td></tr>
+      <tr><td>17:30</td><td>Session, then shower immediately — BP wash, 60 seconds on before rinsing</td></tr>
+      <tr><td>19:30</td><td><strong>Meal 3</strong> — ~750 kcal</td></tr>
+      <tr><td>21:30</td><td><strong>Meal 4</strong> — ~600 kcal (alarm)</td></tr>
+      <tr><td>Evening</td><td>30 min reading, phone in another room · whitening strip (passive)</td></tr>
+      <tr><td>Night</td><td>Floss → brush → spit don't rinse → tongue scrape → salicylic or retinoid → moisturiser</td></tr>
+    </table>
+
+    <h3>The sleep shift</h3>
+    <p>Thirty minutes earlier per night until you land, then hold. <strong>The wake time is the anchor, not the bedtime</strong> — you cannot force yourself to sleep earlier, but you can force yourself up, and the sleep pressure follows within a few days.</p>
+    <table>
+      <tr><th>Nights</th><th>Bed</th><th>Wake</th></tr>
+      <tr><td>Aug 9–10</td><td>3:00am</td><td>11:00am</td></tr>
+      <tr><td>Aug 11–12</td><td>2:00am</td><td>10:00am</td></tr>
+      <tr><td>Aug 13–14</td><td>1:00am</td><td>9:00am</td></tr>
+      <tr><td>Aug 15 →</td><td>12:30am</td><td>8:30am</td></tr>
+      <tr><td>Aug 16–24</td><td colspan="2"><strong>Hold it there.</strong> Same wake time every day including weekends — that consistency is what makes it stick.</td></tr>
+    </table>
+
+    <h3>Skin — the escalation you have been waiting for</h3>
+    <p><strong>Aug 9 is the day you start the retinoid.</strong> This was wrong before the 7th and it is right now, because the purge finally has room to happen. Adapalene 0.1%, pea-sized, at night, <strong>every third night for the first week</strong>, then every other night. Moisturiser on top.</p>
+    <p>Everything else continues: BP wash on the back and chest with 60 seconds of contact, salicylic acid on the nose, SPF every morning, niacinamide if you have it.</p>
+
+    <div class="warn">
+      <h3>Your face will get worse before it gets better</h3>
+      <p>Around days 7–14 of the retinoid your skin will likely look <strong>worse</strong> — more spots, some flaking, some redness. This is the purge: microcomedones that were already under the surface all coming up at once. It is the drug working, not failing.</p>
+      <p style="margin-bottom:0"><strong>This is the moment you would normally quit.</strong> Don't. Push through and it clears from roughly week 4 onward, and the result is better skin than anything else on this page can give you. <strong>Do not score the block on how your face looks on Aug 24</strong> — that one is a three-month investment that happens to start here.</p>
+    </div>
+
+    <h3>Measurement — do it twice, not daily</h3>
+    <ul>
+      <li><strong>Aug 9 and Aug 24 only:</strong> photos in the same spot, same light, same time of day, same pose — front, side, back. Plus weight, and a tape measure round the upper arm and chest if you have one.</li>
+      <li><strong>Weigh daily but only ever read the 7-day average.</strong> Daily weight swings 1–2kg on food volume and hydration alone — a single reading contains almost no signal.</li>
+      <li><strong>Do not check the mirror looking for change.</strong> Daily mirror checks show you nothing and make you anxious. The day-1 vs day-16 photo pair is where you will actually see it.</li>
+    </ul>
+
+    <h3>What sixteen days honestly delivers</h3>
+    <table>
+      <tr><th>Thing</th><th>By Aug 24</th></tr>
+      <tr><td>Back &amp; chest</td><td><strong>Genuinely clearer.</strong> 16 days is the real timeline for benzoyl peroxide. This is the biggest visible win available.</td></tr>
+      <tr><td>Teeth</td><td><strong>A full whitening course fits.</strong> Two to four shades if you run it properly.</td></tr>
+      <tr><td>Sleep</td><td><strong>Fixed.</strong> 16 days is more than enough at 30 minutes a night.</td></tr>
+      <tr><td>Weight</td><td><strong>+1.5–2.5kg</strong> — part muscle, part glycogen and water. Visible on a 52kg frame.</td></tr>
+      <tr><td>Strength</td><td><strong>Noticeably up.</strong> Mostly neural, which is why it comes fast — you'll be lifting meaningfully more than tonight.</td></tr>
+      <tr><td>Muscle</td><td><strong>~0.5kg.</strong> Real but subtle. Photos will show it; the mirror won't.</td></tr>
+      <tr><td>Face</td><td><strong>Possibly mid-purge and worse.</strong> Expected. Not a failure. See above.</td></tr>
+      <tr><td>Habits</td><td><strong>The actual prize.</strong> Sixteen days of hitting a floor is what makes September possible.</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <div class="shead amber">
+      <div class="sn">04</div>
+      <div class="st"><h2>The rules</h2><div class="sd">the ones that make it survive contact with a bad day</div></div>
+    </div>
+    <div class="box hl">
+      <ul>
+        <li><strong>A late thing still counts. A small thing still counts.</strong> A 1,800 calorie day is a day that happened, not a failed one.</li>
+        <li><strong>Never write off a day.</strong> 4pm with nothing done is not a lost day — it's water, food, creatine, and the day counted.</li>
+        <li><strong>No streaks.</strong> A streak is a thing that breaks, and a broken streak is the excuse you've been waiting for.</li>
+        <li><strong>Test, don't guess, on weights.</strong> If you get past the top of the rep range with clean form, add weight. Micro-load with the 1.25kg plates.</li>
+        <li><strong>Write down every weight and rep.</strong> Without the record you can't beat last time, and beating last time is the entire mechanism.</li>
+        <li><strong>Stop 2–3 reps short of failure.</strong> Failure adds fatigue faster than muscle, and fatigue is what makes you skip day 12.</li>
+        <li><strong>Don't pick anything on your skin.</strong> A spot left alone lasts days. A spot you pick becomes a mark that lasts months.</li>
+        <li><strong>Shower immediately after training</strong>, not an hour later. Sweat sitting on your back is the single biggest driver of what's there.</li>
+        <li><strong>When it goes wrong, open the app, not the chat.</strong> The card will tell you the next thing faster than asking will.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    Built for Leo · 52kg · 5'7" · pull-up bar, dip bar, barbell, adjustable dumbbells, no bench<br>
+    Priorities: upper chest · triceps long head · shoulder width · skin · sleep<br>
+    <span style="color:var(--amber)">The plan is not the hard part. The 16:00 alarm is.</span>
+  </footer>
+</div>
+</body>
+</html>
